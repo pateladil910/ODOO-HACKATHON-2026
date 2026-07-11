@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Hackathon Blueprint</title>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .auth-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: var(--space-md);
+    }
+
+    .auth-container {
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: var(--space-lg);
+    }
+
+    .auth-header h2 {
+      font-size: 2rem;
+      margin-bottom: var(--space-xs);
+    }
+
+    .auth-toggle-text {
+      text-align: center;
+      margin-top: var(--space-lg);
+      font-size: 0.9rem;
+    }
+
+    .auth-toggle-link {
+      color: var(--accent-secondary);
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+    }
+    .auth-toggle-link:hover {
+      text-decoration: underline;
+      color: var(--accent-secondary-hover);
+    }
+
+    .role-select-wrapper {
+      display: none; /* Hidden by default during login */
+    }
+  </style>
+  <!-- Guest Route Guard: Run immediately before page paints to prevent layout flash -->
+  <script>
+    // Inline check since script files load async
+    if (localStorage.getItem('token')) {
+      window.location.href = 'index.html';
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Floating Alerts Wrapper -->
+  <div class="alerts-container"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-brand-glow" style="color: var(--accent-primary);"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span>Hackathon<span class="nav-brand-glow">Blueprint</span></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+      <li><a href="login.html" class="btn btn-primary" style="padding: 0.45rem 1rem; font-size: 0.85rem;">Login</a></li>
+    </ul>
+  </nav>
+
+  <!-- Login/Registration card wrapper -->
+  <main class="auth-wrapper">
+    <div class="auth-container">
+      <div class="glass-card">
+        <div class="auth-header">
+          <h2 id="auth-title">Welcome Back</h2>
+          <p id="auth-subtitle">Sign in to your dashboard account</p>
+        </div>
+
+        <form id="auth-form">
+          <!-- Email Input -->
+          <div class="form-group">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" id="email" class="form-input" placeholder="name@example.com" required>
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+          </div>
+
+          <!-- Role Selector (Visible only on Registration) -->
+          <div class="form-group role-select-wrapper" id="role-wrapper">
+            <label for="role" class="form-label">Account Role</label>
+            <select id="role" class="form-input" style="background: rgba(0, 0, 0, 0.45); color: #fff; cursor: pointer;">
+              <option value="user" style="background-color: var(--bg-secondary);">Standard User (Read-Only CRUD)</option>
+              <option value="admin" style="background-color: var(--bg-secondary);">Administrator (Full Access CRUD)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-submit" style="width: 100%; margin-top: var(--space-md);">
+            Sign In
+          </button>
+        </form>
+
+        <div class="auth-toggle-text">
+          <span id="toggle-label">Don't have an account?</span>
+          <button class="auth-toggle-link" id="auth-toggle-btn">Create one</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- JS Helper Files -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Guard guest pages
+      window.auth.guardGuestRoute();
+
+      const authForm = document.getElementById('auth-form');
+      const authTitle = document.getElementById('auth-title');
+      const authSubtitle = document.getElementById('auth-subtitle');
+      const btnSubmit = document.getElementById('btn-submit');
+      const authToggleBtn = document.getElementById('auth-toggle-btn');
+      const toggleLabel = document.getElementById('toggle-label');
+      const roleWrapper = document.getElementById('role-wrapper');
+
+      let isLoginMode = true;
+
+      // Check if URL specifies signup mode on load
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('mode') === 'signup') {
+        isLoginMode = false;
+        authTitle.textContent = 'Create Account';
+        authSubtitle.textContent = 'Register a new account to get started';
+        btnSubmit.textContent = 'Register';
+        toggleLabel.textContent = 'Already have an account?';
+        authToggleBtn.textContent = 'Sign In';
+        roleWrapper.style.display = 'block';
+      }
+
+      // Toggle Login / Register forms
+      authToggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        isLoginMode = !isLoginMode;
+
+        if (isLoginMode) {
+          authTitle.textContent = 'Welcome Back';
+          authSubtitle.textContent = 'Sign in to your dashboard account';
+          btnSubmit.textContent = 'Sign In';
+          toggleLabel.textContent = "Don't have an account?";
+          authToggleBtn.textContent = 'Create one';
+          roleWrapper.style.display = 'none';
+        } else {
+          authTitle.textContent = 'Create Account';
+          authSubtitle.textContent = 'Register a new account to get started';
+          btnSubmit.textContent = 'Register';
+          toggleLabel.textContent = 'Already have an account?';
+          authToggleBtn.textContent = 'Sign In';
+          roleWrapper.style.display = 'block';
+        }
+        authForm.reset();
+      });
+
+      // Submit credentials
+      authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+          if (isLoginMode) {
+            await window.auth.login(email, password);
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 800);
+          } else {
+            const role = document.getElementById('role').value;
+            await window.auth.register(email, password, role);
+            
+            // Auto switch back to login mode
+            authToggleBtn.click();
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
