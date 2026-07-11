@@ -82,11 +82,11 @@ It is structured to comply with **MVC architecture**, **SOLID design principles*
    npm install
    npm run dev
    ```
-   The backend dev server will start using `nodemon` on `http://localhost:5000` with hot-reloading enabled.
+   The backend dev server will start using `nodemon` on `http://localhost:5005` with hot-reloading enabled.
 
 4. **Access the Frontend App:**
-   - **Method A (Integrated Static Server):** Open `http://localhost:5000` in your web browser. The Express server automatically serves the frontend directory static files out of the box.
-   - **Method B (Separate Dev Server):** Open the `frontend` folder using any live-server extension (like VS Code's Live Server running on port 5500). The frontend `api.js` client automatically detects the port discrepancy and routes fetch requests directly to the backend at `http://localhost:5000/api/v1`.
+   - **Method A (Integrated Static Server):** Open `http://localhost:5005` in your web browser. The Express server automatically serves the frontend directory static files out of the box.
+   - **Method B (Separate Dev Server):** Open the `frontend` folder using any live-server extension (like VS Code's Live Server running on port 5500). The frontend `api.js` client automatically detects the port discrepancy and routes fetch requests directly to the backend at `http://localhost:5005/api/v1`.
 
 ---
 

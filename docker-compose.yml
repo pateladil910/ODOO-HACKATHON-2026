@@ -28,13 +28,13 @@ services:
     restart: always
     command: npm run dev
     ports:
-      - "${PORT:-5000}:${PORT:-5000}"
+      - "${PORT:-5005}:${PORT:-5005}"
     volumes:
       - ./backend:/app
       - /app/node_modules
       - ./frontend:/frontend
     environment:
-      PORT: ${PORT:-5000}
+      PORT: ${PORT:-5005}
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: ${DB_USER:-postgres}
