@@ -13,7 +13,7 @@ RUN npm ci
 COPY . .
 
 # Expose the API port
-EXPOSE 5000
+EXPOSE 5005
 
 # Start script
 CMD ["npm", "run", "dev"]

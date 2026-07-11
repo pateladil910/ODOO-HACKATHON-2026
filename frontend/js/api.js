@@ -3,13 +3,13 @@
 // Determine base API URL depending on current origin host
 const getApiBaseUrl = () => {
   const { origin } = window.location;
-  // If hosted directly on backend port 5000
-  if (origin.includes(':5000')) {
+  // If hosted directly on backend port 5005
+  if (origin.includes(':5005')) {
     return '/api/v1';
   }
   // If hosted on standard dev port (like VS Code Live Server 5500 or Vite 5173)
   if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-    return 'http://localhost:5000/api/v1';
+    return 'http://localhost:5005/api/v1';
   }
   // Production fallback
   return '/api/v1';
