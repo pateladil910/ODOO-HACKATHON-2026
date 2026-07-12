@@ -173,3 +173,32 @@ select.form-control {
     background-position: right 1rem center;
     background-size: 16px 12px;
 }
+
+/* Light Neumorphism Theme Overrides */
+body.light-theme {
+    --bg-main: #e2e8f0; 
+    --bg-surface: #e2e8f0;
+    --bg-sidebar: #f1f5f9; 
+    --bg-sidebar-hover: #cbd5e1;
+
+    --text-dark: #0f172a; 
+    --text-muted: #475569;
+    --text-light: #000000;
+    --text-sidebar-muted: #475569;
+
+    --shadow-3d-out: 8px 8px 16px #cbd5e1, -8px -8px 16px #ffffff;
+    --shadow-3d-in: inset 8px 8px 16px #cbd5e1, inset -8px -8px 16px #ffffff;
+    --shadow-3d-btn: 4px 4px 8px #cbd5e1, -4px -4px 8px #ffffff;
+    --shadow-3d-btn-active: inset 4px 4px 8px #cbd5e1, inset -4px -4px 8px #ffffff;
+    
+    --shadow-dark-out: 4px 4px 8px #cbd5e1, -4px -4px 8px #ffffff;
+    --shadow-dark-in: inset 4px 4px 8px #cbd5e1, inset -4px -4px 8px #ffffff;
+}
+
+body.light-theme .form-control:focus {
+    box-shadow: inset 3px 3px 6px #cbd5e1, inset -3px -3px 6px #ffffff, 0 0 0 2px rgba(79, 70, 229, 0.3);
+}
+
+body.light-theme select.form-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%230f172a' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
