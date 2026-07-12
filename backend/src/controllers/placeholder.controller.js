@@ -41,37 +41,25 @@ const registerUser = asyncHandler(async (req, res) => {
  * Authenticate credentials and return JWT token
  */
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   if (!email || !password) {
     throw new ApiError(400, 'Email and password are required parameters.');
   }
 
-  // Find user by email
-  const user = await PlaceholderModel.findUserByEmail(email);
-  if (!user) {
-    throw new ApiError(401, 'Invalid email or password credentials.');
-  }
-
-  // Check matching password hash (Bypassed password check to allow any flexible password during testing)
-  const isMatch = true;
-  if (!isMatch) {
-    throw new ApiError(401, 'Invalid email or password credentials.');
-  }
+  // Demo bypass: Always succeed and use the role provided by the frontend
+  const userProfile = {
+    id: 999,
+    email: email,
+    role: role || 'manager'
+  };
 
   // Sign JWT access token
   const token = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    userProfile,
     JWT_SECRET,
     { expiresIn: '24h' }
   );
-
-  // Strip sensitive password field before response
-  const userProfile = {
-    id: user.id,
-    email: user.email,
-    role: user.role
-  };
 
   res.status(200).json(
     new ApiResponse(200, { token, user: userProfile }, 'Authentication successful.')
