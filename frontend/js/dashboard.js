@@ -54,60 +54,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return result.data !== undefined ? result.data : result;
     };
 
-    // 2. Fetch and Render Health Status
-    const loadHealthStatus = async () => {
-        const apiStatus = document.getElementById('apiStatusBadge');
-        const dbStatus = document.getElementById('dbStatusBadge');
-
-        try {
-            const healthRes = await fetch(`${API_BASE_URL.replace('/api/v1', '/api/v1/health')}`);
-            const health = await healthRes.json();
-            
-            if (healthRes.ok) {
-                apiStatus.className = 'badge badge-success';
-                apiStatus.textContent = 'ONLINE';
-            } else {
-                apiStatus.className = 'badge badge-danger';
-                apiStatus.textContent = 'ERROR';
-            }
-
-            if (health.database === 'CONNECTED') {
-                dbStatus.className = 'badge badge-success';
-                dbStatus.textContent = 'CONNECTED';
-            } else {
-                dbStatus.className = 'badge badge-danger';
-                dbStatus.textContent = 'DISCONNECTED';
-            }
-        } catch (error) {
-            console.error('[Health Check Failure]', error);
-            apiStatus.className = 'badge badge-danger';
-            apiStatus.textContent = 'OFFLINE';
-            dbStatus.className = 'badge badge-danger';
-            dbStatus.textContent = 'OFFLINE';
-        }
-    };
-
-    // 3. Fetch and Render KPIs
+    // 2. Fetch and Render KPIs
     const loadKPIs = async () => {
         try {
             const kpis = await authenticatedFetch('/analytics/kpis');
             
-            document.getElementById('kpiTotalVehicles').textContent = kpis.vehicles.total;
-            document.getElementById('kpiActiveDrivers').textContent = kpis.drivers.active;
-            document.getElementById('kpiActiveTrips').textContent = kpis.trips.dispatched;
-            document.getElementById('kpiUtilization').textContent = `${kpis.vehicles.utilization_percentage}%`;
+            if (document.getElementById('kpiTotalVehicles')) document.getElementById('kpiTotalVehicles').textContent = kpis.vehicles.total;
+            if (document.getElementById('kpiActiveDrivers')) document.getElementById('kpiActiveDrivers').textContent = kpis.drivers.active;
+            if (document.getElementById('kpiActiveTrips')) document.getElementById('kpiActiveTrips').textContent = kpis.trips.dispatched;
+            if (document.getElementById('kpiUtilization')) document.getElementById('kpiUtilization').textContent = `${kpis.vehicles.utilization_percentage}%`;
         } catch (error) {
             console.error('[KPI Load Failure]', error);
-            document.getElementById('kpiTotalVehicles').textContent = 'Error';
-            document.getElementById('kpiActiveDrivers').textContent = 'Error';
-            document.getElementById('kpiActiveTrips').textContent = 'Error';
-            document.getElementById('kpiUtilization').textContent = 'Error';
         }
     };
 
-    // 4. Fetch and Render Recent Trips
+    // 3. Fetch and Render Recent Trips
     const loadRecentTrips = async () => {
         const tableBody = document.getElementById('recentTripsTableBody');
+        if (!tableBody) return;
         try {
             const trips = await authenticatedFetch('/trips');
             tableBody.innerHTML = '';
@@ -115,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (trips.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-muted);">No trips registered yet.</td>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1rem;">No trips registered yet.</td>
                     </tr>
                 `;
                 return;
@@ -124,33 +88,59 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get last 5 trips
             const recentTrips = trips.slice(-5).reverse();
             recentTrips.forEach(trip => {
-                let badgeClass = 'badge-info';
-                if (trip.status === 'Completed') badgeClass = 'badge-success';
-                if (trip.status === 'Cancelled') badgeClass = 'badge-danger';
-                if (trip.status === 'Draft') badgeClass = 'badge-warning';
+                let badgeColor = '#6b7280'; // Draft
+                let textColor = 'white';
+                if (trip.status === 'Completed') badgeColor = 'var(--secondary-color)';
+                if (trip.status === 'Cancelled') badgeColor = 'var(--danger-color)';
+                if (trip.status === 'On Trip' || trip.status === 'In Progress') badgeColor = 'var(--primary-color)';
+                if (trip.status === 'Dispatched') { badgeColor = '#60a5fa'; textColor = 'black'; }
 
                 const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
                 tr.innerHTML = `
-                    <td>#${trip.id}</td>
-                    <td>${trip.source}</td>
-                    <td>${trip.destination}</td>
-                    <td>${trip.cargo_weight} kg</td>
-                    <td><span class="badge ${badgeClass}">${trip.status}</span></td>
+                    <td style="padding: 1rem;">TR${String(trip.id).padStart(3, '0')}</td>
+                    <td style="padding: 1rem;">${trip.vehicle_id || '—'}</td>
+                    <td style="padding: 1rem;">${trip.driver_id || '—'}</td>
+                    <td style="padding: 1rem;"><span style="background-color: ${badgeColor}; padding: 0.25rem 1rem; border-radius: 4px; color: ${textColor};">${trip.status}</span></td>
+                    <td style="padding: 1rem;">${trip.eta || '—'}</td>
                 `;
                 tableBody.appendChild(tr);
             });
         } catch (error) {
             console.error('[Trips Load Failure]', error);
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; color: var(--danger-color);">Failed to load recent trips.</td>
-                </tr>
-            `;
         }
     };
 
+    // 4. Vehicle Status Bars Animation
+    const updateVehicleStatusBars = () => {
+        const data = {
+            available: 42,
+            onTrip: 53,
+            inShop: 5,
+            retired: 0 
+        };
+        const total = data.available + data.onTrip + data.inShop + data.retired;
+
+        const availablePct = total > 0 ? (data.available / total) * 100 : 0;
+        const onTripPct = total > 0 ? (data.onTrip / total) * 100 : 0;
+        const inShopPct = total > 0 ? (data.inShop / total) * 100 : 0;
+        const retiredPct = total > 0 ? (data.retired / total) * 100 : 0;
+
+        setTimeout(() => {
+            const barAvailable = document.getElementById('bar-available');
+            const barOnTrip = document.getElementById('bar-ontrip');
+            const barInShop = document.getElementById('bar-inshop');
+            const barRetired = document.getElementById('bar-retired');
+
+            if (barAvailable) barAvailable.style.width = `${availablePct}%`;
+            if (barOnTrip) barOnTrip.style.width = `${onTripPct}%`;
+            if (barInShop) barInShop.style.width = `${inShopPct}%`;
+            if (barRetired) barRetired.style.width = `${retiredPct}%`;
+        }, 100);
+    };
+
     // Run loader tasks
-    loadHealthStatus();
     loadKPIs();
     loadRecentTrips();
+    updateVehicleStatusBars();
 });
