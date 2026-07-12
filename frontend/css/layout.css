@@ -267,6 +267,7 @@
   height: 32px;
   max-width: 280px;
   transition: border-color var(--t-fast);
+  position: relative; /* Added relative positioning for dropdown */
 }
 .header-search:focus-within {
   border-color: var(--border-strong);
@@ -287,6 +288,79 @@
   height: 100%;
 }
 .header-search input::placeholder { color: var(--text-muted); }
+
+/* Global Search Overlay Dropdown */
+.global-search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 340px;
+  max-height: 420px;
+  overflow-y: auto;
+  background: rgba(30, 41, 59, 0.7); /* dark slate with opacity */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  padding: 0.5rem 0;
+  display: none;
+}
+body.light-theme .global-search-results {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+.global-search-group {
+  padding: 0.25rem 0.75rem;
+}
+.global-search-group-title {
+  font-size: 0.643rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0.5rem 0 0.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.global-search-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--t-fast);
+  color: var(--text-primary);
+  font-size: 0.857rem;
+}
+.global-search-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+body.light-theme .global-search-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+.global-search-item .item-left {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+.global-search-item .item-title {
+  font-weight: 500;
+}
+.global-search-item .item-subtitle {
+  font-size: 0.714rem;
+  color: var(--text-secondary);
+}
+.global-search-no-results {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.857rem;
+}
 
 .header-right {
   display: flex;

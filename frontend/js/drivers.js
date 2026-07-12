@@ -253,6 +253,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Initialize list
-    loadDrivers();
+    // Initialize list and apply global search filters if present in query parameters
+    loadDrivers().then(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+        if (searchParam && searchInput) {
+            searchInput.value = searchParam;
+            filterAndSearch();
+        }
+    });
 });

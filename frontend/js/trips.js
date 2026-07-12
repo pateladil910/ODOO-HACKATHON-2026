@@ -333,7 +333,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initializer call
+    // Initializer call and apply global search filters if present in query parameters
     updateLifecycleUI('Draft');
-    loadTrips();
+    loadTrips().then(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+        if (searchParam && searchInput) {
+            searchInput.value = searchParam;
+            searchInput.dispatchEvent(new Event('input'));
+        }
+    });
 });
