@@ -1,3 +1,5 @@
+document.write('<script src="js/mock-api.js"></script>');
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const loginError = document.getElementById('loginError');

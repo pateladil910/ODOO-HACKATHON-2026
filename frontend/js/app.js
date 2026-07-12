@@ -1,3 +1,5 @@
+document.write('<script src="js/mock-api.js"></script>');
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Authentication Check
     const userData = localStorage.getItem('transitOpsUser');
