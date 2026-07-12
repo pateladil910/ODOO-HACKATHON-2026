@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trips Dispatch - TransitOps</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-brand">
+                    <div class="sidebar-icon">T</div>
+                    <span>TransitOps</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item" data-roles="all">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="vehicles.html" class="nav-item" data-roles="manager">
+                    <i class="ph ph-car"></i>
+                    <span>Vehicle Registry</span>
+                </a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
+                    <i class="ph ph-identification-card"></i>
+                    <span>Drivers</span>
+                </a>
+                <a href="trips.html" class="nav-item active" data-roles="manager,driver">
+                    <i class="ph ph-path"></i>
+                    <span>Trips</span>
+                </a>
+                <a href="maintenance.html" class="nav-item" data-roles="manager">
+                    <i class="ph ph-wrench"></i>
+                    <span>Maintenance</span>
+                </a>
+                <a href="expenses.html" class="nav-item" data-roles="manager,finance">
+                    <i class="ph ph-receipt"></i>
+                    <span>Fuel & Expenses</span>
+                </a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name">User Name</div>
+                        <div class="user-role">Role</div>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn" title="Logout">
+                        <i class="ph ph-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="ph ph-list"></i>
+                    </button>
+                    <h2 class="page-title">Trips & Dispatch Management</h2>
+                </div>
+                <div class="header-right">
+                    <button class="header-action" title="Notifications">
+                        <i class="ph ph-bell"></i>
+                    </button>
+                    <button class="header-action" title="Settings">
+                        <i class="ph ph-gear"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="app-content">
+                <!-- Action Header -->
+                <div class="data-table-container">
+                    <div class="data-table-header">
+                        <h3 class="data-table-title">Trips Manifest</h3>
+                        <button class="btn btn-primary" id="openAddModalBtn">
+                            <i class="ph ph-plus" style="margin-right: 8px;"></i> Create Trip
+                        </button>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search by source or destination..." style="max-width: 300px; box-shadow: var(--shadow-3d-btn);">
+                        <select id="statusFilter" class="form-control" style="max-width: 200px; box-shadow: var(--shadow-3d-btn);">
+                            <option value="">All Statuses</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Dispatched">Dispatched</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Trip ID</th>
+                                <th>Route (Source &rarr; Destination)</th>
+                                <th>Vehicle Allocation</th>
+                                <th>Driver Assigned</th>
+                                <th>Cargo</th>
+                                <th>Distance / Rev</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tripsTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: var(--text-muted);">Loading manifest...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create/Edit Trip Modal Overlay -->
+    <div class="modal-overlay" id="tripModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Create New Dispatch Trip</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="tripForm">
+                <input type="hidden" id="tripId">
+                <div class="form-group">
+                    <label class="form-label" for="source">Source Location</label>
+                    <input type="text" id="source" class="form-control" placeholder="e.g. Warehouse A (Chicago)" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="destination">Destination Location</label>
+                    <input type="text" id="destination" class="form-control" placeholder="e.g. Distribution Center (Detroit)" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="vehicleSelect">Allocate Vehicle</label>
+                    <select id="vehicleSelect" class="form-control" required>
+                        <option value="">Choose a vehicle...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="driverSelect">Assign Driver</label>
+                    <select id="driverSelect" class="form-control" required>
+                        <option value="">Choose a driver...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="cargoWeight">Cargo Weight (kg)</label>
+                    <input type="number" step="0.01" id="cargoWeight" class="form-control" placeholder="e.g. 1200" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="plannedDistance">Planned Distance (km)</label>
+                    <input type="number" step="0.01" id="plannedDistance" class="form-control" placeholder="e.g. 450" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="revenue">Projected Revenue ($)</label>
+                    <input type="number" step="0.01" id="revenue" class="form-control" placeholder="e.g. 1800" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Trip Status</label>
+                    <select id="status" class="form-control" required>
+                        <option value="Draft">Draft</option>
+                        <option value="Dispatched">Dispatched</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem;">Save Dispatch Trip</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/trips.js"></script>
+</body>
+</html>

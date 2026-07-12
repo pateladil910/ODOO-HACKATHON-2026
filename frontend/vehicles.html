@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Registry - TransitOps</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-brand">
+                    <div class="sidebar-icon">T</div>
+                    <span>TransitOps</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item" data-roles="all">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="vehicles.html" class="nav-item active" data-roles="manager">
+                    <i class="ph ph-car"></i>
+                    <span>Vehicle Registry</span>
+                </a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
+                    <i class="ph ph-identification-card"></i>
+                    <span>Drivers</span>
+                </a>
+                <a href="trips.html" class="nav-item" data-roles="manager,driver">
+                    <i class="ph ph-path"></i>
+                    <span>Trips</span>
+                </a>
+                <a href="maintenance.html" class="nav-item" data-roles="manager">
+                    <i class="ph ph-wrench"></i>
+                    <span>Maintenance</span>
+                </a>
+                <a href="expenses.html" class="nav-item" data-roles="manager,finance">
+                    <i class="ph ph-receipt"></i>
+                    <span>Fuel & Expenses</span>
+                </a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name">User Name</div>
+                        <div class="user-role">Role</div>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn" title="Logout">
+                        <i class="ph ph-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="ph ph-list"></i>
+                    </button>
+                    <h2 class="page-title">Vehicle Registry</h2>
+                </div>
+                <div class="header-right">
+                    <button class="header-action" title="Notifications">
+                        <i class="ph ph-bell"></i>
+                    </button>
+                    <button class="header-action" title="Settings">
+                        <i class="ph ph-gear"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="app-content">
+                <!-- Action Header -->
+                <div class="data-table-container">
+                    <div class="data-table-header">
+                        <h3 class="data-table-title">Fleet Vehicles</h3>
+                        <button class="btn btn-primary" id="openAddModalBtn">
+                            <i class="ph ph-plus" style="margin-right: 8px;"></i> Add Vehicle
+                        </button>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search by registration or model..." style="max-width: 300px; box-shadow: var(--shadow-3d-btn);">
+                        <select id="statusFilter" class="form-control" style="max-width: 200px; box-shadow: var(--shadow-3d-btn);">
+                            <option value="">All Statuses</option>
+                            <option value="Available">Available</option>
+                            <option value="On Trip">On Trip</option>
+                            <option value="In Shop">In Shop</option>
+                            <option value="Retired">Retired</option>
+                        </select>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Registration</th>
+                                <th>Model / Type</th>
+                                <th>Max Capacity</th>
+                                <th>Odometer (km)</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vehiclesTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted);">Loading fleet registry...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Vehicle Modal Overlay -->
+    <div class="modal-overlay" id="vehicleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Register New Vehicle</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="vehicleForm">
+                <input type="hidden" id="vehicleId">
+                <div class="form-group">
+                    <label class="form-label" for="regNumber">Registration Number</label>
+                    <input type="text" id="regNumber" class="form-control" placeholder="e.g. VAN-04" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="model">Model Name</label>
+                    <input type="text" id="model" class="form-control" placeholder="e.g. Ford Transit 2023" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="type">Vehicle Type</label>
+                    <input type="text" id="type" class="form-control" placeholder="e.g. Van" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="capacity">Max Capacity (kg)</label>
+                    <input type="number" step="0.01" id="capacity" class="form-control" placeholder="e.g. 1500" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="odometer">Current Odometer (km)</label>
+                    <input type="number" step="0.01" id="odometer" class="form-control" placeholder="e.g. 12000" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="cost">Acquisition Cost ($)</label>
+                    <input type="number" step="0.01" id="cost" class="form-control" placeholder="e.g. 35000" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Status</label>
+                    <select id="status" class="form-control" required>
+                        <option value="Available">Available</option>
+                        <option value="On Trip">On Trip</option>
+                        <option value="In Shop">In Shop</option>
+                        <option value="Retired">Retired</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem;">Save Vehicle</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/vehicles.js"></script>
+</body>
+</html>
