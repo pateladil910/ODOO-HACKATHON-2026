@@ -14,7 +14,8 @@
     color: var(--text-light);
     padding: 4rem;
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     box-shadow: inset -10px 0 20px rgba(0,0,0,0.2);
 }
 
@@ -126,9 +127,9 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     padding: 2rem;
+    overflow-y: auto;
 }
 
 .auth-form-container {
@@ -139,6 +140,7 @@
     border-radius: 30px;
     box-shadow: var(--shadow-3d-out);
     border: 1px solid rgba(255, 255, 255, 0.6);
+    margin: auto 0; /* Centers vertically without cutting off top when overflowing */
 }
 
 .form-header {
