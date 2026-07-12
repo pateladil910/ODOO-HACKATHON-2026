@@ -1,6 +1,8 @@
 // TransitOps Core API Client Wrapper & Notification Services
 (function() {
-  const BASE_URL = window.location.origin + '/api/v1';
+  const BASE_URL = (window.location.port && window.location.port !== '5005')
+    ? 'http://localhost:5005/api/v1'
+    : window.location.origin + '/api/v1';
 
   async function request(endpoint, options = {}) {
     // Read session token from teammate's localStorage key
