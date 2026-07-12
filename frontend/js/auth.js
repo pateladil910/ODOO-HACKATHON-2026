@@ -88,8 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 4000);
         } finally {
             const submitBtn = loginForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Sign In';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+            }
+        }
     });
 });
 
