@@ -1,6 +1,7 @@
 require('dotenv').config();
 const app = require('./src/app');
 const db = require('./src/config/db');
+const { initJobs } = require('./src/jobs');
 
 const PORT = process.env.PORT || 5005;
 
@@ -16,6 +17,9 @@ const startServer = async () => {
 
     const server = app.listen(PORT, () => {
       console.log(`[Server] Express App running on Port ${PORT} (Environment: ${process.env.NODE_ENV || 'development'})`);
+      
+      // Initialize background jobs after server is up
+      initJobs();
     });
 
     // Graceful Shutdown routines
