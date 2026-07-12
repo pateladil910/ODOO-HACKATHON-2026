@@ -62,24 +62,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let totalCost = 0;
         let sumRoi = 0;
+        let totalRevenue = 0;
 
         // Calculate totals for KPIs
         reportsList.forEach(r => {
             const rCost = parseFloat(r.fuel_cost || 0) + parseFloat(r.maintenance_cost || 0) + parseFloat(r.other_expenses || 0);
             totalCost += rCost;
             sumRoi += parseFloat(r.roi || 0);
+            totalRevenue += parseFloat(r.revenue || 0);
             
             // Store total cost on object for sorting
             r.totalOperationalCost = rCost;
         });
 
         const avgRoi = reportsList.length > 0 ? (sumRoi / reportsList.length) * 100 : 0;
+        const netProfit = totalRevenue - totalCost;
 
         // Update KPIs
         if (kpiFuelEff) kpiFuelEff.innerHTML = '8.4 <span style="font-size:1rem; color:var(--text-muted); font-weight:400;">km/l</span>';
         if (kpiUtil) kpiUtil.textContent = '81%';
-        if (kpiCost) kpiCost.textContent = Math.round(totalCost).toLocaleString();
+        if (kpiCost) kpiCost.textContent = '$' + Math.round(totalCost).toLocaleString();
         if (kpiRoi) kpiRoi.textContent = avgRoi.toFixed(1) + '%';
+        
+        const kpiProfit = document.getElementById('kpiProfit');
+        if (kpiProfit) {
+            kpiProfit.textContent = (netProfit >= 0 ? '$' : '-$') + Math.abs(Math.round(netProfit)).toLocaleString();
+        }
 
         renderRevenueChart();
         renderCostliestVehicles(reportsList);
