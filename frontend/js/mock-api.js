@@ -673,7 +673,7 @@
             `trailer\r\n<< /Size 6 /Root 1 0 R >>\r\n` +
             `startxref\r\n${startXref}\r\n%%EOF\r\n`;
             
-          fileData = 'data:application/pdf;base64,' + btoa(pdf);
+          fileData = 'data:application/pdf;base64,' + btoa(unescape(encodeURIComponent(pdf)));
         } else {
           // Dynamic SVG containing vehicle details
           const svg = `
@@ -695,7 +695,7 @@
             </svg>
           `.trim();
           
-          fileData = 'data:image/svg+xml;base64,' + btoa(svg);
+          fileData = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
         }
       }
 

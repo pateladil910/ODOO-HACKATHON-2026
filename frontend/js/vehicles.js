@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const downloadDocument = async (docId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/vehicles/documents/${docId}`, {
+            const response = await fetch(`${API_BASE_URL}/vehicles/documents/${docId}?_t=${Date.now()}`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
