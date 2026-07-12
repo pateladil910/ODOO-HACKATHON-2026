@@ -27,15 +27,43 @@ const mockDb = {
     {
       id: 1,
       email: 'admin@hackathon.com',
-      password: '$2a$10$yvE314.yH1m1oJ7s37eWseF.T30DdQgDk0q7Xy3.z.l7dY/Z7V0XW', // adminpassword
+      password: '$2a$10$VPoSK4JXQak5qemFj2s5sOj0wBm.H4xZv5ZXhdy/GZ3ZmHRrV0HpW', // adminpassword
       role: 'admin',
       created_at: new Date()
     },
     {
       id: 2,
       email: 'user@hackathon.com',
-      password: '$2a$10$n7/n5Z/2X9vj7R.y4s3lEuM5L0f10e4t.i.l8y3.z.l7dY/Z7V0XW', // userpassword
+      password: '$2a$10$iBMvE8lcWruTRykKlZWt5egPsqob8A7Dj.rAkE6o8pTE/6.yMWT3C', // userpassword
       role: 'user',
+      created_at: new Date()
+    },
+    {
+      id: 3,
+      email: 'manager@transitops.com',
+      password: '$2a$10$VPoSK4JXQak5qemFj2s5sOj0wBm.H4xZv5ZXhdy/GZ3ZmHRrV0HpW', // adminpassword
+      role: 'fleet_manager',
+      created_at: new Date()
+    },
+    {
+      id: 4,
+      email: 'driver@transitops.com',
+      password: '$2a$10$VPoSK4JXQak5qemFj2s5sOj0wBm.H4xZv5ZXhdy/GZ3ZmHRrV0HpW', // adminpassword
+      role: 'driver',
+      created_at: new Date()
+    },
+    {
+      id: 5,
+      email: 'safety@transitops.com',
+      password: '$2a$10$VPoSK4JXQak5qemFj2s5sOj0wBm.H4xZv5ZXhdy/GZ3ZmHRrV0HpW', // adminpassword
+      role: 'safety_officer',
+      created_at: new Date()
+    },
+    {
+      id: 6,
+      email: 'analyst@transitops.com',
+      password: '$2a$10$VPoSK4JXQak5qemFj2s5sOj0wBm.H4xZv5ZXhdy/GZ3ZmHRrV0HpW', // adminpassword
+      role: 'financial_analyst',
       created_at: new Date()
     }
   ],
@@ -95,6 +123,7 @@ const mockDb = {
 
 const handleMockQuery = (text, params) => {
   const normalizedText = text.replace(/\s+/g, ' ').trim();
+  console.log(`[Database Mock Query]: "${normalizedText}" | Params:`, params);
   
   if (normalizedText.includes('SELECT NOW()')) {
     return { rows: [{ now: new Date() }], rowCount: 1 };
@@ -188,9 +217,14 @@ const handleMockQuery = (text, params) => {
   }
 
   // --- Dynamic SELECT Handler ---
-  const selectMatch = normalizedText.match(/SELECT\s+.*?\s+FROM\s+(\w+)(?:\s+(\w+))?(?:\s+LEFT\s+JOIN\s+(\w+)(?:\s+(\w+))?\s+ON\s+.*?)?(?:\s+WHERE\s+(.+))?/i);
-  if (selectMatch) {
-    const tableName = selectMatch[1].toLowerCase();
+  if (normalizedText.startsWith('SELECT')) {
+    const tableMatch = normalizedText.match(/FROM\s+(\w+)/i);
+    if (!tableMatch) {
+      console.warn('[Database Mock] Could not parse table from SELECT query:', text);
+      return { rows: [], rowCount: 0 };
+    }
+    
+    const tableName = tableMatch[1].toLowerCase();
     const dbTable = mockDb[tableName] || mockDb[tableName + 's'];
     
     if (!dbTable) {
@@ -199,7 +233,9 @@ const handleMockQuery = (text, params) => {
     }
     
     let records = [...dbTable];
-    const whereClause = selectMatch[5];
+    
+    const whereMatch = normalizedText.match(/WHERE\s+(.+)/i);
+    const whereClause = whereMatch ? whereMatch[1] : '';
     
     if (whereClause) {
       // Basic param extraction & evaluation
