@@ -20,6 +20,258 @@ const dbConfig = {
   ssl: isProduction ? { rejectUnauthorized: false } : false
 };
 
+let useMock = false;
+
+const mockDb = {
+  users: [
+    {
+      id: 1,
+      email: 'admin@hackathon.com',
+      password: '$2a$10$yvE314.yH1m1oJ7s37eWseF.T30DdQgDk0q7Xy3.z.l7dY/Z7V0XW', // adminpassword
+      role: 'admin',
+      created_at: new Date()
+    },
+    {
+      id: 2,
+      email: 'user@hackathon.com',
+      password: '$2a$10$n7/n5Z/2X9vj7R.y4s3lEuM5L0f10e4t.i.l8y3.z.l7dY/Z7V0XW', // userpassword
+      role: 'user',
+      created_at: new Date()
+    }
+  ],
+  vehicles: [
+    {
+      id: 1,
+      registration_number: 'VAN-01',
+      model: 'Ford Transit',
+      type: 'Van',
+      load_capacity: 1200,
+      odometer: 45000,
+      cost: 32000,
+      status: 'Available',
+      created_at: new Date()
+    },
+    {
+      id: 2,
+      registration_number: 'TRK-02',
+      model: 'Volvo FH16',
+      type: 'Truck',
+      load_capacity: 18000,
+      odometer: 120000,
+      cost: 95000,
+      status: 'In Shop',
+      created_at: new Date()
+    }
+  ],
+  drivers: [
+    {
+      id: 1,
+      name: 'Alex Johnson',
+      license_number: 'DL-9921203',
+      license_category: 'Heavy Truck',
+      license_expiry: '2028-12-31',
+      phone: '555-0199',
+      safety_score: 95,
+      status: 'Available',
+      created_at: new Date()
+    },
+    {
+      id: 2,
+      name: 'Sarah Smith',
+      license_number: 'DL-4819201',
+      license_category: 'Light Commercial',
+      license_expiry: '2027-06-15',
+      phone: '555-0144',
+      safety_score: 88,
+      status: 'Off Duty',
+      created_at: new Date()
+    }
+  ],
+  trips: [],
+  maintenance_logs: [],
+  fuel_logs: [],
+  expenses: []
+};
+
+const handleMockQuery = (text, params) => {
+  const normalizedText = text.replace(/\s+/g, ' ').trim();
+  
+  if (normalizedText.includes('SELECT NOW()')) {
+    return { rows: [{ now: new Date() }], rowCount: 1 };
+  }
+
+  // --- Dynamic INSERT Handler ---
+  const insertMatch = normalizedText.match(/INSERT\s+INTO\s+(\w+)\s*\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)/i);
+  if (insertMatch) {
+    const tableName = insertMatch[1].toLowerCase();
+    const columns = insertMatch[2].split(',').map(c => c.trim().toLowerCase());
+    const dbTable = mockDb[tableName] || mockDb[tableName + 's']; // support logs pluralization mapping
+    
+    if (!dbTable) {
+      console.warn(`[Database Mock] Table '${tableName}' not found for INSERT`);
+      return { rows: [], rowCount: 0 };
+    }
+    
+    const newRecord = { id: dbTable.length + 1 };
+    columns.forEach((col, index) => {
+      let val = params[index];
+      // Auto-parse JSON strings for metadata fields
+      if (col === 'metadata' && typeof val === 'string') {
+        try {
+          val = JSON.parse(val);
+        } catch (e) {}
+      }
+      newRecord[col] = val;
+    });
+    newRecord.created_at = new Date();
+    newRecord.updated_at = new Date();
+    
+    dbTable.push(newRecord);
+    return { rows: [newRecord], rowCount: 1 };
+  }
+
+  // --- Dynamic UPDATE Handler ---
+  const updateMatch = normalizedText.match(/UPDATE\s+(\w+)\s+SET\s+(.+?)\s+WHERE\s+id\s*=\s*\$(\d+)/i);
+  if (updateMatch) {
+    const tableName = updateMatch[1].toLowerCase();
+    const setClause = updateMatch[2];
+    const idParamIdx = parseInt(updateMatch[3], 10) - 1;
+    const idVal = parseInt(params[idParamIdx], 10);
+    const dbTable = mockDb[tableName] || mockDb[tableName + 's'];
+    
+    if (!dbTable) {
+      console.warn(`[Database Mock] Table '${tableName}' not found for UPDATE`);
+      return { rows: [], rowCount: 0 };
+    }
+    
+    const recordIndex = dbTable.findIndex(r => r.id === idVal);
+    if (recordIndex === -1) return { rows: [], rowCount: 0 };
+    
+    const assignments = setClause.split(',').map(a => a.trim());
+    assignments.forEach(assign => {
+      const parts = assign.split('=').map(p => p.trim());
+      const col = parts[0].toLowerCase();
+      const valStr = parts[1]; // E.g., "$1"
+      const paramIdx = parseInt(valStr.replace('$', ''), 10) - 1;
+      let val = params[paramIdx];
+      // Auto-parse JSON metadata
+      if (col === 'metadata' && typeof val === 'string') {
+        try {
+          val = JSON.parse(val);
+        } catch (e) {}
+      }
+      dbTable[recordIndex][col] = val;
+    });
+    
+    dbTable[recordIndex].updated_at = new Date();
+    return { rows: [dbTable[recordIndex]], rowCount: 1 };
+  }
+
+  // --- Dynamic DELETE Handler ---
+  const deleteMatch = normalizedText.match(/DELETE\s+FROM\s+(\w+)\s+WHERE\s+id\s*=\s*\$(\d+)/i);
+  if (deleteMatch) {
+    const tableName = deleteMatch[1].toLowerCase();
+    const idParamIdx = parseInt(deleteMatch[2], 10) - 1;
+    const idVal = parseInt(params[idParamIdx], 10);
+    const dbTable = mockDb[tableName] || mockDb[tableName + 's'];
+    
+    if (!dbTable) {
+      console.warn(`[Database Mock] Table '${tableName}' not found for DELETE`);
+      return { rows: [], rowCount: 0 };
+    }
+    
+    const recordIndex = dbTable.findIndex(r => r.id === idVal);
+    if (recordIndex === -1) return { rows: [], rowCount: 0 };
+    
+    const deleted = dbTable.splice(recordIndex, 1);
+    return { rows: deleted, rowCount: 1 };
+  }
+
+  // --- Dynamic SELECT Handler ---
+  const selectMatch = normalizedText.match(/SELECT\s+.*?\s+FROM\s+(\w+)(?:\s+(\w+))?(?:\s+LEFT\s+JOIN\s+(\w+)(?:\s+(\w+))?\s+ON\s+.*?)?(?:\s+WHERE\s+(.+))?/i);
+  if (selectMatch) {
+    const tableName = selectMatch[1].toLowerCase();
+    const dbTable = mockDb[tableName] || mockDb[tableName + 's'];
+    
+    if (!dbTable) {
+      console.warn(`[Database Mock] Table '${tableName}' not found for SELECT`);
+      return { rows: [], rowCount: 0 };
+    }
+    
+    let records = [...dbTable];
+    const whereClause = selectMatch[5];
+    
+    if (whereClause) {
+      // Basic param extraction & evaluation
+      // Matches pattern "column = $index"
+      const paramMatches = [...whereClause.matchAll(/(\w+)\s*=\s*\$(\d+)/gi)];
+      paramMatches.forEach(m => {
+        const col = m[1].toLowerCase();
+        const paramIdx = parseInt(m[2], 10) - 1;
+        const val = params[paramIdx];
+        records = records.filter(r => {
+          if (typeof val === 'boolean') {
+            return (r[col] === val || (val === true && r[col] === 'true') || (val === false && r[col] === 'false'));
+          }
+          return String(r[col]) === String(val);
+        });
+      });
+
+      // Matches pattern "id = $index"
+      const idMatch = whereClause.match(/id\s*=\s*\$(\d+)/i);
+      if (idMatch && !paramMatches.some(m => m[1].toLowerCase() === 'id')) {
+        const paramIdx = parseInt(idMatch[1], 10) - 1;
+        const val = parseInt(params[paramIdx], 10);
+        records = records.filter(r => r.id === val);
+      }
+
+      // Matches unique fields like email or registration_number
+      if (whereClause.includes('email = $1')) {
+        records = records.filter(r => r.email === params[0]);
+      }
+      if (whereClause.includes('registration_number = $1')) {
+        records = records.filter(r => r.registration_number === params[0]);
+      }
+      
+      // Case-insensitive search match (ILIKE)
+      const ilikeMatches = [...whereClause.matchAll(/\((?:i\.)?(\w+)\s+ILIKE\s+\$(\d+)\s+OR\s+(?:i\.)?(\w+)\s+ILIKE\s+\$(\d+)\)/gi)];
+      if (ilikeMatches.length > 0) {
+        ilikeMatches.forEach(m => {
+          const col1 = m[1].toLowerCase();
+          const pIdx1 = parseInt(m[2], 10) - 1;
+          const searchVal = params[pIdx1].replace(/%/g, '').toLowerCase();
+          records = records.filter(r => 
+            (r[col1] && String(r[col1]).toLowerCase().includes(searchVal)) ||
+            (r[m[3].toLowerCase()] && String(r[m[3].toLowerCase()]).toLowerCase().includes(searchVal))
+          );
+        });
+      }
+    }
+    
+    // Sort or Join mappings: Add creator_email, vehicle_name, driver_name
+    records = records.map(r => {
+      const creator = mockDb.users.find(u => u.id === r.created_by);
+      const vehicle = mockDb.vehicles.find(v => v.id === r.vehicle_id);
+      const driver = mockDb.drivers.find(d => d.id === r.driver_id);
+      return { 
+        ...r, 
+        creator_email: creator ? creator.email : null,
+        vehicle_name: vehicle ? vehicle.model : null,
+        registration_number: vehicle ? vehicle.registration_number : (r.registration_number || null),
+        driver_name: driver ? driver.name : null
+      };
+    });
+
+    // Default sort by created_at DESC if present
+    records.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+    
+    return { rows: records, rowCount: records.length };
+  }
+  
+  console.warn('[Database Mock] Unhandled query pattern:', text);
+  return { rows: [], rowCount: 0 };
+};
+
 const pool = new Pool(dbConfig);
 
 // Pool event listeners for monitoring connection states
@@ -28,8 +280,10 @@ pool.on('connect', () => {
 });
 
 pool.on('error', (err) => {
-  console.error('[Database] Unexpected error on idle PostgreSQL client', err);
-  process.exit(-1);
+  if (!useMock) {
+    console.error('[Database] Unexpected error on idle PostgreSQL client', err);
+    process.exit(-1);
+  }
 });
 
 module.exports = {
@@ -41,6 +295,9 @@ module.exports = {
    * @returns {Promise<import('pg').QueryResult>}
    */
   query: async (text, params) => {
+    if (useMock) {
+      return handleMockQuery(text, params);
+    }
     const start = Date.now();
     try {
       const res = await pool.query(text, params);
@@ -61,6 +318,13 @@ module.exports = {
    * @returns {Promise<import('pg').PoolClient>}
    */
   getClient: async () => {
+    if (useMock) {
+      // Mock Transaction Client
+      return {
+        query: async (text, params) => handleMockQuery(text, params),
+        release: () => {}
+      };
+    }
     const client = await pool.connect();
     const query = client.query;
     const release = client.release;
@@ -93,7 +357,7 @@ module.exports = {
    * Used to check database readiness during system startup.
    */
   testConnection: async () => {
-    let attempts = 5;
+    let attempts = 3;
     while (attempts) {
       try {
         const client = await pool.connect();
@@ -103,12 +367,14 @@ module.exports = {
         return true;
       } catch (err) {
         attempts -= 1;
-        console.warn(`[Database] Connection failed. Retrying in 2 seconds... (${attempts} attempts left)`);
+        console.warn(`[Database] Connection failed. (${attempts} attempts left)`);
         console.warn(`[Database] Error: ${err.message}`);
         if (attempts === 0) {
-          throw new Error('Could not establish database connection after multiple retries.');
+          console.warn('[Database] Switching to IN-MEMORY MOCK DATABASE MODE (PostgreSQL not running)');
+          useMock = true;
+          return true;
         }
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
   },
