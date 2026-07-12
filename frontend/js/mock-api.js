@@ -398,14 +398,16 @@
 
         const v = vehicles.find(x => x.id === newM.vehicle_id);
         if (v) {
-          if (oldM.status !== newM.status) {
             if (newM.status === 'Closed') {
-              v.status = 'Available';
+              if (v.status !== 'Retired') {
+                v.status = 'Available';
+              }
             } else if (newM.status === 'Active') {
-              v.status = 'In Shop';
+              if (v.status !== 'Retired') {
+                v.status = 'In Shop';
+              }
             }
             saveDb('mock_vehicles', vehicles);
-          }
         }
 
         return makeResponse(newM);
