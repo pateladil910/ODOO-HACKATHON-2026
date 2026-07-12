@@ -1,10 +1,9 @@
 // TransitOps Dashboard Integration Logic
 document.addEventListener('DOMContentLoaded', () => {
   // --- Check Authenticated Session ---
-  const token = localStorage.getItem('token');
-  const userJSON = localStorage.getItem('user');
+  const userJSON = localStorage.getItem('transitOpsUser');
 
-  if (!token || !userJSON) {
+  if (!userJSON) {
     window.location.href = 'login.html';
     return;
   }
@@ -16,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const userRoleEl = document.getElementById('user-role');
   const userAvatarTextEl = document.getElementById('user-avatar-text');
   const welcomeUsernameEl = document.getElementById('welcome-username');
-  const btnLogout = document.getElementById('btn-logout');
+  const logoutBtn = document.getElementById('logoutBtn');
   
   const pageTitle = document.getElementById('page-title');
   const pageSubtitle = document.getElementById('page-subtitle');
@@ -50,21 +49,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCancelDriver = document.getElementById('btn-cancel-driver');
 
   // --- Session Setup ---
-  userEmailEl.textContent = currentUser.email;
-  // Format role tag (e.g. fleet_manager -> Fleet Manager)
-  userRoleEl.textContent = currentUser.role.replace('_', ' ');
-  userAvatarTextEl.textContent = currentUser.email.charAt(0).toUpperCase();
-  welcomeUsernameEl.textContent = currentUser.email.split('@')[0];
+  if (userEmailEl) userEmailEl.textContent = currentUser.email;
+  if (userRoleEl) userRoleEl.textContent = currentUser.role.replace('_', ' ');
+  if (userAvatarTextEl) userAvatarTextEl.textContent = currentUser.email.charAt(0).toUpperCase();
+  if (welcomeUsernameEl) welcomeUsernameEl.textContent = currentUser.email.split('@')[0];
 
   // Logout Trigger
-  btnLogout.addEventListener('click', () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.api.showToast('Signed out successfully.', 'info');
-    setTimeout(() => {
-      window.location.href = 'login.html';
-    }, 1000);
-  });
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('transitOpsUser');
+      window.api.showToast('Signed out successfully.', 'info');
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 1000);
+    });
+  }
 
   // --- Tab Panel Router ---
   navLinks.forEach(link => {
