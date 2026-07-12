@@ -78,6 +78,45 @@
   --radius-lg: 10px;
 }
 
+body.light-theme {
+  /* Base Surfaces */
+  --bg-base:        #F8FAFC;   /* Slate 50 */
+  --bg-surface:     #FFFFFF;
+  --bg-surface-2:   #F1F5F9;   /* Slate 100 */
+  --bg-sidebar:     #FFFFFF;
+  --bg-hover:       #F1F5F9;   /* Slate 100 */
+  --border-subtle:  #E2E8F0;   /* Slate 200 */
+  --border-strong:  #CBD5E1;   /* Slate 300 */
+
+  /* Accent — disciplined: Sky Blue (slightly darker for contrast) */
+  --accent:         #0284C7;
+  --accent-dim:     rgba(2, 132, 199, 0.08);
+  --accent-glow:    rgba(2, 132, 199, 0.15);
+
+  /* Semantic status colors adjusted for light background */
+  --status-green:   #16A34A;   /* Green 600 */
+  --status-green-bg: rgba(22, 163, 74, 0.08);
+  --status-amber:   #D97706;   /* Amber 600 */
+  --status-amber-bg: rgba(217, 119, 6, 0.08);
+  --status-red:     #DC2626;   /* Red 600 */
+  --status-red-bg:  rgba(220, 38, 38, 0.08);
+  --status-blue:    #2563EB;   /* Blue 600 */
+  --status-blue-bg: rgba(37, 99, 235, 0.08);
+  --status-neutral: #475569;   /* Slate 600 */
+  --status-neutral-bg: rgba(71, 85, 105, 0.08);
+
+  /* Text colors */
+  --text-primary:   #0F172A;   /* Slate 900 */
+  --text-secondary: #475569;   /* Slate 600 */
+  --text-muted:     #94A3B8;   /* Slate 400 */
+  --text-light:     #0F172A;
+
+  /* Shadows for light mode */
+  --shadow-card:  0 1px 3px rgba(0,0,0,0.05), 0 0 0 1px var(--border-subtle);
+  --shadow-modal: 0 16px 48px rgba(0,0,0,0.1);
+  --shadow-accent: 0 0 12px var(--accent-glow);
+}
+
 /* ─────────────────────────────────────────
    RESET & BASE
 ───────────────────────────────────────── */
@@ -96,6 +135,12 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   line-height: 1.5;
+  transition: background-color var(--t-base), color var(--t-base);
+}
+
+/* Theme Transition Support */
+body, .app-sidebar, .app-header, .sidebar-header, .sidebar-footer, .nav-item, .card, .kpi-card, .data-table-container, .form-control, .header-search, .header-action, .header-user-pill, table.data-table thead tr, table.data-table tr {
+  transition: background-color var(--t-base), border-color var(--t-base), color var(--t-base), box-shadow var(--t-base);
 }
 
 a {
