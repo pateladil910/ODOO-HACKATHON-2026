@@ -268,6 +268,211 @@
     font-weight: bold;
 }
 
+
+/* Neumorphic Grid & Dashboard Widgets */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.metric-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    background-color: var(--bg-main);
+    box-shadow: var(--shadow-3d-btn);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: var(--primary-color);
+}
+
+.metric-card-info {
+    flex: 1;
+}
+
+.metric-card-title {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-card-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+/* Dashboard Two-Column Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Data Tables Neumorphic Style */
+.data-table-container {
+    background-color: var(--bg-main);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-3d-out);
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+}
+
+.data-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.data-table-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.data-table th {
+    padding: 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(163, 177, 198, 0.2);
+}
+
+.data-table td {
+    padding: 1rem;
+    font-size: 0.925rem;
+    color: var(--text-dark);
+    border-bottom: 1px solid rgba(163, 177, 198, 0.1);
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badge System */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 20px;
+    text-transform: capitalize;
+    box-shadow: var(--shadow-3d-btn);
+}
+
+.badge-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-info {
+    background-color: #e0f2fe;
+    color: #075985;
+}
+
+/* Modals & Popups Neumorphic Style */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(226, 232, 240, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--bg-main);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-3d-out);
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transform: translateY(20px);
+    transition: transform var(--transition-normal);
+}
+
+.modal-overlay.show .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
 /* Content Container */
 .app-content {
     flex: 1;

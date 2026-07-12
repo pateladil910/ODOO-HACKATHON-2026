@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel & Expenses - TransitOps</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        .tabs-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .tab-btn {
+            background-color: var(--bg-main);
+            border: none;
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-3d-btn);
+            color: var(--text-muted);
+            transition: all var(--transition-fast);
+        }
+        .tab-btn.active {
+            color: var(--primary-color);
+            box-shadow: var(--shadow-3d-in);
+        }
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-brand">
+                    <div class="sidebar-icon">T</div>
+                    <span>TransitOps</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item" data-roles="all">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="vehicles.html" class="nav-item" data-roles="manager">
+                    <i class="ph ph-car"></i>
+                    <span>Vehicle Registry</span>
+                </a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
+                    <i class="ph ph-identification-card"></i>
+                    <span>Drivers</span>
+                </a>
+                <a href="trips.html" class="nav-item" data-roles="manager,driver">
+                    <i class="ph ph-path"></i>
+                    <span>Trips</span>
+                </a>
+                <a href="maintenance.html" class="nav-item" data-roles="manager">
+                    <i class="ph ph-wrench"></i>
+                    <span>Maintenance</span>
+                </a>
+                <a href="expenses.html" class="nav-item active" data-roles="manager,finance">
+                    <i class="ph ph-receipt"></i>
+                    <span>Fuel & Expenses</span>
+                </a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name">User Name</div>
+                        <div class="user-role">Role</div>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn" title="Logout">
+                        <i class="ph ph-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="ph ph-list"></i>
+                    </button>
+                    <h2 class="page-title">Fuel & Expenses</h2>
+                </div>
+                <div class="header-right">
+                    <button class="header-action" title="Notifications">
+                        <i class="ph ph-bell"></i>
+                    </button>
+                    <button class="header-action" title="Settings">
+                        <i class="ph ph-gear"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="app-content">
+                <!-- Action Headers -->
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="fuelTab">Fuel Logs</button>
+                    <button class="tab-btn" data-tab="expensesTab">Other Expenses</button>
+                </div>
+
+                <!-- TAB 1: FUEL LOGS -->
+                <div class="tab-pane active" id="fuelTab">
+                    <div class="data-table-container">
+                        <div class="data-table-header">
+                            <h3 class="data-table-title">Fuel Refuel Logs</h3>
+                            <button class="btn btn-primary" id="openFuelModalBtn">
+                                <i class="ph ph-plus" style="margin-right: 8px;"></i> Log Fuel
+                            </button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>Vehicle</th>
+                                    <th>Liters</th>
+                                    <th>Cost ($)</th>
+                                    <th>Logged Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fuelTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--text-muted);">Loading refuel data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 2: OTHER EXPENSES -->
+                <div class="tab-pane" id="expensesTab">
+                    <div class="data-table-container">
+                        <div class="data-table-header">
+                            <h3 class="data-table-title">Operational Expenses</h3>
+                            <button class="btn btn-primary" id="openExpenseModalBtn">
+                                <i class="ph ph-plus" style="margin-right: 8px;"></i> Log Expense
+                            </button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Expense ID</th>
+                                    <th>Vehicle</th>
+                                    <th>Type</th>
+                                    <th>Cost ($)</th>
+                                    <th>Logged Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--text-muted);">Loading expenses data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Log Fuel Modal Overlay -->
+    <div class="modal-overlay" id="fuelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Log Fuel Refill</h3>
+                <button class="modal-close" id="closeFuelModalBtn">&times;</button>
+            </div>
+            <form id="fuelForm">
+                <div class="form-group">
+                    <label class="form-label" for="fuelVehicleSelect">Vehicle</label>
+                    <select id="fuelVehicleSelect" class="form-control" required>
+                        <option value="">Choose a vehicle...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="liters">Liters Refilled</label>
+                    <input type="number" step="0.01" id="liters" class="form-control" placeholder="e.g. 50" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="fuelCost">Total Cost ($)</label>
+                    <input type="number" step="0.01" id="fuelCost" class="form-control" placeholder="e.g. 75" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="fuelLoggedAt">Refill Date</label>
+                    <input type="date" id="fuelLoggedAt" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem;">Log Fuel Refill</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Log Expense Modal Overlay -->
+    <div class="modal-overlay" id="expenseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Log Expense</h3>
+                <button class="modal-close" id="closeExpenseModalBtn">&times;</button>
+            </div>
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label class="form-label" for="expenseVehicleSelect">Vehicle</label>
+                    <select id="expenseVehicleSelect" class="form-control" required>
+                        <option value="">Choose a vehicle...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="expenseType">Expense Type</label>
+                    <select id="expenseType" class="form-control" required>
+                        <option value="Tolls">Tolls</option>
+                        <option value="Permits">Permits</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="expenseCost">Total Cost ($)</label>
+                    <input type="number" step="0.01" id="expenseCost" class="form-control" placeholder="e.g. 150" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="expenseLoggedAt">Logged Date</label>
+                    <input type="date" id="expenseLoggedAt" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem;">Log Expense</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/expenses.js"></script>
+</body>
+</html>

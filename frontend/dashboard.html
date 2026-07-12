@@ -81,7 +81,7 @@
                 <div class="header-right">
                     <div class="header-user">
                         <span class="header-user-name">Raven K.</span>
-                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
+                        <div class="header-user-role" id="userRoleBadge">Dispatcher <div class="header-user-avatar">RK</div></div>
                     </div>
                 </div>
             </header>
@@ -106,7 +106,7 @@
                 <div class="kpi-grid">
                     <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Active Vehicles</span>
-                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">53</div>
+                        <div class="kpi-value" id="kpiTotalVehicles" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">53</div>
                     </div>
                     
                     <div class="kpi-card" style="border-left: 4px solid var(--secondary-color);">
@@ -121,7 +121,7 @@
 
                     <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Active Trips</span>
-                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">18</div>
+                        <div class="kpi-value" id="kpiActiveTrips" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">18</div>
                     </div>
 
                     <div class="kpi-card" style="border-left: 4px solid #6b7280;">
@@ -131,12 +131,12 @@
 
                     <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Drivers On Duty</span>
-                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">26</div>
+                        <div class="kpi-value" id="kpiActiveDrivers" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">26</div>
                     </div>
                     
                     <div class="kpi-card" style="border-left: 4px solid var(--secondary-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Fleet Utilization</span>
-                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">81%</div>
+                        <div class="kpi-value" id="kpiUtilization" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">81%</div>
                     </div>
                 </div>
 
@@ -155,7 +155,7 @@
                                     <th style="padding: 1rem; font-weight: normal;">ETA</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="recentTripsTableBody">
                                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                                     <td style="padding: 1rem;">TR001</td>
                                     <td style="padding: 1rem;">VAN-05</td>
