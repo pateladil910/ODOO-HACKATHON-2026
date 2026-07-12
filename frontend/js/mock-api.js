@@ -66,6 +66,19 @@
     { id: 4, vehicle_id: 5, type: 'Permits', cost: 150.00, logged_at: '2026-07-04' }
   ];
 
+  const seedDocuments = [
+    { id: 1, vehicle_id: 1, document_name: 'Registration Card', file_name: 'Registration_VAN-01.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 2, vehicle_id: 1, document_name: 'Insurance Policy', file_name: 'Insurance_VAN-01.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 3, vehicle_id: 2, document_name: 'Registration Card', file_name: 'Registration_TRK-02.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 4, vehicle_id: 2, document_name: 'Insurance Policy', file_name: 'Insurance_TRK-02.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 5, vehicle_id: 3, document_name: 'Registration Card', file_name: 'Registration_VAN-03.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 6, vehicle_id: 3, document_name: 'Insurance Policy', file_name: 'Insurance_VAN-03.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 7, vehicle_id: 4, document_name: 'Registration Card', file_name: 'Registration_TRK-04.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 8, vehicle_id: 4, document_name: 'Insurance Policy', file_name: 'Insurance_TRK-04.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 9, vehicle_id: 5, document_name: 'Registration Card', file_name: 'Registration_VAN-05.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 10, vehicle_id: 5, document_name: 'Insurance Policy', file_name: 'Insurance_VAN-05.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() }
+  ];
+
   // Global Intercept Function
   const handleMockRequest = async (url, init = {}) => {
     const method = (init.method || 'GET').toUpperCase();
@@ -123,7 +136,7 @@
     }
 
     // --- 2. VEHICLES CRUD ---
-    if (url.includes('/vehicles')) {
+    if (url.includes('/vehicles') && !url.includes('/documents')) {
       const parts = url.split('/vehicles');
       const paramId = parts[1] ? parseInt(parts[1].replace('/', ''), 10) : null;
 
@@ -398,14 +411,16 @@
 
         const v = vehicles.find(x => x.id === newM.vehicle_id);
         if (v) {
-          if (oldM.status !== newM.status) {
             if (newM.status === 'Closed') {
-              v.status = 'Available';
+              if (v.status !== 'Retired') {
+                v.status = 'Available';
+              }
             } else if (newM.status === 'Active') {
-              v.status = 'In Shop';
+              if (v.status !== 'Retired') {
+                v.status = 'In Shop';
+              }
             }
             saveDb('mock_vehicles', vehicles);
-          }
         }
 
         return makeResponse(newM);
@@ -548,6 +563,135 @@
         });
         return makeResponse(report);
       }
+    }
+
+    // --- VEHICLE DOCUMENTS MOCK ---
+    if (url.includes('/vehicles/') && url.includes('/documents') && method === 'GET') {
+      const parts = url.split('/');
+      const vehicleId = parseInt(parts[parts.indexOf('vehicles') + 1], 10);
+      const docs = loadDb('mock_documents', seedDocuments);
+      const vehicleDocs = docs.filter(d => d.vehicle_id === vehicleId);
+      return makeResponse(vehicleDocs);
+    }
+
+    if (url.includes('/vehicles/') && url.includes('/documents') && method === 'POST') {
+      const parts = url.split('/');
+      const vehicleId = parseInt(parts[parts.indexOf('vehicles') + 1], 10);
+      const docs = loadDb('mock_documents', seedDocuments);
+      const newDoc = {
+        id: docs.length > 0 ? Math.max(...docs.map(x => x.id)) + 1 : 1,
+        vehicle_id: vehicleId,
+        document_name: body.document_name,
+        file_name: body.file_name,
+        file_size: body.file_size,
+        mime_type: body.mime_type,
+        created_at: new Date()
+      };
+      docs.push(newDoc);
+      saveDb('mock_documents', docs);
+      return makeResponse(newDoc, 201);
+    }
+
+    if (url.includes('/vehicles/documents/') && method === 'GET') {
+      const parts = url.split('/');
+      const docId = parseInt(parts[parts.indexOf('documents') + 1], 10);
+      const docs = loadDb('mock_documents', seedDocuments);
+      const doc = docs.find(x => x.id === docId);
+      if (!doc) return makeResponse({ message: 'Document not found' }, 404);
+      
+      let fileData = doc.file_data;
+      if (!fileData) {
+        // Generate mock data containing vehicle details
+        const vehicle = vehicles.find(v => v.id === doc.vehicle_id) || {
+          registration_number: 'N/A',
+          model: 'N/A',
+          type: 'N/A',
+          odometer: 0,
+          max_capacity: 0,
+          status: 'N/A'
+        };
+
+        if (doc.file_name.endsWith('.pdf')) {
+          // Helper to escape parenthesis characters inside PDF text string operators
+          const escapePdf = (text) => String(text || '').replace(/[\(\)\\]/g, '\\$&');
+
+          // Dynamic uncompressed PDF generator containing vehicle details in a single stream line
+          const streamContent = `BT /F1 18 Tf 70 750 Td (${escapePdf(doc.document_name)}) Tj /F1 12 Tf 0 -40 Td (Vehicle Registration: ${escapePdf(vehicle.registration_number)}) Tj 0 -25 Td (Model Name: ${escapePdf(vehicle.model)}) Tj 0 -25 Td (Vehicle Type: ${escapePdf(vehicle.type)}) Tj 0 -25 Td (Current Odometer: ${parseFloat(vehicle.odometer).toLocaleString()} km) Tj 0 -25 Td (Max Cargo Capacity: ${parseFloat(vehicle.max_capacity).toLocaleString()} kg) Tj 0 -25 Td (Operational Status: ${escapePdf(vehicle.status)}) Tj 0 -40 Td (This certificate verifies active registration and compliance logs.) Tj 0 -20 Td (Generated dynamically on: ${new Date().toLocaleDateString()}) Tj ET`;
+          const streamLength = streamContent.length;
+          
+          const pdfParts = [
+            `%PDF-1.4\n%âãÏÓ\n`,
+            `1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`,
+            `2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n`,
+            `3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R >> >> /MediaBox [0 0 595 842] /Contents 5 0 R >>\nendobj\n`,
+            `4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n`,
+            `5 0 obj\n<< /Length ${streamLength} >>\nstream\n${streamContent}\nendstream\nendobj\n`
+          ];
+          
+          const offsets = [];
+          let currentOffset = 0;
+          for (let i = 1; i < pdfParts.length; i++) {
+            currentOffset += pdfParts[i - 1].length;
+            offsets.push(currentOffset);
+          }
+          
+          const startXref = currentOffset + pdfParts[pdfParts.length - 1].length;
+          const padOffset = (offset) => String(offset).padStart(10, '0');
+          
+          const pdf = pdfParts.join('') +
+            `xref\r\n0 6\r\n0000000000 65535 f\r\n` +
+            `${padOffset(offsets[0])} 00000 n\r\n` +
+            `${padOffset(offsets[1])} 00000 n\r\n` +
+            `${padOffset(offsets[2])} 00000 n\r\n` +
+            `${padOffset(offsets[3])} 00000 n\r\n` +
+            `${padOffset(offsets[4])} 00000 n\r\n` +
+            `trailer\r\n<< /Size 6 /Root 1 0 R >>\r\n` +
+            `startxref\r\n${startXref}\r\n%%EOF\r\n`;
+            
+          fileData = 'data:application/pdf;base64,' + btoa(pdf);
+        } else {
+          // Dynamic SVG containing vehicle details
+          const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+              <rect width="100%" height="100%" fill="#1e1e24" />
+              <rect x="20" y="20" width="560" height="360" rx="15" fill="none" stroke="#22d3ee" stroke-width="2" />
+              <text x="300" y="70" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" fill="#22d3ee" text-anchor="middle">
+                ${doc.document_name.toUpperCase()}
+              </text>
+              <text x="80" y="140" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Registration: ${vehicle.registration_number}</text>
+              <text x="80" y="175" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Model: ${vehicle.model}</text>
+              <text x="80" y="210" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Type: ${vehicle.type}</text>
+              <text x="80" y="245" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Odometer: ${parseFloat(vehicle.odometer).toLocaleString()} km</text>
+              <text x="80" y="280" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Capacity: ${parseFloat(vehicle.max_capacity).toLocaleString()} kg</text>
+              <text x="80" y="315" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Status: ${vehicle.status}</text>
+              <text x="300" y="360" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">
+                Official compliance file mock. Generated dynamically on ${new Date().toLocaleDateString()}
+              </text>
+            </svg>
+          `.trim();
+          
+          fileData = 'data:image/svg+xml;base64,' + btoa(svg);
+        }
+      }
+
+      return makeResponse({
+        id: doc.id,
+        vehicle_id: doc.vehicle_id,
+        document_name: doc.document_name,
+        file_name: doc.file_name,
+        file_size: doc.file_size,
+        mime_type: doc.mime_type,
+        file_data: fileData
+      });
+    }
+
+    if (url.includes('/vehicles/documents/') && method === 'DELETE') {
+      const parts = url.split('/');
+      const docId = parseInt(parts[parts.indexOf('documents') + 1], 10);
+      const docs = loadDb('mock_documents', seedDocuments);
+      const newDocList = docs.filter(x => x.id !== docId);
+      saveDb('mock_documents', newDocList);
+      return makeResponse(null);
     }
 
     return makeResponse({ message: 'Endpoint mock not matched' }, 404);

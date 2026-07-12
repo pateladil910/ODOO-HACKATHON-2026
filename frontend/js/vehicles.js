@@ -67,19 +67,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let allVehicles = [];
     const loadVehicles = async () => {
         try {
-            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading fleet registry...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading fleet registry...</td></tr>';
             allVehicles = await authenticatedFetch('/vehicles');
             renderVehicles(allVehicles);
         } catch (error) {
             console.error('[Load Vehicles Error]', error);
-            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger-color); padding: 2rem;">Failed to load vehicles.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--danger-color); padding: 2rem;">Failed to load vehicles.</td></tr>';
         }
     };
 
     const renderVehicles = (vehiclesList) => {
         tableBody.innerHTML = '';
         if (vehiclesList.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No vehicles found matching criteria.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">No vehicles found matching criteria.</td></tr>';
             return;
         }
 
@@ -101,6 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="padding: 1rem;">${parseFloat(v.odometer).toLocaleString()}</td>
                 <td style="padding: 1rem;">${parseFloat(v.acquisition_cost || 0).toLocaleString()}</td>
                 <td style="padding: 1rem;"><span style="background-color: ${badgeColor}; padding: 0.25rem 1rem; border-radius: 4px; color: ${textColor};">${v.status}</span></td>
+                <td style="padding: 1rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-outline btn-sm docs-btn" data-id="${v.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"><i class="ph ph-paperclip"></i> Docs</button>
+                        <button class="btn btn-outline btn-sm edit-btn" data-id="${v.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</button>
+                        <button class="btn btn-outline btn-sm delete-btn" data-id="${v.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: #fca5a5;">Delete</button>
+                    </div>
+                </td>
             `;
             tableBody.appendChild(tr);
         });
@@ -113,8 +120,175 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', () => deleteVehicle(btn.getAttribute('data-id')));
             });
+            document.querySelectorAll('.docs-btn').forEach(btn => {
+                btn.addEventListener('click', () => openDocModal(btn.getAttribute('data-id')));
+            });
         }
     };
+
+    // --- Document Management Modal Handlers ---
+    let currentVehicleIdForDocs = null;
+
+    const openDocModal = async (vehicleId) => {
+        currentVehicleIdForDocs = vehicleId;
+        document.getElementById('docVehicleId').value = vehicleId;
+        document.getElementById('docUploadForm').reset();
+        const docModal = document.getElementById('documentModal');
+        docModal.classList.add('show');
+        loadVehicleDocuments(vehicleId);
+    };
+
+    const loadVehicleDocuments = async (vehicleId) => {
+        const listContainer = document.getElementById('docListContainer');
+        listContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 1rem;">Loading documents...</div>';
+        try {
+            const docs = await authenticatedFetch(`/vehicles/${vehicleId}/documents`);
+            listContainer.innerHTML = '';
+            if (docs.length === 0) {
+                listContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 1rem;">No documents uploaded.</div>';
+                return;
+            }
+            docs.forEach(doc => {
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.justify = 'space-between';
+                div.style.alignItems = 'center';
+                div.style.padding = '0.5rem';
+                div.style.background = 'rgba(255,255,255,0.05)';
+                div.style.borderRadius = '4px';
+                div.style.border = '1px solid rgba(255,255,255,0.1)';
+                
+                div.innerHTML = `
+                    <div style="display: flex; flex-direction: column; text-align: left;">
+                        <span style="font-size: 0.85rem; font-weight: 500;">${doc.document_name}</span>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">${doc.file_name} (${(doc.file_size / 1024).toFixed(1)} KB)</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-outline btn-sm download-doc-btn" data-id="${doc.id}" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; color: var(--secondary-color); display: flex; align-items: center; cursor: pointer;"><i class="ph ph-download"></i></button>
+                        <button class="btn btn-outline btn-sm delete-doc-btn" data-id="${doc.id}" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; color: #fca5a5;"><i class="ph ph-trash"></i></button>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+            // Attach download and delete listeners
+            listContainer.querySelectorAll('.download-doc-btn').forEach(btn => {
+                btn.addEventListener('click', () => downloadDocument(btn.getAttribute('data-id')));
+            });
+            listContainer.querySelectorAll('.delete-doc-btn').forEach(btn => {
+                btn.addEventListener('click', () => deleteDocument(btn.getAttribute('data-id')));
+            });
+        } catch (err) {
+            listContainer.innerHTML = '<div style="color: #fca5a5; font-size: 0.85rem; text-align: center; padding: 1rem;">Failed to load documents.</div>';
+        }
+    };
+
+    const uploadDocument = async (e) => {
+        e.preventDefault();
+        const vehicleId = document.getElementById('docVehicleId').value;
+        const docName = document.getElementById('docName').value;
+        const fileInput = document.getElementById('docFile');
+        const file = fileInput.files[0];
+        
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = async () => {
+            const base64Data = reader.result;
+            const payload = {
+                document_name: docName,
+                file_name: file.name,
+                file_size: file.size,
+                mime_type: file.type,
+                file_data: base64Data,
+                file_content: base64Data
+            };
+            try {
+                await authenticatedFetch(`/vehicles/${vehicleId}/documents`, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                loadVehicleDocuments(vehicleId);
+                document.getElementById('docUploadForm').reset();
+            } catch (err) {
+                alert(err.message || 'Failed to upload document.');
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const deleteDocument = async (docId) => {
+        if (confirm('Are you sure you want to delete this document?')) {
+            try {
+                await authenticatedFetch(`/vehicles/documents/${docId}`, {
+                    method: 'DELETE'
+                });
+                loadVehicleDocuments(currentVehicleIdForDocs);
+            } catch (err) {
+                alert(err.message || 'Failed to delete document.');
+            }
+        }
+    };
+
+    const downloadDocument = async (docId) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/vehicles/documents/${docId}?_t=${Date.now()}`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('Download failed');
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const result = await response.json();
+                const doc = result.data || result;
+                const link = document.createElement('a');
+                link.href = doc.file_data || 'data:application/pdf;base64,JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nDMwMzQ1MjcyMVFIy0zRNzTWT8tM0TdSMCpWiAcAOCME7gplbmRzdHJlYW0KZW5kb2JqCjMgMCBvYmoKMjIKZW5kb2JqCjEgMCBvYmoKPDwvVHlwZS9QYWdlcy9LaWRzWzQgMCBSXS9Db3VudCAxPj4KZW5kb2JqCjQgMCBvYmoKPDwvVHlwZS9QYWdlL1BhcmVudCAxIDAgUi9NZWRpYUJveFswIDAgNTk1IDQyMF0vQ29udGVudHMgMiAwIFI+PgplbmRvYmoKNSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMSAwIFI+PgpleHRyYWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDIxOSAwMDAwMCBuIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDAxNDggMDAwMDAgbiAKMDAwMDAwMDIxOSAwMDAwMCBuIAowMDAwMDAwMzAzIDAwMDAwIG4gCnRyYWlsZXIKPDwvU2l6ZSA2L1Jvb3QgNSAwIFI+PgpzdGFydHhyZWYKMzUxCiUlRU9GCg==';
+                link.download = doc.file_name || 'document.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                let filename = 'downloaded_file';
+                const disposition = response.headers.get('content-disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    const matches = filenameRegex.exec(disposition);
+                    if (matches != null && matches[1]) { 
+                        filename = matches[1].replace(/['"]/g, '');
+                    }
+                }
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }
+        } catch (err) {
+            alert('Failed to download document: ' + err.message);
+        }
+    };
+
+    const docUploadForm = document.getElementById('docUploadForm');
+    if (docUploadForm) {
+        docUploadForm.addEventListener('submit', uploadDocument);
+    }
+
+    const closeDocModalBtn = document.getElementById('closeDocModalBtn');
+    if (closeDocModalBtn) {
+        closeDocModalBtn.addEventListener('click', () => {
+            document.getElementById('documentModal').classList.remove('show');
+        });
+    }
 
     // Filter and Search Event Handlers
     const filterAndSearch = () => {
