@@ -526,7 +526,8 @@ table.data-table .actions-col {
   align-items: center;
   justify-content: center;
 }
-.modal-overlay.open { display: flex; }
+.modal-overlay.open,
+.modal-overlay.show { display: flex; }
 
 .modal-content {
   background: var(--bg-surface-2);
