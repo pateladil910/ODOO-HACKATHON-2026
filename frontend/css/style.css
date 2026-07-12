@@ -431,6 +431,7 @@ table.data-table thead th {
   letter-spacing: 0.07em;
   color: var(--text-secondary);
   white-space: nowrap;
+  text-align: left;
 }
 
 table.data-table tbody tr {
