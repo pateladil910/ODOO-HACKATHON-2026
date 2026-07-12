@@ -90,50 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = loginForm.querySelector('button[type="submit"]');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Sign In';
-        }
-    });
-
-    // Google Sign-In OAuth Simulation
-    const googleLoginBtn = document.getElementById('googleLoginBtn');
-    const googleOAuthModal = document.getElementById('googleOAuthModal');
-    const closeGoogleBtn = document.getElementById('closeGoogleBtn');
-    
-    if (googleLoginBtn && googleOAuthModal) {
-        googleLoginBtn.addEventListener('click', () => {
-            googleOAuthModal.classList.add('open');
-        });
-    }
-
-    if (closeGoogleBtn && googleOAuthModal) {
-        closeGoogleBtn.addEventListener('click', () => {
-            googleOAuthModal.classList.remove('open');
-        });
-    }
-
-    // Handle account selection
-    const accountItems = document.querySelectorAll('.google-account-item');
-    accountItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const email = item.getAttribute('data-email');
-            const role = item.getAttribute('data-role');
-            const name = item.getAttribute('data-name');
-            
-            // Create session user object
-            const googleUser = {
-                id: 888, 
-                email: email,
-                role: mapRoleToFrontend(role),
-                name: name,
-                token: 'mock-google-oauth-token-55555'
-            };
-
-            // Save to localStorage
-            localStorage.setItem('transitOpsUser', JSON.stringify(googleUser));
-
-            // Close modal and redirect
-            googleOAuthModal.classList.remove('open');
-            window.location.href = 'dashboard.html';
-        });
     });
 });
 
