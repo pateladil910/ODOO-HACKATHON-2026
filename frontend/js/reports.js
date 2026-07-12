@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const costliestChart = document.getElementById('costliestChart');
     
     const exportCsvBtn = document.getElementById('exportCsvBtn');
-    const exportExcelBtn = document.getElementById('exportExcelBtn');
     const exportPdfBtn = document.getElementById('exportPdfBtn');
 
     let allReports = [];
@@ -174,35 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (exportExcelBtn) {
-        exportExcelBtn.addEventListener('click', () => {
-            if (allReports.length === 0) {
-                alert('No data to export');
-                return;
-            }
-            if (typeof XLSX === 'undefined') {
-                alert('Excel library not loaded.');
-                return;
-            }
-            const headers = ['Vehicle', 'Model', 'Distance (km)', 'Fuel Cost', 'Maintenance', 'Other Exp', 'Total Cost', 'Revenue', 'ROI'];
-            const rows = allReports.map(r => [
-                r.registration_number,
-                r.model,
-                r.distance_traveled,
-                r.fuel_cost,
-                r.maintenance_cost,
-                r.other_expenses,
-                r.totalOperationalCost,
-                r.revenue,
-                r.roi
-            ]);
-            
-            const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Fleet Report");
-            XLSX.writeFile(workbook, `fleet_report_${new Date().toISOString().split('T')[0]}.xlsx`);
-        });
-    }
 
     if (exportPdfBtn) {
         exportPdfBtn.addEventListener('click', () => {
@@ -215,9 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const opt = {
                 margin:       0.5,
                 filename:     `fleet_dashboard_${new Date().toISOString().split('T')[0]}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0f1015' },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { scale: 3, useCORS: true, backgroundColor: '#0f1015', windowWidth: 1200 },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
             };
             html2pdf().set(opt).from(element).save();
         });
