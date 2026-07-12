@@ -4,11 +4,12 @@ require('dotenv').config();
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Database credentials validation
+const host = process.env.DB_HOST || 'localhost';
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
+  host,
+  port: host === 'db' ? 5432 : parseInt(process.env.DB_PORT || '5432', 10),
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres_password',
+  password: process.env.DB_PASSWORD || 'adil@9106', // fallback to adil@9106
   database: process.env.DB_NAME || 'hackathon_db',
   // Max number of clients in pool
   max: 20,
@@ -458,7 +459,7 @@ module.exports = {
    * Used to check database readiness during system startup.
    */
   testConnection: async () => {
-    let attempts = 3;
+    let attempts = 10;
     while (attempts) {
       try {
         const client = await pool.connect();
@@ -469,13 +470,13 @@ module.exports = {
       } catch (err) {
         attempts -= 1;
         console.warn(`[Database] Connection failed. (${attempts} attempts left)`);
-        console.warn(`[Database] Error: ${err.message}`);
+        console.warn(`[Database] Error: ${err.message || err}`);
         if (attempts === 0) {
           console.warn('[Database] Switching to IN-MEMORY MOCK DATABASE MODE (PostgreSQL not running)');
           useMock = true;
           return true;
         }
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
   },
