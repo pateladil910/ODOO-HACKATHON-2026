@@ -1,4 +1,4 @@
-/* Login Page Specific Styles */
+/* Login Page Specific Styles - 3D */
 .auth-layout {
     display: flex;
     min-height: 100vh;
@@ -9,11 +9,12 @@
 .auth-branding {
     flex: 1;
     display: none;
-    background: linear-gradient(135deg, var(--bg-sidebar) 0%, #1e1b4b 100%);
+    background-color: var(--bg-sidebar);
     color: var(--text-light);
     padding: 4rem;
     position: relative;
     overflow: hidden;
+    box-shadow: inset -10px 0 20px rgba(0,0,0,0.2);
 }
 
 @media (min-width: 992px) {
@@ -38,22 +39,26 @@
 }
 
 .brand-icon {
-    width: 48px;
-    height: 48px;
-    background: var(--primary-color);
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(145deg, #544be6, #463fcc);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+    font-weight: 800;
+    font-size: 1.75rem;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.4), 
+                -2px -2px 10px rgba(255,255,255,0.1),
+                inset 1px 1px 2px rgba(255,255,255,0.3);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .brand-title {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 2.75rem;
+    font-weight: 800;
     letter-spacing: -0.02em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .brand-subtitle {
@@ -71,41 +76,47 @@
 .roles-list li {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
     font-size: 1.05rem;
     color: #e2e8f0;
+    background: rgba(255,255,255,0.05);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-dark-out);
+    border: 1px solid rgba(255,255,255,0.05);
 }
 
 .roles-list li::before {
     content: '';
     display: inline-block;
-    width: 8px;
-    height: 8px;
-    background-color: var(--secondary-color);
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle at 30% 30%, #34d399, #059669);
     border-radius: 50%;
-    box-shadow: 0 0 10px var(--secondary-color);
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.4), inset -1px -1px 2px rgba(0,0,0,0.3);
 }
 
-/* Decorative background shapes */
+/* 3D Decorative objects */
 .bg-shape {
     position: absolute;
     border-radius: 50%;
-    background: linear-gradient(to right, rgba(79, 70, 229, 0.1), rgba(79, 70, 229, 0.05));
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    box-shadow: 20px 20px 60px #0d1424, -20px -20px 60px #2f405c;
     z-index: 1;
 }
 
 .shape-1 {
-    width: 600px;
-    height: 600px;
-    top: -200px;
+    width: 400px;
+    height: 400px;
+    top: -100px;
     left: -100px;
 }
 
 .shape-2 {
-    width: 400px;
-    height: 400px;
-    bottom: -100px;
+    width: 300px;
+    height: 300px;
+    bottom: -50px;
     right: -100px;
 }
 
@@ -117,23 +128,29 @@
     justify-content: center;
     align-items: center;
     padding: 2rem;
-    background-color: var(--bg-surface);
 }
 
 .auth-form-container {
     width: 100%;
     max-width: 420px;
+    padding: 3rem;
+    background-color: var(--bg-surface);
+    border-radius: 30px;
+    box-shadow: var(--shadow-3d-out);
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .form-header {
     margin-bottom: 2.5rem;
+    text-align: center;
 }
 
 .form-title {
-    font-size: 1.875rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 800;
     color: var(--text-dark);
     margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
 }
 
 .form-subtitle {
@@ -145,7 +162,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     font-size: 0.875rem;
 }
 
@@ -157,13 +174,38 @@
     color: var(--text-dark);
 }
 
+/* Custom 3D Checkbox */
+.checkbox-label input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background-color: var(--bg-surface);
+    border-radius: 4px;
+    box-shadow: var(--shadow-3d-in);
+    cursor: pointer;
+    position: relative;
+    outline: none;
+}
+
+.checkbox-label input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
 .auth-footer {
     margin-top: 2.5rem;
     font-size: 0.85rem;
     color: var(--text-muted);
     line-height: 1.6;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    background-color: var(--bg-surface);
+    box-shadow: var(--shadow-3d-in);
 }
 
 .auth-footer ul {
@@ -179,23 +221,23 @@
 .alert-error {
     display: none;
     background-color: #fef2f2;
-    border: 1px solid #f87171;
+    border-left: 4px solid #f87171;
     color: #b91c1c;
-    padding: 0.75rem 1rem;
+    padding: 1rem;
     border-radius: var(--radius-sm);
     margin-bottom: 1.5rem;
     font-size: 0.875rem;
     align-items: center;
     gap: 0.5rem;
+    box-shadow: 4px 4px 10px rgba(239, 68, 68, 0.1), inset 1px 1px 2px rgba(255,255,255,0.8);
 }
 
 .alert-error.show {
     display: flex;
-    animation: shake 0.4s ease-in-out;
+    animation: bounce 0.5s ease-in-out;
 }
 
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
 }
