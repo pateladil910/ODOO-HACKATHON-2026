@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get('/', verifyJWT, getTrips);
 router.get('/:id', verifyJWT, getTripById);
-router.post('/', verifyJWT, restrictTo('driver', 'fleet_manager', 'admin'), createTrip);
+router.post('/', verifyJWT, restrictTo('fleet_manager', 'admin'), createTrip);
 router.put('/:id', verifyJWT, restrictTo('driver', 'fleet_manager', 'admin'), updateTrip);
 router.delete('/:id', verifyJWT, restrictTo('fleet_manager', 'admin'), deleteTrip);
 
