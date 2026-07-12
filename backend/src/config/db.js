@@ -73,9 +73,9 @@ const mockDb = {
       registration_number: 'VAN-01',
       model: 'Ford Transit',
       type: 'Van',
-      load_capacity: 1200,
+      max_capacity: 1200,
       odometer: 45000,
-      cost: 32000,
+      acquisition_cost: 32000,
       status: 'Available',
       created_at: new Date()
     },
@@ -84,9 +84,9 @@ const mockDb = {
       registration_number: 'TRK-02',
       model: 'Volvo FH16',
       type: 'Truck',
-      load_capacity: 18000,
+      max_capacity: 18000,
       odometer: 120000,
-      cost: 95000,
+      acquisition_cost: 95000,
       status: 'In Shop',
       created_at: new Date()
     }
@@ -97,8 +97,8 @@ const mockDb = {
       name: 'Alex Johnson',
       license_number: 'DL-9921203',
       license_category: 'Heavy Truck',
-      license_expiry: '2028-12-31',
-      phone: '555-0199',
+      license_expiry_date: '2028-12-31',
+      contact_number: '555-0199',
       safety_score: 95,
       status: 'Available',
       created_at: new Date()
@@ -108,8 +108,8 @@ const mockDb = {
       name: 'Sarah Smith',
       license_number: 'DL-4819201',
       license_category: 'Light Commercial',
-      license_expiry: '2027-06-15',
-      phone: '555-0144',
+      license_expiry_date: '2027-06-15',
+      contact_number: '555-0144',
       safety_score: 88,
       status: 'Off Duty',
       created_at: new Date()
@@ -180,9 +180,15 @@ const handleMockQuery = (text, params) => {
     assignments.forEach(assign => {
       const parts = assign.split('=').map(p => p.trim());
       const col = parts[0].toLowerCase();
-      const valStr = parts[1]; // E.g., "$1"
-      const paramIdx = parseInt(valStr.replace('$', ''), 10) - 1;
-      let val = params[paramIdx];
+      const valStr = parts[1]; // E.g., "$1" or "'On Trip'"
+      let val;
+      if (valStr.startsWith('$')) {
+        const paramIdx = parseInt(valStr.replace('$', ''), 10) - 1;
+        val = params[paramIdx];
+      } else {
+        // String literal - strip quotes
+        val = valStr.replace(/^['"]|['"]$/g, '');
+      }
       // Auto-parse JSON metadata
       if (col === 'metadata' && typeof val === 'string') {
         try {
