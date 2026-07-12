@@ -612,25 +612,28 @@
         };
 
         if (doc.file_name.endsWith('.pdf')) {
+          // Helper to escape parenthesis characters inside PDF text string operators
+          const escapePdf = (text) => String(text || '').replace(/[\(\)\\]/g, '\\$&');
+
           // Dynamic uncompressed PDF generator containing vehicle details
           const lines = [
             `BT`,
             `/F1 18 Tf`,
             `70 750 Td`,
-            `(${doc.document_name.toUpperCase()}) Tj`,
+            `(${escapePdf(doc.document_name)}) Tj`,
             `/F1 12 Tf`,
             `0 -40 Td`,
-            `(Vehicle Registration: ${vehicle.registration_number}) Tj`,
+            `(Vehicle Registration: ${escapePdf(vehicle.registration_number)}) Tj`,
             `0 -25 Td`,
-            `(Model Name: ${vehicle.model}) Tj`,
+            `(Model Name: ${escapePdf(vehicle.model)}) Tj`,
             `0 -25 Td`,
-            `(Vehicle Type: ${vehicle.type}) Tj`,
+            `(Vehicle Type: ${escapePdf(vehicle.type)}) Tj`,
             `0 -25 Td`,
             `(Current Odometer: ${parseFloat(vehicle.odometer).toLocaleString()} km) Tj`,
             `0 -25 Td`,
             `(Max Cargo Capacity: ${parseFloat(vehicle.max_capacity).toLocaleString()} kg) Tj`,
             `0 -25 Td`,
-            `(Operational Status: ${vehicle.status}) Tj`,
+            `(Operational Status: ${escapePdf(vehicle.status)}) Tj`,
             `0 -40 Td`,
             `(This certificate verifies the active registration and compliance logs of the vehicle.) Tj`,
             `0 -20 Td`,
@@ -658,16 +661,17 @@
           }
           
           const startXref = currentOffset + pdfParts[pdfParts.length - 1].length;
+          const padOffset = (offset) => String(offset).padStart(10, '0');
           
           const pdf = pdfParts.join('') +
-            `xref\n0 6\n0000000000 65535 f \n` +
-            `${String(offsets[0]).padStart(10, '0')} 00000 n \n` +
-            `${String(offsets[1]).padStart(10, '0')} 00000 n \n` +
-            `${String(offsets[2]).padStart(10, '0')} 00000 n \n` +
-            `${String(offsets[3]).padStart(10, '0')} 00000 n \n` +
-            `${String(offsets[4]).padStart(10, '0')} 00000 n \n` +
-            `trailer\n<< /Size 6 /Root 1 0 R >>\n` +
-            `startxref\n${startXref}\n%%EOF\n`;
+            `xref\r\n0 6\r\n0000000000 65535 f\r\n` +
+            `${padOffset(offsets[0])} 00000 n\r\n` +
+            `${padOffset(offsets[1])} 00000 n\r\n` +
+            `${padOffset(offsets[2])} 00000 n\r\n` +
+            `${padOffset(offsets[3])} 00000 n\r\n` +
+            `${padOffset(offsets[4])} 00000 n\r\n` +
+            `trailer\r\n<< /Size 6 /Root 1 0 R >>\r\n` +
+            `startxref\r\n${startXref}\r\n%%EOF\r\n`;
             
           fileData = 'data:application/pdf;base64,' + btoa(pdf);
         } else {
