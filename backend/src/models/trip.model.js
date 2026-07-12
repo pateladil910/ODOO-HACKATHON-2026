@@ -199,6 +199,12 @@ class TripModel {
             throw new Error(`Driver ${driver.name} is Suspended and cannot be assigned.`);
           }
 
+          const today = new Date();
+          const licenseExpiry = new Date(driver.license_expiry_date);
+          if (licenseExpiry < today) {
+            throw new Error(`Driver ${driver.name} has an expired driving license (Expired: ${driver.license_expiry_date}) and cannot be assigned.`);
+          }
+
           // Lock vehicle/driver
           await client.query("UPDATE vehicles SET status = 'On Trip' WHERE id = $1;", [existing.vehicle_id]);
           await client.query("UPDATE drivers SET status = 'On Trip' WHERE id = $1;", [existing.driver_id]);
