@@ -592,6 +592,32 @@
       return makeResponse(newDoc, 201);
     }
 
+    if (url.includes('/vehicles/documents/') && method === 'GET') {
+      const parts = url.split('/');
+      const docId = parseInt(parts[parts.indexOf('documents') + 1], 10);
+      const docs = loadDb('mock_documents', seedDocuments);
+      const doc = docs.find(x => x.id === docId);
+      if (!doc) return makeResponse({ message: 'Document not found' }, 404);
+      
+      let fileData = doc.file_data;
+      if (!fileData) {
+        if (doc.file_name.endsWith('.pdf')) {
+          fileData = 'data:application/pdf;base64,JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nDMwMzQ1MjcyMVFIy0zRNzTWT8tM0TdSMCpWiAcAOCME7gplbmRzdHJlYW0KZW5kb2JqCjMgMCBvYmoKMjIKZW5kb2JqCjEgMCBvYmoKPDwvVHlwZS9QYWdlcy9LaWRzWzQgMCBSXS9Db3VudCAxPj4KZW5kb2JqCjQgMCBvYmoKPDwvVHlwZS9QYWdlL1BhcmVudCAxIDAgUi9NZWRpYUJveFswIDAgNTk1IDQyMF0vQ29udGVudHMgMiAwIFI+PgplbmRvYmoKNSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMSAwIFI+PgpleHRyYWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDIxOSAwMDAwMCBuIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDAxNDggMDAwMDAgbiAKMDAwMDAwMDIxOSAwMDAwMCBuIAowMDAwMDAwMzAzIDAwMDAwIG4gCnRyYWlsZXIKPDwvU2l6ZSA2L1Jvb3QgNSAwIFI+PgpzdGFydHhyZWYKMzUxCiUlRU9GCg==';
+        } else {
+          fileData = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        }
+      }
+      return makeResponse({
+        id: doc.id,
+        vehicle_id: doc.vehicle_id,
+        document_name: doc.document_name,
+        file_name: doc.file_name,
+        file_size: doc.file_size,
+        mime_type: doc.mime_type,
+        file_data: fileData
+      });
+    }
+
     if (url.includes('/vehicles/documents/') && method === 'DELETE') {
       const parts = url.split('/');
       const docId = parseInt(parts[parts.indexOf('documents') + 1], 10);

@@ -164,13 +164,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="font-size: 0.7rem; color: var(--text-muted);">${doc.file_name} (${(doc.file_size / 1024).toFixed(1)} KB)</span>
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
-                        <a href="${API_BASE_URL}/vehicles/documents/${doc.id}" target="_blank" class="btn btn-outline btn-sm" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; color: var(--secondary-color); text-decoration: none; display: flex; align-items: center;"><i class="ph ph-download"></i></a>
+                        <button class="btn btn-outline btn-sm download-doc-btn" data-id="${doc.id}" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; color: var(--secondary-color); display: flex; align-items: center; cursor: pointer;"><i class="ph ph-download"></i></button>
                         <button class="btn btn-outline btn-sm delete-doc-btn" data-id="${doc.id}" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; color: #fca5a5;"><i class="ph ph-trash"></i></button>
                     </div>
                 `;
                 listContainer.appendChild(div);
             });
-            // Attach delete listeners
+            // Attach download and delete listeners
+            listContainer.querySelectorAll('.download-doc-btn').forEach(btn => {
+                btn.addEventListener('click', () => downloadDocument(btn.getAttribute('data-id')));
+            });
             listContainer.querySelectorAll('.delete-doc-btn').forEach(btn => {
                 btn.addEventListener('click', () => deleteDocument(btn.getAttribute('data-id')));
             });
@@ -223,6 +226,55 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 alert(err.message || 'Failed to delete document.');
             }
+        }
+    };
+
+    const downloadDocument = async (docId) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/vehicles/documents/${docId}`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('Download failed');
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const result = await response.json();
+                const doc = result.data || result;
+                const link = document.createElement('a');
+                link.href = doc.file_data || 'data:application/pdf;base64,JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nDMwMzQ1MjcyMVFIy0zRNzTWT8tM0TdSMCpWiAcAOCME7gplbmRzdHJlYW0KZW5kb2JqCjMgMCBvYmoKMjIKZW5kb2JqCjEgMCBvYmoKPDwvVHlwZS9QYWdlcy9LaWRzWzQgMCBSXS9Db3VudCAxPj4KZW5kb2JqCjQgMCBvYmoKPDwvVHlwZS9QYWdlL1BhcmVudCAxIDAgUi9NZWRpYUJveFswIDAgNTk1IDQyMF0vQ29udGVudHMgMiAwIFI+PgplbmRvYmoKNSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMSAwIFI+PgpleHRyYWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDIxOSAwMDAwMCBuIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDAxNDggMDAwMDAgbiAKMDAwMDAwMDIxOSAwMDAwMCBuIAowMDAwMDAwMzAzIDAwMDAwIG4gCnRyYWlsZXIKPDwvU2l6ZSA2L1Jvb3QgNSAwIFI+PgpzdGFydHhyZWYKMzUxCiUlRU9GCg==';
+                link.download = doc.file_name || 'document.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                let filename = 'downloaded_file';
+                const disposition = response.headers.get('content-disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    const matches = filenameRegex.exec(disposition);
+                    if (matches != null && matches[1]) { 
+                        filename = matches[1].replace(/['"]/g, '');
+                    }
+                }
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }
+        } catch (err) {
+            alert('Failed to download document: ' + err.message);
         }
     };
 
