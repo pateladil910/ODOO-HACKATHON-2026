@@ -19,17 +19,17 @@ const initDb = async () => {
   try {
     await client.connect();
     
-    // Check if target database exists
+    // Check if target database exists, drop it to perform a clean recreate
     const res = await client.query('SELECT 1 FROM pg_database WHERE datname = $1', [targetDb]);
-    if (res.rowCount === 0) {
-      console.log(`[DB Setup] Database "${targetDb}" does not exist. Creating...`);
-      // CREATE DATABASE cannot be run with parameterized name, construct query string carefully
-      // targetDb is validated / read from env
-      await client.query(`CREATE DATABASE ${targetDb}`);
-      console.log(`[DB Setup] Database "${targetDb}" created successfully.`);
-    } else {
-      console.log(`[DB Setup] Database "${targetDb}" already exists.`);
+    if (res.rowCount > 0) {
+      console.log(`[DB Setup] Database "${targetDb}" already exists. Dropping for a clean setup...`);
+      // Terminate any active connections to the database to ensure we can drop it safely
+      await client.query(`SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = $1 AND pid <> pg_backend_pid()`, [targetDb]);
+      await client.query(`DROP DATABASE ${targetDb}`);
     }
+    console.log(`[DB Setup] Creating database "${targetDb}"...`);
+    await client.query(`CREATE DATABASE ${targetDb}`);
+    console.log(`[DB Setup] Database "${targetDb}" created successfully.`);
   } catch (error) {
     console.error('[DB Setup] Failed to connect/create database:', error.message);
     console.error('Please verify that PostgreSQL is running and your DB_PASSWORD is correct in .env');
