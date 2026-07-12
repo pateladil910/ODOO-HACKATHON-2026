@@ -94,6 +94,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 5.5. Route Protection: Redirect if user attempts to directly access unauthorized page via URL
+    let currentPage = window.location.pathname.split('/').pop();
+    if (!currentPage || currentPage === '/') {
+        currentPage = 'dashboard.html';
+    }
+    if (currentPage !== 'login.html') {
+        const currentNavItem = document.querySelector(`.nav-item[href="${currentPage}"]`);
+        if (currentNavItem) {
+            const allowedRoles = currentNavItem.getAttribute('data-roles');
+            if (allowedRoles) {
+                const rolesArray = allowedRoles.split(',');
+                if (!rolesArray.includes(user.role) && !rolesArray.includes('all')) {
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+            }
+        }
+    }
+
     // 6. Dynamic Theme Toggle Logic
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
