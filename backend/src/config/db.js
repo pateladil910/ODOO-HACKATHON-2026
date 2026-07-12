@@ -129,6 +129,50 @@ const handleMockQuery = (text, params) => {
     return { rows: [{ now: new Date() }], rowCount: 1 };
   }
 
+  // --- dynamic COUNT(*) Aggregate query interceptor ---
+  if (normalizedText.includes('COUNT(*)')) {
+    const tableMatch = normalizedText.match(/FROM\s+(\w+)/i);
+    const tableName = tableMatch ? tableMatch[1].toLowerCase() : '';
+    const dbTable = mockDb[tableName] || mockDb[tableName + 's'];
+    const records = dbTable || [];
+
+    if (tableName === 'vehicles') {
+      const total = records.length;
+      const available = records.filter(v => v.status === 'Available').length;
+      const active = records.filter(v => v.status === 'On Trip').length;
+      const maintenance = records.filter(v => v.status === 'In Shop').length;
+      const retired = records.filter(v => v.status === 'Retired').length;
+      return {
+        rows: [{ total, available, active, maintenance, retired }],
+        rowCount: 1
+      };
+    }
+    
+    if (tableName === 'drivers') {
+      const total = records.length;
+      const available = records.filter(d => d.status === 'Available').length;
+      const active = records.filter(d => d.status === 'On Trip').length;
+      const off_duty = records.filter(d => d.status === 'Off Duty').length;
+      const suspended = records.filter(d => d.status === 'Suspended').length;
+      return {
+        rows: [{ total, available, active, off_duty, suspended }],
+        rowCount: 1
+      };
+    }
+
+    if (tableName === 'trips') {
+      const total = records.length;
+      const draft = records.filter(t => t.status === 'Draft').length;
+      const dispatched = records.filter(t => t.status === 'Dispatched' || t.status === 'On Trip').length;
+      const completed = records.filter(t => t.status === 'Completed').length;
+      const cancelled = records.filter(t => t.status === 'Cancelled').length;
+      return {
+        rows: [{ total, draft, dispatched, completed, cancelled }],
+        rowCount: 1
+      };
+    }
+  }
+
   // --- Dynamic INSERT Handler ---
   const insertMatch = normalizedText.match(/INSERT\s+INTO\s+(\w+)\s*\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)/i);
   if (insertMatch) {
