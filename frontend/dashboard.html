@@ -73,15 +73,16 @@
                     <button class="mobile-toggle" id="mobileToggle">
                         <i class="ph ph-list"></i>
                     </button>
-                    <h2 class="page-title">Dashboard Overview</h2>
+                    <div class="header-search">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
                 </div>
                 <div class="header-right">
-                    <button class="header-action" title="Notifications">
-                        <i class="ph ph-bell"></i>
-                    </button>
-                    <button class="header-action" title="Settings">
-                        <i class="ph ph-gear"></i>
-                    </button>
+                    <div class="header-user">
+                        <span class="header-user-name">Raven K.</span>
+                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
+                    </div>
                 </div>
             </header>
 
@@ -89,91 +90,132 @@
             <div class="app-content">
                 <!-- Filters -->
                 <div class="dashboard-filters">
-                    <div class="filter-group">
-                        <label>Vehicle Type</label>
-                        <select class="filter-select">
-                            <option value="all">All Types</option>
-                            <option value="truck">Heavy Truck</option>
-                            <option value="van">Cargo Van</option>
-                            <option value="trailer">Trailer</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Status</label>
-                        <select class="filter-select">
-                            <option value="all">All Statuses</option>
-                            <option value="active">Active/On Trip</option>
-                            <option value="maintenance">In Maintenance</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Region</label>
-                        <select class="filter-select">
-                            <option value="all">All Regions</option>
-                            <option value="north">North Region</option>
-                            <option value="south">South Region</option>
-                        </select>
-                    </div>
-                    <div style="flex-grow: 1;"></div>
-                    <button class="btn btn-primary">Generate Report</button>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Filters</span>
+                    <select class="filter-select">
+                        <option value="all">Vehicle Type: All</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="all">Status: All</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="all">Region: All</option>
+                    </select>
                 </div>
 
                 <!-- KPI Cards -->
                 <div class="kpi-grid">
-                    <div class="kpi-card">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Active Vehicles</span>
-                            <div class="kpi-icon icon-emerald"><i class="ph ph-car"></i></div>
-                        </div>
-                        <div class="kpi-value">124</div>
-                        <div class="kpi-trend trend-up"><i class="ph ph-trend-up"></i> +12% from last week</div>
+                    <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
+                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Active Vehicles</span>
+                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">53</div>
                     </div>
                     
-                    <div class="kpi-card">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Available Vehicles</span>
-                            <div class="kpi-icon icon-indigo"><i class="ph ph-check-circle"></i></div>
-                        </div>
-                        <div class="kpi-value">42</div>
-                        <div class="kpi-trend trend-up"><i class="ph ph-trend-up"></i> +5% from last week</div>
+                    <div class="kpi-card" style="border-left: 4px solid var(--secondary-color);">
+                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Available Vehicles</span>
+                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">42</div>
                     </div>
 
-                    <div class="kpi-card">
-                        <div class="kpi-header">
-                            <span class="kpi-title">In Maintenance</span>
-                            <div class="kpi-icon icon-warning"><i class="ph ph-wrench"></i></div>
-                        </div>
-                        <div class="kpi-value">8</div>
-                        <div class="kpi-trend trend-down"><i class="ph ph-trend-down"></i> -2% from last week</div>
+                    <div class="kpi-card" style="border-left: 4px solid var(--warning-color);">
+                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Vehicles In Maintenance</span>
+                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">05</div>
                     </div>
 
-                    <div class="kpi-card">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Active Trips</span>
-                            <div class="kpi-icon icon-indigo"><i class="ph ph-path"></i></div>
-                        </div>
-                        <div class="kpi-value">87</div>
-                        <div class="kpi-trend trend-up"><i class="ph ph-trend-up"></i> +18% from last week</div>
+                    <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
+                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Active Trips</span>
+                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">18</div>
+                    </div>
+
+                    <div class="kpi-card" style="border-left: 4px solid #6b7280;">
+                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Pending Trips</span>
+                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">09</div>
+                    </div>
+
+                    <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
+                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Drivers On Duty</span>
+                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">26</div>
                     </div>
                     
-                    <div class="kpi-card">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Fleet Utilization</span>
-                            <div class="kpi-icon icon-emerald"><i class="ph ph-chart-pie-slice"></i></div>
-                        </div>
-                        <div class="kpi-value">85%</div>
-                        <div class="kpi-trend trend-up"><i class="ph ph-trend-up"></i> +4% from last week</div>
+                    <div class="kpi-card" style="border-left: 4px solid var(--secondary-color);">
+                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Fleet Utilization</span>
+                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">81%</div>
                     </div>
                 </div>
 
                 <!-- Main Dashboard Sections -->
-                <div class="dashboard-section">
-                    <div class="section-header">
-                        <h3 class="section-title">Fleet Performance & Analytics</h3>
-                        <button class="btn">View Details</button>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                    <!-- Recent Trips -->
+                    <div class="dashboard-section" style="padding: 0; background: transparent; box-shadow: none;">
+                        <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1rem;">Recent Trips</h3>
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted);">
+                                    <th style="padding: 1rem; font-weight: normal;">TRIP</th>
+                                    <th style="padding: 1rem; font-weight: normal;">VEHICLE</th>
+                                    <th style="padding: 1rem; font-weight: normal;">DRIVER</th>
+                                    <th style="padding: 1rem; font-weight: normal;">STATUS</th>
+                                    <th style="padding: 1rem; font-weight: normal;">ETA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding: 1rem;">TR001</td>
+                                    <td style="padding: 1rem;">VAN-05</td>
+                                    <td style="padding: 1rem;">Alex</td>
+                                    <td style="padding: 1rem;"><span style="background-color: var(--primary-color); padding: 0.25rem 1rem; border-radius: 4px; color: white;">On Trip</span></td>
+                                    <td style="padding: 1rem;">45 min</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding: 1rem;">TR002</td>
+                                    <td style="padding: 1rem;">TRK-12</td>
+                                    <td style="padding: 1rem;">John</td>
+                                    <td style="padding: 1rem;"><span style="background-color: var(--secondary-color); padding: 0.25rem 1rem; border-radius: 4px; color: white;">Completed</span></td>
+                                    <td style="padding: 1rem;">—</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding: 1rem;">TR003</td>
+                                    <td style="padding: 1rem;">MINI-08</td>
+                                    <td style="padding: 1rem;">Priya</td>
+                                    <td style="padding: 1rem;"><span style="background-color: #60a5fa; padding: 0.25rem 1rem; border-radius: 4px; color: black;">Dispatched</span></td>
+                                    <td style="padding: 1rem;">1h 10m</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding: 1rem;">TR004</td>
+                                    <td style="padding: 1rem;">—</td>
+                                    <td style="padding: 1rem;">—</td>
+                                    <td style="padding: 1rem;"><span style="background-color: #6b7280; padding: 0.25rem 1rem; border-radius: 4px; color: white;">Draft</span></td>
+                                    <td style="padding: 1rem;">Awaiting vehicle</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="chart-container">
-                        [ Chart Placeholder - Phase 5 ]
+
+                    <!-- Vehicle Status -->
+                    <div class="dashboard-section" style="padding: 0; background: transparent; box-shadow: none;">
+                        <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1rem;">Vehicle Status</h3>
+                        
+                        <div style="margin-bottom: 1rem; display: flex; align-items: center;">
+                            <span style="width: 80px; font-size: 0.85rem;">Available</span>
+                            <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
+                                <div style="width: 75%; height: 100%; background-color: var(--secondary-color); border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem; display: flex; align-items: center;">
+                            <span style="width: 80px; font-size: 0.85rem;">On Trip</span>
+                            <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
+                                <div style="width: 30%; height: 100%; background-color: #60a5fa; border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem; display: flex; align-items: center;">
+                            <span style="width: 80px; font-size: 0.85rem;">In Shop</span>
+                            <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
+                                <div style="width: 10%; height: 100%; background-color: var(--warning-color); border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem; display: flex; align-items: center;">
+                            <span style="width: 80px; font-size: 0.85rem;">Retired</span>
+                            <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
+                                <div style="width: 5%; height: 100%; background-color: #fca5a5; border-radius: 2px;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

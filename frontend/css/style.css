@@ -10,27 +10,27 @@
     --danger-color: #ef4444;
     --warning-color: #f59e0b;
     
-    /* Backgrounds for 3D effect */
-    --bg-main: #e2e8f0; /* Slightly darker gray for Neumorphism contrast */
-    --bg-surface: #e2e8f0;
-    --bg-sidebar: #1e293b; /* Deep slate */
-    --bg-sidebar-hover: #334155;
+    /* Backgrounds for 3D effect - Dark Mode */
+    --bg-main: #121418; 
+    --bg-surface: #1a1d24;
+    --bg-sidebar: #121418; 
+    --bg-sidebar-hover: #1e222b;
 
     /* Text */
-    --text-dark: #1e293b;
-    --text-muted: #64748b;
-    --text-light: #f8fafc;
-    --text-sidebar-muted: #94a3b8;
+    --text-dark: #f8fafc; /* Now light for dark mode */
+    --text-muted: #94a3b8;
+    --text-light: #ffffff;
+    --text-sidebar-muted: #64748b;
 
-    /* 3D Shadows (Neumorphism & Extrusion) */
-    --shadow-3d-out: 8px 8px 16px #cbd5e1, -8px -8px 16px #f1f5f9;
-    --shadow-3d-in: inset 6px 6px 12px #cbd5e1, inset -6px -6px 12px #f1f5f9;
-    --shadow-3d-btn: 4px 4px 8px #cbd5e1, -4px -4px 8px #f1f5f9;
-    --shadow-3d-btn-active: inset 4px 4px 8px #cbd5e1, inset -4px -4px 8px #f1f5f9;
+    /* 3D Shadows (Dark Neumorphism) */
+    --shadow-3d-out: 5px 5px 10px #0a0c0f, -5px -5px 10px #242a33;
+    --shadow-3d-in: inset 5px 5px 10px #0a0c0f, inset -5px -5px 10px #242a33;
+    --shadow-3d-btn: 3px 3px 6px #0a0c0f, -3px -3px 6px #242a33;
+    --shadow-3d-btn-active: inset 3px 3px 6px #0a0c0f, inset -3px -3px 6px #242a33;
     
     /* Dark mode 3D shadows for sidebar */
-    --shadow-dark-out: 5px 5px 10px #0f172a, -5px -5px 10px #2a3b52;
-    --shadow-dark-in: inset 5px 5px 10px #0f172a, inset -5px -5px 10px #2a3b52;
+    --shadow-dark-out: 5px 5px 10px #0a0c0f, -5px -5px 10px #242a33;
+    --shadow-dark-in: inset 5px 5px 10px #0a0c0f, inset -5px -5px 10px #242a33;
 
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -86,7 +86,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-3d-out);
     padding: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* 3D Buttons */
@@ -163,12 +163,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .form-control:focus {
     outline: none;
-    box-shadow: inset 8px 8px 16px #cbd5e1, inset -8px -8px 16px #f1f5f9, 0 0 0 2px rgba(79, 70, 229, 0.3);
+    box-shadow: inset 3px 3px 6px #0a0c0f, inset -3px -3px 6px #242a33, 0 0 0 2px rgba(79, 70, 229, 0.3);
 }
 
 select.form-control {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23f8fafc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 1rem center;
     background-size: 16px 12px;
