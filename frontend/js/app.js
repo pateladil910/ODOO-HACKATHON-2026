@@ -61,4 +61,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // 6. Dynamic Theme Toggle Injection & Logic
+    const headerRight = document.querySelector('.header-right');
+    if (headerRight && !document.getElementById('themeToggleBtn')) {
+        const themeToggleBtn = document.createElement('button');
+        themeToggleBtn.className = 'header-action';
+        themeToggleBtn.id = 'themeToggleBtn';
+        themeToggleBtn.title = 'Toggle Theme';
+        themeToggleBtn.style.marginRight = '8px';
+        themeToggleBtn.innerHTML = '<i class="ph ph-sun" id="themeIcon" style="font-size: 1.25rem;"></i>';
+        headerRight.prepend(themeToggleBtn);
+    }
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    // Apply saved theme state immediately
+    const currentTheme = localStorage.getItem('transitOpsTheme') || 'dark';
+    if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+        if (themeIcon) {
+            themeIcon.className = 'ph ph-moon';
+        }
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('transitOpsTheme', isLight ? 'light' : 'dark');
+            if (themeIcon) {
+                themeIcon.className = isLight ? 'ph ph-moon' : 'ph ph-sun';
+            }
+        });
+    }
 });

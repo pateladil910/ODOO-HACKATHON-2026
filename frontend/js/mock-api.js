@@ -92,14 +92,26 @@
     const fuel = loadDb('mock_fuel', seedFuel);
     const expenses = loadDb('mock_expenses', seedExpenses);
 
+    // --- 0. HEALTH CHECK MOCK ---
+    if (url.includes('/health')) {
+      return makeResponse({
+        uptime: typeof performance !== 'undefined' ? performance.now() / 1000 : 100.0,
+        message: 'OK',
+        timestamp: Date.now(),
+        database: 'CONNECTED'
+      });
+    }
+
     // --- 1. AUTH LOG IN BYPASS ---
     if (url.includes('/auth/login')) {
       const email = body.email || 'guest@transitops.com';
-      let role = 'manager'; // Default to manager for full demo access
-      if (email.includes('driver')) role = 'driver';
-      if (email.includes('safety')) role = 'safety_officer';
-      if (email.includes('analyst') || email.includes('finance')) role = 'financial_analyst';
-      if (email.includes('manager')) role = 'fleet_manager';
+      let role = body.role || 'manager'; // Default to manager for full demo access
+      if (!body.role) {
+          if (email.includes('driver')) role = 'driver';
+          if (email.includes('safety')) role = 'safety_officer';
+          if (email.includes('analyst') || email.includes('finance')) role = 'financial_analyst';
+          if (email.includes('manager')) role = 'fleet_manager';
+      }
 
       return makeResponse({
         token: 'mock-jwt-bypass-token-12345',

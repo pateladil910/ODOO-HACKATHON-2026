@@ -160,6 +160,20 @@ CREATE TRIGGER update_expenses_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 
+-- Vehicle Documents table for document management bonus feature
+CREATE TABLE IF NOT EXISTS vehicle_documents (
+    id SERIAL PRIMARY KEY,
+    vehicle_id INT REFERENCES vehicles(id) ON DELETE CASCADE NOT NULL,
+    document_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(512) NOT NULL,
+    file_type VARCHAR(100),
+    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_vehicle_documents_vehicle_id ON vehicle_documents(vehicle_id);
+
+
+
 -- 2. Seed initial data
 -- Insert default admin user:
 -- Email: admin@hackathon.com

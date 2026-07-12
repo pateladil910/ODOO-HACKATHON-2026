@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        const roleSelect = document.getElementById('role');
+        const role = roleSelect ? roleSelect.value : undefined;
 
         try {
             // Disable submit button during load
@@ -46,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password, role })
             });
 
             const result = await response.json();
