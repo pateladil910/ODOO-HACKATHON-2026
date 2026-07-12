@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - TransitOps</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <!-- Include Phosphor Icons for premium scalable icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <main class="auth-layout">
+        <!-- Left Side: Branding -->
+        <section class="auth-branding">
+            <div class="bg-shape shape-1"></div>
+            <div class="bg-shape shape-2"></div>
+            
+            <div class="brand-content">
+                <div class="brand-logo">
+                    <div class="brand-icon">T</div>
+                    <h1 class="brand-title">TransitOps</h1>
+                </div>
+                <p class="brand-subtitle">Smart Transport Operations Platform. Digitize vehicle, driver, dispatch, maintenance, and expense management seamlessly.</p>
+                
+                <h3 class="font-semibold" style="margin-bottom: 0.5rem; color: #fff;">One login, four roles:</h3>
+                <ul class="roles-list">
+                    <li>Fleet Manager</li>
+                    <li>Dispatcher (Driver Role)</li>
+                    <li>Safety Officer</li>
+                    <li>Financial Analyst</li>
+                </ul>
+            </div>
+            
+            <div style="position: absolute; bottom: 2rem; color: var(--text-sidebar-muted); font-size: 0.75rem;">
+                &copy; 2026 TransitOps. All rights reserved.
+            </div>
+        </section>
+
+        <!-- Right Side: Login Form -->
+        <section class="auth-form-wrapper">
+            <div class="auth-form-container">
+                <div class="form-header">
+                    <h2 class="form-title">Sign in to your account</h2>
+                    <p class="form-subtitle">Enter your credentials to access the platform</p>
+                </div>
+
+                <div id="loginError" class="alert-error">
+                    <i class="ph ph-warning-circle"></i>
+                    <span>Invalid credentials. Please try again.</span>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="name@transitops.in" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role" class="form-label">Role (RBAC Simulation)</label>
+                        <select id="role" class="form-control" required>
+                            <option value="manager">Fleet Manager</option>
+                            <option value="driver">Driver (Dispatcher)</option>
+                            <option value="safety">Safety Officer</option>
+                            <option value="finance">Financial Analyst</option>
+                        </select>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember">
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem; font-size: 1rem;">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <strong>Access is scoped by role after login:</strong>
+                    <ul>
+                        <li>• Fleet Manager &rarr; Fleet, Maintenance</li>
+                        <li>• Driver &rarr; Dashboard, Trips</li>
+                        <li>• Safety Officer &rarr; Drivers, Compliance</li>
+                        <li>• Financial Analyst &rarr; Fuel & Expenses, Analytics</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="js/auth.js"></script>
+</body>
+</html>
