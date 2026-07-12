@@ -75,7 +75,7 @@
     const makeResponse = (data, status = 200) => {
       const responseBody = {
         status,
-        message: 'Mock response generated.',
+        message: (data && data.message) ? data.message : 'Mock response generated.',
         data
       };
       return new Response(JSON.stringify(responseBody), {
@@ -251,7 +251,7 @@
         const today = new Date();
         const licenseExpiry = new Date(d.license_expiry_date);
         if (licenseExpiry < today) {
-          return makeResponse({ message: `Driver has an expired license and cannot be assigned.` }, 400);
+          return makeResponse({ message: `Driver License expired` }, 400);
         }
         if (parseFloat(body.cargo_weight) > parseFloat(v.max_capacity)) {
           return makeResponse({ message: `Cargo weight exceeds vehicle maximum capacity (${v.max_capacity} kg).` }, 400);
@@ -289,8 +289,6 @@
 
         const oldT = trips[tIndex];
         const newT = { ...oldT, ...body };
-        trips[tIndex] = newT;
-        saveDb('mock_trips', trips);
 
         const v = vehicles.find(x => x.id === newT.vehicle_id);
         const d = drivers.find(x => x.id === newT.driver_id);
@@ -298,6 +296,23 @@
         if (v && d) {
           if (oldT.status !== newT.status) {
             if (newT.status === 'Dispatched') {
+              if (v.status === 'On Trip' && oldT.vehicle_id !== newT.vehicle_id) {
+                return makeResponse({ message: `Vehicle is already on an active trip.` }, 400);
+              }
+              if (d.status === 'On Trip' && oldT.driver_id !== newT.driver_id) {
+                return makeResponse({ message: `Driver is already on an active trip.` }, 400);
+              }
+              if (v.status === 'Retired' || v.status === 'In Shop') {
+                return makeResponse({ message: `Vehicle is in status '${v.status}' and cannot be dispatched.` }, 400);
+              }
+              if (d.status === 'Suspended') {
+                return makeResponse({ message: `Driver is Suspended and cannot be assigned.` }, 400);
+              }
+              const today = new Date();
+              const licenseExpiry = new Date(d.license_expiry_date);
+              if (licenseExpiry < today) {
+                return makeResponse({ message: `Driver License expired` }, 400);
+              }
               v.status = 'On Trip';
               d.status = 'On Trip';
             } else if (oldT.status === 'Dispatched' && (newT.status === 'Completed' || newT.status === 'Cancelled')) {
@@ -308,6 +323,9 @@
             saveDb('mock_drivers', drivers);
           }
         }
+
+        trips[tIndex] = newT;
+        saveDb('mock_trips', trips);
 
         return makeResponse(newT);
       }
