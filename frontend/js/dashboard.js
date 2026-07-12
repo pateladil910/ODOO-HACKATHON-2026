@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="padding: 1rem;">TR${String(trip.id).padStart(3, '0')}</td>
                 <td style="padding: 1rem;">${trip.source}</td>
                 <td style="padding: 1rem;">${trip.destination}</td>
-                <td style="padding: 1rem;">${trip.cargo_weight} kg</td>
+                <td class="num-col" style="padding: 1rem;">${trip.cargo_weight} kg</td>
                 <td style="padding: 1rem;"><span style="background-color: ${badgeColor}; padding: 0.25rem 1rem; border-radius: 4px; color: ${textColor}; font-weight: 600;">${trip.status}</span></td>
             `;
             tableBody.appendChild(tr);

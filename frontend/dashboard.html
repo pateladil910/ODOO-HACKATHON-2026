@@ -100,12 +100,12 @@
                 </div>
 
                 <!-- Main Two-Column Layout -->
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: stretch;">
 
                     <!-- Recent Trips -->
-                    <div>
-                        <p class="section-label">Recent Trips</p>
-                        <div class="data-table-container">
+                    <div style="display: flex; flex-direction: column;">
+                        <p class="section-label" style="margin-top: 0; margin-bottom: 0.5rem;">Recent Trips</p>
+                        <div class="data-table-container" style="flex: 1; display: flex; flex-direction: column;">
                             <div class="data-table-header">
                                 <span class="data-table-title">Recent Dispatched Trips</span>
                             </div>
@@ -127,29 +127,27 @@
                     </div>
 
                     <!-- Vehicle Status -->
-                    <div>
-                        <div class="data-table-container" style="padding: 1.25rem;">
-                            <div class="data-table-title" style="margin-bottom: 1.25rem;">Vehicle Status</div>
-                            <div class="fleet-status-bar">
-                                <span class="fleet-status-label">Available</span>
-                                <div class="fleet-status-track"><div id="bar-available" class="fleet-status-fill" style="width:0%; background:var(--status-green);"></div></div>
-                                <span class="fleet-status-count">0</span>
-                            </div>
-                            <div class="fleet-status-bar">
-                                <span class="fleet-status-label">On Trip</span>
-                                <div class="fleet-status-track"><div id="bar-ontrip" class="fleet-status-fill" style="width:0%; background:var(--status-blue);"></div></div>
-                                <span class="fleet-status-count">0</span>
-                            </div>
-                            <div class="fleet-status-bar">
-                                <span class="fleet-status-label">In Shop</span>
-                                <div class="fleet-status-track"><div id="bar-inshop" class="fleet-status-fill" style="width:0%; background:var(--status-amber);"></div></div>
-                                <span class="fleet-status-count">0</span>
-                            </div>
-                            <div class="fleet-status-bar">
-                                <span class="fleet-status-label">Retired</span>
-                                <div class="fleet-status-track"><div id="bar-retired" class="fleet-status-fill" style="width:0%; background:var(--status-red);"></div></div>
-                                <span class="fleet-status-count">0</span>
-                            </div>
+                    <div class="data-table-container" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; margin-top: 1.75rem;">
+                        <div class="data-table-title" style="margin-bottom: 1.25rem;">Vehicle Status</div>
+                        <div class="fleet-status-bar">
+                            <span class="fleet-status-label">Available</span>
+                            <div class="fleet-status-track"><div id="bar-available" class="fleet-status-fill" style="width:0%; background:var(--status-green);"></div></div>
+                            <span class="fleet-status-count">0</span>
+                        </div>
+                        <div class="fleet-status-bar">
+                            <span class="fleet-status-label">On Trip</span>
+                            <div class="fleet-status-track"><div id="bar-ontrip" class="fleet-status-fill" style="width:0%; background:var(--status-blue);"></div></div>
+                            <span class="fleet-status-count">0</span>
+                        </div>
+                        <div class="fleet-status-bar">
+                            <span class="fleet-status-label">In Shop</span>
+                            <div class="fleet-status-track"><div id="bar-inshop" class="fleet-status-fill" style="width:0%; background:var(--status-amber);"></div></div>
+                            <span class="fleet-status-count">0</span>
+                        </div>
+                        <div class="fleet-status-bar">
+                            <span class="fleet-status-label">Retired</span>
+                            <div class="fleet-status-track"><div id="bar-retired" class="fleet-status-fill" style="width:0%; background:var(--status-red);"></div></div>
+                            <span class="fleet-status-count">0</span>
                         </div>
                     </div>
 

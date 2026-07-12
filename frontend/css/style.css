@@ -466,6 +466,11 @@ table.data-table .actions-col {
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
+@media (min-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
 
 .kpi-card {
   background: var(--bg-surface);
