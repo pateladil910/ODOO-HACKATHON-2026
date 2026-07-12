@@ -1,5 +1,11 @@
 document.write('<script src="js/mock-api.js"></script>');
 
+// 0. Synchronous Theme Pre-Load (Prevents flicker)
+const currentTheme = localStorage.getItem('transitOpsTheme') || 'dark';
+if (currentTheme === 'light' && document.body) {
+    document.body.classList.add('light-theme');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Authentication Check
     const userData = localStorage.getItem('transitOpsUser');
@@ -98,10 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
     
-    // Apply saved theme state immediately
-    const currentTheme = localStorage.getItem('transitOpsTheme') || 'dark';
-    if (currentTheme === 'light') {
-        document.body.classList.add('light-theme');
+    // Apply saved theme state to icon (body class is already handled synchronously above)
+    const savedTheme = localStorage.getItem('transitOpsTheme') || 'dark';
+    if (savedTheme === 'light') {
         if (themeIcon) {
             themeIcon.className = 'ph ph-moon';
         }
