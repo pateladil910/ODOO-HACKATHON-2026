@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,144 +6,84 @@
     <title>Vehicle Registry - TransitOps</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar -->
         <aside class="app-sidebar" id="appSidebar">
             <div class="sidebar-header">
-                <a href="dashboard.html" class="sidebar-brand">
-                    <div class="sidebar-icon">T</div>
-                    <span>TransitOps</span>
-                </a>
+                <a href="dashboard.html" class="sidebar-brand"><div class="sidebar-icon">T</div><span>TransitOps</span></a>
             </div>
-            
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item" data-roles="all">
-                    <i class="ph ph-squares-four"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="vehicles.html" class="nav-item active" data-roles="manager">
-                    <i class="ph ph-car"></i>
-                    <span>Vehicle Registry</span>
-                </a>
-                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
-                    <i class="ph ph-identification-card"></i>
-                    <span>Drivers</span>
-                </a>
-                <a href="trips.html" class="nav-item" data-roles="manager,driver">
-                    <i class="ph ph-path"></i>
-                    <span>Trips</span>
-                </a>
-                <a href="maintenance.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-wrench"></i>
-                    <span>Maintenance</span>
-                </a>
-                <a href="expenses.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-receipt"></i>
-                    <span>Fuel & Expenses</span>
-                </a>
-                <a href="reports.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="settings.html" class="nav-item" data-roles="admin,manager">
-                    <i class="ph ph-gear"></i>
-                    <span>Settings</span>
-                </a>
+                <a href="dashboard.html" class="nav-item" data-roles="all"><i class="ph ph-squares-four"></i><span>Dashboard</span></a>
+                <a href="vehicles.html" class="nav-item active" data-roles="manager"><i class="ph ph-car"></i><span>Vehicle Registry</span></a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety"><i class="ph ph-identification-card"></i><span>Drivers</span></a>
+                <a href="trips.html" class="nav-item" data-roles="manager,driver"><i class="ph ph-path"></i><span>Trips</span></a>
+                <a href="maintenance.html" class="nav-item" data-roles="manager"><i class="ph ph-wrench"></i><span>Maintenance</span></a>
+                <a href="expenses.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-receipt"></i><span>Fuel &amp; Expenses</span></a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-chart-bar"></i><span>Reports</span></a>
+                <a href="settings.html" class="nav-item" data-roles="admin,manager"><i class="ph ph-gear"></i><span>Settings</span></a>
             </nav>
-
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <div class="user-avatar">U</div>
-                    <div class="user-info">
-                        <div class="user-name">User Name</div>
-                        <div class="user-role">Role</div>
-                    </div>
-                    <button class="logout-btn" id="logoutBtn" title="Logout">
-                        <i class="ph ph-sign-out"></i>
-                    </button>
+                    <div class="user-info"><div class="user-name">User Name</div><div class="user-role">Role</div></div>
+                    <button class="logout-btn" id="logoutBtn" title="Logout"><i class="ph ph-sign-out"></i></button>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="app-main">
-            <!-- Header -->
             <header class="app-header">
                 <div class="header-left">
-                    <button class="mobile-toggle" id="mobileToggle">
-                        <i class="ph ph-list"></i>
-                    </button>
-                    <div class="header-search">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" placeholder="Search...">
-                    </div>
+                    <button class="mobile-toggle" id="mobileToggle"><i class="ph ph-list"></i></button>
+                    <div class="header-search"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search..."></div>
                 </div>
                 <div class="header-right">
                     <div class="header-user">
-                        <span class="header-user-name">Raven K.</span>
-                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
+                        <span class="header-user-name">User</span>
+                        <div class="header-user-role" id="userRoleBadge">- <div class="header-user-avatar">U</div></div>
                     </div>
                 </div>
             </header>
 
-            <!-- Page Content -->
             <div class="app-content">
-                <!-- Filters -->
-                <div class="dashboard-filters" style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1.5rem; justify-content: space-between;">
-                    <div style="display: flex; gap: 1rem;">
-                        <select class="filter-select" style="min-width: 150px; padding: 0.5rem 1rem; background-color: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted); border-radius: 4px;">
-                            <option value="all">Type: All</option>
-                            <option value="Van">Van</option>
-                            <option value="Truck">Truck</option>
-                            <option value="Mini">Mini</option>
-                        </select>
-                        <select id="statusFilter" class="filter-select" style="min-width: 150px; padding: 0.5rem 1rem; background-color: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted); border-radius: 4px;">
-                            <option value="">Status: All</option>
-                            <option value="Available">Available</option>
-                            <option value="On Trip">On Trip</option>
-                            <option value="In Shop">In Shop</option>
-                            <option value="Retired">Retired</option>
-                        </select>
-                        <input type="text" id="searchInput" placeholder="Search reg. no..." style="min-width: 200px; padding: 0.5rem 1rem; background-color: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted); border-radius: 4px;">
-                    </div>
-                    
-                    <button class="btn" id="openAddModalBtn" style="background-color: var(--warning-color); color: #000; border: none; padding: 0.5rem 1.5rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
-                        + Add Vehicle
-                    </button>
+                <div class="filter-bar">
+                    <select class="filter-select"><option value="all">Type: All</option><option value="Van">Van</option><option value="Truck">Truck</option><option value="Mini">Mini</option></select>
+                    <select id="statusFilter" class="filter-select"><option value="">Status: All</option><option value="Available">Available</option><option value="On Trip">On Trip</option><option value="In Shop">In Shop</option><option value="Retired">Retired</option></select>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search registration..." style="max-width: 200px; padding: 0.375rem 0.75rem; font-size: 0.786rem;">
+                    <div class="filter-separator"></div>
+                    <button class="btn btn-primary" id="openAddModalBtn"><i class="ph ph-plus"></i> Add Vehicle</button>
                 </div>
 
-                <div class="dashboard-section" style="padding: 0; background: transparent; box-shadow: none;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                <div class="data-table-container">
+                    <div class="data-table-header">
+                        <span class="data-table-title">Fleet Registry</span>
+                        <span style="font-size:0.714rem;color:var(--text-secondary);">Retired / In Shop vehicles are excluded from dispatch pool</span>
+                    </div>
+                    <table class="data-table">
                         <thead>
-                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted);">
-                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Reg. No. (Unique)</th>
-                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Name/Model</th>
-                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Type</th>
-                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Capacity</th>
-                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Odometer</th>
-                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Acq. Cost</th>
-                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Status</th>
+                            <tr>
+                                <th>Reg. No.</th>
+                                <th>Model</th>
+                                <th>Type</th>
+                                <th class="num-col">Capacity (kg)</th>
+                                <th class="num-col">Odometer (km)</th>
+                                <th class="num-col">Acq. Cost</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="vehiclesTableBody">
-                            <tr>
-                                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading fleet registry...</td>
-                            </tr>
+                            <tr><td colspan="7" style="text-align:center;color:var(--text-secondary);padding:2.5rem;">Loading fleet registry...</td></tr>
                         </tbody>
                     </table>
-                </div>
-                
-                <div style="margin-top: 1.5rem; font-size: 0.75rem; color: var(--warning-color);">
-                    Rule: Registration No. must be unique • Retired/In Shop vehicles are hidden from Trip Dispatcher
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Add/Edit Vehicle Modal Overlay -->
+    <!-- Vehicle Modal -->
     <div class="modal-overlay" id="vehicleModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -152,40 +92,14 @@
             </div>
             <form id="vehicleForm">
                 <input type="hidden" id="vehicleId">
-                <div class="form-group">
-                    <label class="form-label" for="regNumber">Registration Number</label>
-                    <input type="text" id="regNumber" class="form-control" placeholder="e.g. VAN-04" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="model">Model Name</label>
-                    <input type="text" id="model" class="form-control" placeholder="e.g. Ford Transit 2023" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="type">Vehicle Type</label>
-                    <input type="text" id="type" class="form-control" placeholder="e.g. Van" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="capacity">Max Capacity (kg)</label>
-                    <input type="number" step="0.01" id="capacity" class="form-control" placeholder="e.g. 1500" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="odometer">Current Odometer (km)</label>
-                    <input type="number" step="0.01" id="odometer" class="form-control" placeholder="e.g. 12000" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="cost">Acquisition Cost ($)</label>
-                    <input type="number" step="0.01" id="cost" class="form-control" placeholder="e.g. 35000" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="status">Status</label>
-                    <select id="status" class="form-control" required>
-                        <option value="Available">Available</option>
-                        <option value="On Trip">On Trip</option>
-                        <option value="In Shop">In Shop</option>
-                        <option value="Retired">Retired</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem;">Save Vehicle</button>
+                <div class="form-group"><label class="form-label" for="regNumber">Registration Number</label><input type="text" id="regNumber" class="form-control" placeholder="e.g. VAN-04" required></div>
+                <div class="form-group"><label class="form-label" for="model">Model Name</label><input type="text" id="model" class="form-control" placeholder="e.g. Ford Transit 2023" required></div>
+                <div class="form-group"><label class="form-label" for="type">Vehicle Type</label><input type="text" id="type" class="form-control" placeholder="e.g. Van" required></div>
+                <div class="form-group"><label class="form-label" for="capacity">Max Capacity (kg)</label><input type="number" step="0.01" id="capacity" class="form-control" placeholder="e.g. 1500" required></div>
+                <div class="form-group"><label class="form-label" for="odometer">Current Odometer (km)</label><input type="number" step="0.01" id="odometer" class="form-control" placeholder="e.g. 12000" required></div>
+                <div class="form-group"><label class="form-label" for="cost">Acquisition Cost ($)</label><input type="number" step="0.01" id="cost" class="form-control" placeholder="e.g. 35000" required></div>
+                <div class="form-group"><label class="form-label" for="status">Status</label><select id="status" class="form-control" required><option value="Available">Available</option><option value="On Trip">On Trip</option><option value="In Shop">In Shop</option><option value="Retired">Retired</option></select></div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.75rem; margin-top: 0.5rem;">Save Vehicle</button>
             </form>
         </div>
     </div>

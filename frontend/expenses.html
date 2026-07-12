@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,214 +6,99 @@
     <title>Fuel & Expenses - TransitOps</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar -->
         <aside class="app-sidebar" id="appSidebar">
-            <div class="sidebar-header">
-                <a href="dashboard.html" class="sidebar-brand">
-                    <div class="sidebar-icon">T</div>
-                    <span>TransitOps</span>
-                </a>
-            </div>
-            
+            <div class="sidebar-header"><a href="dashboard.html" class="sidebar-brand"><div class="sidebar-icon">T</div><span>TransitOps</span></a></div>
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item" data-roles="all">
-                    <i class="ph ph-squares-four"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="vehicles.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-car"></i>
-                    <span>Vehicle Registry</span>
-                </a>
-                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
-                    <i class="ph ph-identification-card"></i>
-                    <span>Drivers</span>
-                </a>
-                <a href="trips.html" class="nav-item" data-roles="manager,driver">
-                    <i class="ph ph-path"></i>
-                    <span>Trips</span>
-                </a>
-                <a href="maintenance.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-wrench"></i>
-                    <span>Maintenance</span>
-                </a>
-                <a href="expenses.html" class="nav-item active" data-roles="manager,finance">
-                    <i class="ph ph-receipt"></i>
-                    <span>Fuel & Expenses</span>
-                </a>
-                <a href="reports.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="settings.html" class="nav-item" data-roles="admin,manager">
-                    <i class="ph ph-gear"></i>
-                    <span>Settings</span>
-                </a>
+                <a href="dashboard.html" class="nav-item" data-roles="all"><i class="ph ph-squares-four"></i><span>Dashboard</span></a>
+                <a href="vehicles.html" class="nav-item" data-roles="manager"><i class="ph ph-car"></i><span>Vehicle Registry</span></a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety"><i class="ph ph-identification-card"></i><span>Drivers</span></a>
+                <a href="trips.html" class="nav-item" data-roles="manager,driver"><i class="ph ph-path"></i><span>Trips</span></a>
+                <a href="maintenance.html" class="nav-item" data-roles="manager"><i class="ph ph-wrench"></i><span>Maintenance</span></a>
+                <a href="expenses.html" class="nav-item active" data-roles="manager,finance"><i class="ph ph-receipt"></i><span>Fuel &amp; Expenses</span></a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-chart-bar"></i><span>Reports</span></a>
+                <a href="settings.html" class="nav-item" data-roles="admin,manager"><i class="ph ph-gear"></i><span>Settings</span></a>
             </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-profile">
-                    <div class="user-avatar">U</div>
-                    <div class="user-info">
-                        <div class="user-name">User Name</div>
-                        <div class="user-role">Role</div>
-                    </div>
-                    <button class="logout-btn" id="logoutBtn" title="Logout">
-                        <i class="ph ph-sign-out"></i>
-                    </button>
-                </div>
-            </div>
+            <div class="sidebar-footer"><div class="user-profile"><div class="user-avatar">U</div><div class="user-info"><div class="user-name">User Name</div><div class="user-role">Role</div></div><button class="logout-btn" id="logoutBtn" title="Logout"><i class="ph ph-sign-out"></i></button></div></div>
         </aside>
 
-        <!-- Main Content -->
         <main class="app-main">
-            <!-- Header -->
             <header class="app-header">
                 <div class="header-left">
-                    <button class="mobile-toggle" id="mobileToggle">
-                        <i class="ph ph-list"></i>
-                    </button>
-                    <div class="header-search">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" placeholder="Search...">
-                    </div>
+                    <button class="mobile-toggle" id="mobileToggle"><i class="ph ph-list"></i></button>
+                    <div class="header-search"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search..."></div>
                 </div>
                 <div class="header-right">
-                    <div class="header-user">
-                        <span class="header-user-name">Raven K.</span>
-                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
-                    </div>
+                    <div class="header-user"><span class="header-user-name">User</span><div class="header-user-role" id="userRoleBadge">- <div class="header-user-avatar">U</div></div></div>
                 </div>
             </header>
 
-            <!-- Page Content -->
-            <div class="app-content" style="padding-top: 1rem;">
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h4 style="margin: 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">FUEL LOGS</h4>
-                    <div style="display: flex; gap: 1rem;">
-                        <button class="btn" id="openFuelModalBtn" style="background-color: var(--secondary-color); color: #000; padding: 0.5rem 1rem; border-radius: 4px; border: none; font-size: 0.75rem; font-weight: 600;">
-                            + Log Fuel
-                        </button>
-                        <button class="btn" id="openExpenseModalBtn" style="background-color: transparent; color: var(--secondary-color); border: 1px solid var(--secondary-color); padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.75rem;">
-                            + Add Expense
-                        </button>
+            <div class="app-content">
+                <!-- Fuel Logs -->
+                <div class="data-table-container" style="margin-bottom: 1.5rem;">
+                    <div class="data-table-header">
+                        <span class="data-table-title">Fuel Logs</span>
+                        <div style="display:flex;gap:0.5rem;">
+                            <button class="btn btn-primary btn-sm" id="openFuelModalBtn"><i class="ph ph-plus"></i> Log Fuel</button>
+                            <button class="btn btn-sm" id="openExpenseModalBtn"><i class="ph ph-plus"></i> Add Expense</button>
+                        </div>
                     </div>
-                </div>
-
-                <!-- FUEL LOGS TABLE -->
-                <div style="overflow-x: auto; margin-bottom: 3rem;">
-                    <table style="width: 100%; text-align: left; border-collapse: separate; border-spacing: 0 0.5rem;">
-                        <thead>
-                            <tr style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">
-                                <th style="padding-bottom: 0.5rem;">Vehicle</th>
-                                <th style="padding-bottom: 0.5rem;">Date</th>
-                                <th style="padding-bottom: 0.5rem;">Liters</th>
-                                <th style="padding-bottom: 0.5rem; text-align: right;">Fuel Cost</th>
-                            </tr>
-                        </thead>
+                    <table class="data-table">
+                        <thead><tr><th>Vehicle</th><th>Date</th><th class="num-col">Liters</th><th class="num-col">Fuel Cost</th></tr></thead>
                         <tbody id="fuelTableBody">
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading fuel logs...</td>
-                            </tr>
+                            <tr><td colspan="4" style="text-align:center;color:var(--text-secondary);padding:2rem;">Loading fuel logs...</td></tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- OTHER EXPENSES -->
-                <h4 style="margin: 0 0 1.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">OTHER EXPENSES (TOLL / MISC)</h4>
-                <div style="overflow-x: auto; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2rem;">
-                    <table style="width: 100%; text-align: left; border-collapse: separate; border-spacing: 0 0.5rem;">
-                        <thead>
-                            <tr style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">
-                                <th style="padding-bottom: 0.5rem;">Trip</th>
-                                <th style="padding-bottom: 0.5rem;">Vehicle</th>
-                                <th style="padding-bottom: 0.5rem;">Toll</th>
-                                <th style="padding-bottom: 0.5rem;">Other</th>
-                                <th style="padding-bottom: 0.5rem;">Maint. (Locked)</th>
-                                <th style="padding-bottom: 0.5rem; text-align: right;">Total</th>
-                            </tr>
-                        </thead>
+                <!-- Other Expenses -->
+                <div class="data-table-container">
+                    <div class="data-table-header">
+                        <span class="data-table-title">Other Expenses (Toll / Misc)</span>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Trip</th><th>Vehicle</th><th class="num-col">Toll</th><th class="num-col">Other</th><th class="num-col">Maint. (Locked)</th><th class="num-col">Total</th></tr></thead>
                         <tbody id="expensesTableBody">
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading expenses...</td>
-                            </tr>
+                            <tr><td colspan="6" style="text-align:center;color:var(--text-secondary);padding:2rem;">Loading expenses...</td></tr>
                         </tbody>
                     </table>
-                </div>
-
-                <!-- FOOTER TOTAL -->
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; text-transform: uppercase;">
-                    <span style="color: var(--text-muted);">TOTAL OPERATIONAL COST (AUTO) = FUEL + MAINT</span>
-                    <span style="color: var(--secondary-color); font-weight: 700; font-size: 1rem;" id="totalCostDisplay">0</span>
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-top:1px solid var(--border-subtle);">
+                        <span style="font-size:0.786rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;">Total Operational Cost (Fuel + Maintenance)</span>
+                        <span style="font-family:var(--font-data);font-size:1.143rem;font-weight:600;color:var(--status-green);" id="totalCostDisplay">$0</span>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Log Fuel Modal Overlay -->
+    <!-- Log Fuel Modal -->
     <div class="modal-overlay" id="fuelModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Log Fuel Refill</h3>
-                <button class="modal-close" id="closeFuelModalBtn">&times;</button>
-            </div>
+            <div class="modal-header"><h3 class="modal-title">Log Fuel Refill</h3><button class="modal-close" id="closeFuelModalBtn">&times;</button></div>
             <form id="fuelForm">
-                <div class="form-group">
-                    <label class="form-label" for="fuelVehicleSelect">Vehicle</label>
-                    <select id="fuelVehicleSelect" class="form-control" required>
-                        <option value="">Choose a vehicle...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="liters">Liters Refilled</label>
-                    <input type="number" step="0.01" id="liters" class="form-control" placeholder="e.g. 50" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="fuelCost">Total Cost ($)</label>
-                    <input type="number" step="0.01" id="fuelCost" class="form-control" placeholder="e.g. 75" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="fuelLoggedAt">Refill Date</label>
-                    <input type="date" id="fuelLoggedAt" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem;">Log Fuel Refill</button>
+                <div class="form-group"><label class="form-label" for="fuelVehicleSelect">Vehicle</label><select id="fuelVehicleSelect" class="form-control" required><option value="">Choose a vehicle...</option></select></div>
+                <div class="form-group"><label class="form-label" for="liters">Liters Refilled</label><input type="number" step="0.01" id="liters" class="form-control" placeholder="e.g. 50" required></div>
+                <div class="form-group"><label class="form-label" for="fuelCost">Total Cost ($)</label><input type="number" step="0.01" id="fuelCost" class="form-control" placeholder="e.g. 75" required></div>
+                <div class="form-group"><label class="form-label" for="fuelLoggedAt">Refill Date</label><input type="date" id="fuelLoggedAt" class="form-control" required></div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding:0.75rem;margin-top:0.5rem;">Log Fuel Refill</button>
             </form>
         </div>
     </div>
 
-    <!-- Log Expense Modal Overlay -->
+    <!-- Log Expense Modal -->
     <div class="modal-overlay" id="expenseModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Log Expense</h3>
-                <button class="modal-close" id="closeExpenseModalBtn">&times;</button>
-            </div>
+            <div class="modal-header"><h3 class="modal-title">Log Expense</h3><button class="modal-close" id="closeExpenseModalBtn">&times;</button></div>
             <form id="expenseForm">
-                <div class="form-group">
-                    <label class="form-label" for="expenseTripSelect">Trip</label>
-                    <select id="expenseTripSelect" class="form-control" required>
-                        <option value="">Choose a trip...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="expenseVehicleSelect">Vehicle (Auto)</label>
-                    <select id="expenseVehicleSelect" class="form-control" disabled>
-                        <option value="">Automatically selected based on trip</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="expenseToll">Toll Cost ($)</label>
-                    <input type="number" step="0.01" id="expenseToll" class="form-control" placeholder="e.g. 150" value="0" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="expenseOther">Other Cost ($)</label>
-                    <input type="number" step="0.01" id="expenseOther" class="form-control" placeholder="e.g. 150" value="0" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem;">Log Expense</button>
+                <div class="form-group"><label class="form-label" for="expenseTripSelect">Trip</label><select id="expenseTripSelect" class="form-control" required><option value="">Choose a trip...</option></select></div>
+                <div class="form-group"><label class="form-label" for="expenseVehicleSelect">Vehicle (Auto)</label><select id="expenseVehicleSelect" class="form-control" disabled><option value="">Auto-selected from trip</option></select></div>
+                <div class="form-group"><label class="form-label" for="expenseToll">Toll Cost ($)</label><input type="number" step="0.01" id="expenseToll" class="form-control" placeholder="e.g. 150" value="0" required></div>
+                <div class="form-group"><label class="form-label" for="expenseOther">Other Cost ($)</label><input type="number" step="0.01" id="expenseOther" class="form-control" placeholder="e.g. 150" value="0" required></div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding:0.75rem;margin-top:0.5rem;">Log Expense</button>
             </form>
         </div>
     </div>

@@ -7,17 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const user = JSON.parse(userData);
 
-    // Populate role badge
-    const roleBadge = document.getElementById('userRoleBadge');
-    if (roleBadge) {
-        // Format role (e.g. fleet_manager -> Fleet Manager)
-        roleBadge.innerHTML = `${user.role.charAt(0).toUpperCase() + user.role.slice(1).replace('_', ' ')} <div class="header-user-avatar">${user.email.charAt(0).toUpperCase()}</div>`;
-    }
-    const userNameEl = document.querySelector('.header-user-name');
-    if (userNameEl) {
-        userNameEl.textContent = user.email.split('@')[0];
-    }
-
     // Dynamic API URL detection
     const getApiBaseUrl = () => {
         const { origin } = window.location;
