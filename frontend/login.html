@@ -61,6 +61,16 @@
                         <input type="password" id="password" class="form-control" placeholder="••••••••" required>
                     </div>
 
+                    <div class="form-group">
+                        <label for="role" class="form-label" style="text-transform: uppercase;">Role (RBAC)</label>
+                        <select id="role" class="form-control" style="background-color: var(--bg-main); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                            <option value="dispatcher">Dispatcher</option>
+                            <option value="fleet_manager">Fleet Manager</option>
+                            <option value="safety_officer">Safety Officer</option>
+                            <option value="financial_analyst">Financial Analyst</option>
+                        </select>
+                    </div>
+
 
 
                     <div class="form-options">
@@ -74,6 +84,14 @@
                     <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem; font-size: 1rem;">
                         Sign In
                     </button>
+
+                    <div style="margin-top: 1.5rem; color: var(--text-sidebar-muted); font-size: 0.75rem; line-height: 1.6;">
+                        <div style="margin-bottom: 0.25rem;">Access is scoped by role after login:</div>
+                        <div>&bull; Fleet Manager &rarr; Fleet, Maintenance</div>
+                        <div>&bull; Dispatcher &rarr; Dashboard, Trips</div>
+                        <div>&bull; Safety Officer &rarr; Drivers, Compliance</div>
+                        <div>&bull; Financial Analyst &rarr; Fuel & Expenses, Analytics</div>
+                    </div>
                 </form>
 
             </div>
