@@ -67,44 +67,40 @@ document.addEventListener('DOMContentLoaded', () => {
     let allVehicles = [];
     const loadVehicles = async () => {
         try {
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading fleet registry...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading fleet registry...</td></tr>';
             allVehicles = await authenticatedFetch('/vehicles');
             renderVehicles(allVehicles);
         } catch (error) {
             console.error('[Load Vehicles Error]', error);
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--danger-color);">Failed to load vehicles.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger-color); padding: 2rem;">Failed to load vehicles.</td></tr>';
         }
     };
 
     const renderVehicles = (vehiclesList) => {
         tableBody.innerHTML = '';
         if (vehiclesList.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No vehicles found matching criteria.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No vehicles found matching criteria.</td></tr>';
             return;
         }
 
         vehiclesList.forEach(v => {
-            let badgeClass = 'badge-info';
-            if (v.status === 'Available') badgeClass = 'badge-success';
-            if (v.status === 'Retired') badgeClass = 'badge-danger';
-            if (v.status === 'In Shop') badgeClass = 'badge-warning';
+            let badgeColor = '#6b7280'; // Default
+            let textColor = '#000';
+            if (v.status === 'Available') { badgeColor = 'var(--secondary-color)'; textColor = '#000'; }
+            if (v.status === 'Retired') { badgeColor = '#fca5a5'; textColor = '#000'; }
+            if (v.status === 'In Shop') { badgeColor = 'var(--warning-color)'; textColor = '#000'; }
+            if (v.status === 'On Trip' || v.status === 'In Progress') { badgeColor = '#60a5fa'; textColor = '#000'; }
 
             const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
             tr.innerHTML = `
-                <td><strong>${v.registration_number}</strong></td>
-                <td>
-                    <div>${v.model}</div>
-                    <small style="color: var(--text-muted); font-size: 0.75rem;">${v.type}</small>
-                </td>
-                <td>${v.max_capacity} kg</td>
-                <td>${parseFloat(v.odometer).toLocaleString()} km</td>
-                <td><span class="badge ${badgeClass}">${v.status}</span></td>
-                <td>
-                    ${hasWritePermission ? `
-                        <button class="btn btn-sm edit-btn" data-id="${v.id}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; box-shadow: var(--shadow-3d-btn); margin-right: 0.5rem;">Edit</button>
-                        <button class="btn btn-sm delete-btn" data-id="${v.id}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; box-shadow: var(--shadow-3d-btn); color: var(--danger-color);">Delete</button>
-                    ` : '<span style="color: var(--text-muted); font-size: 0.75rem;">Read-only</span>'}
-                </td>
+                <td style="padding: 1rem;">${v.registration_number}</td>
+                <td style="padding: 1rem;">${v.model}</td>
+                <td style="padding: 1rem;">${v.type}</td>
+                <td style="padding: 1rem;">${v.max_capacity} kg</td>
+                <td style="padding: 1rem;">${parseFloat(v.odometer).toLocaleString()}</td>
+                <td style="padding: 1rem;">${parseFloat(v.acquisition_cost || 0).toLocaleString()}</td>
+                <td style="padding: 1rem;"><span style="background-color: ${badgeColor}; padding: 0.25rem 1rem; border-radius: 4px; color: ${textColor};">${v.status}</span></td>
             `;
             tableBody.appendChild(tr);
         });

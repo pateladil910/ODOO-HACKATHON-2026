@@ -95,11 +95,13 @@
     // --- 1. AUTH LOG IN BYPASS ---
     if (url.includes('/auth/login')) {
       const email = body.email || 'guest@transitops.com';
-      let role = 'manager'; // Default to manager for full demo access
-      if (email.includes('driver')) role = 'driver';
-      if (email.includes('safety')) role = 'safety_officer';
-      if (email.includes('analyst') || email.includes('finance')) role = 'financial_analyst';
-      if (email.includes('manager')) role = 'fleet_manager';
+      let role = body.role || 'manager'; // Default to manager for full demo access
+      if (!body.role) {
+          if (email.includes('driver')) role = 'driver';
+          if (email.includes('safety')) role = 'safety_officer';
+          if (email.includes('analyst') || email.includes('finance')) role = 'financial_analyst';
+          if (email.includes('manager')) role = 'fleet_manager';
+      }
 
       return makeResponse({
         token: 'mock-jwt-bypass-token-12345',

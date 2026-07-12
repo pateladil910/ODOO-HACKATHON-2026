@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // UI elements
     const fuelTableBody = document.getElementById('fuelTableBody');
     const expensesTableBody = document.getElementById('expensesTableBody');
+    const totalCostDisplay = document.getElementById('totalCostDisplay');
     
     const openFuelModalBtn = document.getElementById('openFuelModalBtn');
     const openExpenseModalBtn = document.getElementById('openExpenseModalBtn');
@@ -38,6 +39,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const expenseForm = document.getElementById('expenseForm');
     
     const fuelVehicleSelect = document.getElementById('fuelVehicleSelect');
+    
+    // We will inject the simple form back for expense to match backend
+    const expenseFormHTML = `
+        <div class="form-group">
+            <label class="form-label" for="expenseVehicleSelect">Vehicle</label>
+            <select id="expenseVehicleSelect" class="form-control" required>
+                <option value="">Choose a vehicle...</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="expenseType">Expense Type</label>
+            <select id="expenseType" class="form-control" required>
+                <option value="Tolls">Tolls</option>
+                <option value="Permits">Permits</option>
+                <option value="Insurance">Insurance</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="expenseCost">Total Cost ($)</label>
+            <input type="number" step="0.01" id="expenseCost" class="form-control" placeholder="e.g. 150" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="expenseLoggedAt">Logged Date</label>
+            <input type="date" id="expenseLoggedAt" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem;">Log Expense</button>
+    `;
+    expenseForm.innerHTML = expenseFormHTML;
     const expenseVehicleSelect = document.getElementById('expenseVehicleSelect');
 
     // Authenticated API request
@@ -73,16 +103,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!canLogFuel && openFuelModalBtn) openFuelModalBtn.style.display = 'none';
     if (!canLogExpense && openExpenseModalBtn) openExpenseModalBtn.style.display = 'none';
 
-    // Cache vehicles for display mapping
     let vehiclesCache = [];
     
     const loadMetaData = async () => {
         try {
             vehiclesCache = await authenticatedFetch('/vehicles');
-            
-            // Populate both vehicle selections
             [fuelVehicleSelect, expenseVehicleSelect].forEach(select => {
                 if (select) {
+                    const currentV = select.value;
                     select.innerHTML = '<option value="">Choose a vehicle...</option>';
                     vehiclesCache.forEach(v => {
                         const opt = document.createElement('option');
@@ -90,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         opt.textContent = `${v.registration_number} - ${v.model}`;
                         select.appendChild(opt);
                     });
+                    select.value = currentV;
                 }
             });
         } catch (error) {
@@ -97,107 +126,92 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Tab Switching Logic
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabPanes = document.querySelectorAll('.tab-pane');
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetTab = btn.getAttribute('data-tab');
-            
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabPanes.forEach(p => p.classList.remove('active'));
-            
-            btn.classList.add('active');
-            document.getElementById(targetTab).classList.add('active');
+    let totalFuelCost = 0;
+    let totalOtherCost = 0;
 
-            if (targetTab === 'fuelTab') {
-                loadFuelLogs();
-            } else {
-                loadExpenses();
-            }
-        });
-    });
+    const updateTotal = () => {
+        const grandTotal = totalFuelCost + totalOtherCost;
+        if(totalCostDisplay) {
+            totalCostDisplay.textContent = grandTotal.toLocaleString();
+        }
+    };
 
-    // Fetch and Load Fuel Logs
-    const loadFuelLogs = async () => {
+    const loadAllData = async () => {
         try {
-            fuelTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading refuel data...</td></tr>';
+            fuelTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1rem;">Loading fuel data...</td></tr>';
+            expensesTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1rem;">Loading expenses data...</td></tr>';
             
             if (vehiclesCache.length === 0) {
                 await loadMetaData();
             }
 
-            const fuelLogs = await authenticatedFetch('/expenses/fuel');
+            const [fuelLogs, expenses] = await Promise.all([
+                authenticatedFetch('/expenses/fuel'),
+                authenticatedFetch('/expenses/other')
+            ]);
+            
             renderFuelLogs(fuelLogs);
+            renderExpenses(expenses);
         } catch (error) {
-            console.error('[Fuel Load Error]', error);
-            fuelTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--danger-color);">Failed to load fuel logs.</td></tr>';
+            console.error('[Load Error]', error);
         }
     };
 
     const renderFuelLogs = (logs) => {
         fuelTableBody.innerHTML = '';
+        totalFuelCost = 0;
         if (logs.length === 0) {
-            fuelTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No refuel records logged yet.</td></tr>';
-            return;
+            fuelTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1rem;">No refuel records logged yet.</td></tr>';
+        } else {
+            logs.forEach(log => {
+                totalFuelCost += parseFloat(log.cost);
+                const vehicle = vehiclesCache.find(v => v.id === log.vehicle_id);
+                const regNum = vehicle ? vehicle.registration_number : `ID: ${log.vehicle_id}`;
+                const formattedDate = log.logged_at ? new Date(log.logged_at).toISOString().split('T')[0] : '-';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${regNum}</td>
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); color: var(--text-muted);">${formattedDate}</td>
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${log.liters} L</td>
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); text-align: right;">${parseFloat(log.cost).toLocaleString()}</td>
+                `;
+                fuelTableBody.appendChild(tr);
+            });
         }
-
-        logs.forEach(log => {
-            const vehicle = vehiclesCache.find(v => v.id === log.vehicle_id);
-            const regNum = vehicle ? vehicle.registration_number : `ID: ${log.vehicle_id}`;
-            const formattedDate = log.logged_at ? new Date(log.logged_at).toISOString().split('T')[0] : '-';
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>#${log.id}</strong></td>
-                <td><strong>${regNum}</strong></td>
-                <td>${log.liters} Liters</td>
-                <td>$${parseFloat(log.cost).toLocaleString()}</td>
-                <td>${formattedDate}</td>
-            `;
-            fuelTableBody.appendChild(tr);
-        });
-    };
-
-    // Fetch and Load Other Expenses
-    const loadExpenses = async () => {
-        try {
-            expensesTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading expenses data...</td></tr>';
-            
-            if (vehiclesCache.length === 0) {
-                await loadMetaData();
-            }
-
-            const expenses = await authenticatedFetch('/expenses/other');
-            renderExpenses(expenses);
-        } catch (error) {
-            console.error('[Expenses Load Error]', error);
-            expensesTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--danger-color);">Failed to load expenses logs.</td></tr>';
-        }
+        updateTotal();
     };
 
     const renderExpenses = (expenses) => {
         expensesTableBody.innerHTML = '';
+        totalOtherCost = 0;
         if (expenses.length === 0) {
-            expensesTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No expense records logged yet.</td></tr>';
-            return;
+            expensesTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1rem;">No expense records logged yet.</td></tr>';
+        } else {
+            expenses.forEach(exp => {
+                totalOtherCost += parseFloat(exp.cost);
+                const vehicle = vehiclesCache.find(v => v.id === exp.vehicle_id);
+                const regNum = vehicle ? vehicle.registration_number : `ID: ${exp.vehicle_id}`;
+
+                // To match mockup layout for Other Expenses: Trip, Vehicle, Toll, Other, Maint, Total
+                let toll = exp.type === 'Tolls' ? exp.cost : 0;
+                let other = exp.type !== 'Tolls' ? exp.cost : 0;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">TR${String(exp.id).padStart(3, '0')}</td>
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${regNum}</td>
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${parseFloat(toll).toLocaleString()}</td>
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${parseFloat(other).toLocaleString()}</td>
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); color: var(--text-muted);">0</td>
+                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); text-align: right;">
+                        <span style="background-color: var(--secondary-color); color: #000; padding: 0.25rem 1rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">Completed</span>
+                    </td>
+                `;
+                expensesTableBody.appendChild(tr);
+            });
         }
-
-        expenses.forEach(exp => {
-            const vehicle = vehiclesCache.find(v => v.id === exp.vehicle_id);
-            const regNum = vehicle ? vehicle.registration_number : `ID: ${exp.vehicle_id}`;
-            const formattedDate = exp.logged_at ? new Date(exp.logged_at).toISOString().split('T')[0] : '-';
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>#${exp.id}</strong></td>
-                <td><strong>${regNum}</strong></td>
-                <td><span class="badge badge-info">${exp.type}</span></td>
-                <td>$${parseFloat(exp.cost).toLocaleString()}</td>
-                <td>${formattedDate}</td>
-            `;
-            expensesTableBody.appendChild(tr);
-        });
+        updateTotal();
     };
 
     // Modal Control: Fuel
@@ -247,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(payload)
                 });
                 fuelModal.classList.remove('show');
-                loadFuelLogs();
+                loadAllData();
             } catch (error) {
                 alert(error.message || 'Failed to log fuel refill.');
             }
@@ -271,13 +285,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(payload)
                 });
                 expenseModal.classList.remove('show');
-                loadExpenses();
+                loadAllData();
             } catch (error) {
                 alert(error.message || 'Failed to log operational expense.');
             }
         });
     }
 
-    // Initialize (Load Fuel tab first)
-    loadFuelLogs();
+    // Initialize
+    loadAllData();
 });
