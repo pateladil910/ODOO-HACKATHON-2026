@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - TransitOps</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        .settings-section-title {
+            margin: 0 0 1.5rem;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 0.5rem;
+        }
+        
+        .rbac-table th {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding-bottom: 0.75rem;
+            text-align: center;
+        }
+        .rbac-table th:first-child {
+            text-align: left;
+        }
+        .rbac-table td {
+            padding: 1rem 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .rbac-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+        .ph-check-circle {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        .ph-x-circle {
+            color: rgba(255,255,255,0.2);
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-brand">
+                    <div class="sidebar-icon">T</div>
+                    <span>TransitOps</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item" data-roles="all">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="vehicles.html" class="nav-item" data-roles="manager">
+                    <i class="ph ph-car"></i>
+                    <span>Vehicle Registry</span>
+                </a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
+                    <i class="ph ph-identification-card"></i>
+                    <span>Drivers</span>
+                </a>
+                <a href="trips.html" class="nav-item" data-roles="manager,driver">
+                    <i class="ph ph-path"></i>
+                    <span>Trips</span>
+                </a>
+                <a href="maintenance.html" class="nav-item" data-roles="manager">
+                    <i class="ph ph-wrench"></i>
+                    <span>Maintenance</span>
+                </a>
+                <a href="expenses.html" class="nav-item" data-roles="manager,finance">
+                    <i class="ph ph-receipt"></i>
+                    <span>Fuel & Expenses</span>
+                </a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="settings.html" class="nav-item active" data-roles="admin,manager">
+                    <i class="ph ph-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name">User Name</div>
+                        <div class="user-role">Role</div>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn" title="Logout">
+                        <i class="ph ph-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="ph ph-list"></i>
+                    </button>
+                    <div class="header-search">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search settings...">
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="header-user">
+                        <span class="header-user-name">Raven K.</span>
+                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="app-content" style="padding-top: 1rem;">
+                <div class="settings-grid">
+                    
+                    <!-- Left: General Settings Form -->
+                    <div>
+                        <h4 class="settings-section-title">GENERAL</h4>
+                        <form id="settingsForm">
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Depot Name</label>
+                                <input type="text" id="depotName" class="form-control" value="TransitOps Central" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Currency</label>
+                                <select id="currencyCode" class="form-control" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label class="form-label" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Distance Unit</label>
+                                <select id="distanceUnit" class="form-control" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
+                                    <option value="km">Kilometers (km)</option>
+                                    <option value="mi">Miles (mi)</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" id="saveBtn" class="btn" style="background-color: var(--primary-color); color: #fff; width: 100%; border: none; padding: 0.75rem; border-radius: 4px; box-shadow: var(--shadow-3d-btn);">Save changes</button>
+                        </form>
+                    </div>
+
+                    <!-- Right: RBAC Matrix -->
+                    <div>
+                        <h4 class="settings-section-title">ROLE-BASED ACCESS (RBAC)</h4>
+                        <div style="overflow-x: auto;">
+                            <table class="rbac-table" style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                                <thead>
+                                    <tr>
+                                        <th>Role</th>
+                                        <th>Fleet</th>
+                                        <th>Drivers</th>
+                                        <th>Trips</th>
+                                        <th>Fuel/Exp</th>
+                                        <th>Analytics</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Fleet Manager</td>
+                                        <td><i class="ph ph-check-circle"></i></td>
+                                        <td><i class="ph ph-check-circle"></i></td>
+                                        <td><i class="ph ph-check-circle"></i></td>
+                                        <td><i class="ph ph-check-circle"></i></td>
+                                        <td><i class="ph ph-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dispatcher</td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                        <td><i class="ph ph-check-circle"></i></td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Safety Officer</td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                        <td><i class="ph ph-check-circle"></i></td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Financial Analyst</td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                        <td><i class="ph ph-x-circle"></i></td>
+                                        <td><i class="ph ph-check-circle"></i></td>
+                                        <td><i class="ph ph-check-circle"></i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 1.5rem; font-size: 0.75rem; color: var(--text-muted); font-style: italic;">
+                            * Note: Changes to RBAC roles require Administrator level access and backend restart.
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>
