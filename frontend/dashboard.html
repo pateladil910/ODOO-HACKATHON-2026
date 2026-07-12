@@ -78,10 +78,15 @@
                         <input type="text" placeholder="Search...">
                     </div>
                 </div>
-                <div class="header-right">
+                <div class="header-right" style="display: flex; align-items: center; gap: 1rem;">
+                    <!-- Health Status Badges -->
+                    <div style="display: flex; gap: 0.5rem;">
+                        <span class="badge badge-success" id="apiStatusBadge" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">API Connecting</span>
+                        <span class="badge badge-success" id="dbStatusBadge" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">DB Connecting</span>
+                    </div>
                     <div class="header-user">
-                        <span class="header-user-name">Raven K.</span>
-                        <div class="header-user-role" id="userRoleBadge">Dispatcher <div class="header-user-avatar">RK</div></div>
+                        <span class="header-user-name">User</span>
+                        <div class="header-user-role" id="userRoleBadge">- <div class="header-user-avatar">U</div></div>
                     </div>
                 </div>
             </header>
@@ -106,37 +111,37 @@
                 <div class="kpi-grid">
                     <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Active Vehicles</span>
-                        <div class="kpi-value" id="kpiTotalVehicles" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">53</div>
+                        <div class="kpi-value" id="kpiTotalVehicles" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
                     </div>
                     
                     <div class="kpi-card" style="border-left: 4px solid var(--secondary-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Available Vehicles</span>
-                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">42</div>
+                        <div class="kpi-value" id="kpiAvailableVehicles" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
                     </div>
 
                     <div class="kpi-card" style="border-left: 4px solid var(--warning-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Vehicles In Maintenance</span>
-                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">05</div>
+                        <div class="kpi-value" id="kpiMaintenanceVehicles" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
                     </div>
 
                     <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Active Trips</span>
-                        <div class="kpi-value" id="kpiActiveTrips" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">18</div>
+                        <div class="kpi-value" id="kpiActiveTrips" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
                     </div>
 
                     <div class="kpi-card" style="border-left: 4px solid #6b7280;">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Pending Trips</span>
-                        <div class="kpi-value" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">09</div>
+                        <div class="kpi-value" id="kpiPendingTrips" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
                     </div>
 
                     <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Drivers On Duty</span>
-                        <div class="kpi-value" id="kpiActiveDrivers" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">26</div>
+                        <div class="kpi-value" id="kpiActiveDrivers" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
                     </div>
                     
                     <div class="kpi-card" style="border-left: 4px solid var(--secondary-color);">
                         <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Fleet Utilization</span>
-                        <div class="kpi-value" id="kpiUtilization" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">81%</div>
+                        <div class="kpi-value" id="kpiUtilization" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0%</div>
                     </div>
                 </div>
 
@@ -144,45 +149,20 @@
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
                     <!-- Recent Trips -->
                     <div class="dashboard-section" style="padding: 0; background: transparent; box-shadow: none;">
-                        <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1rem;">Recent Trips</h3>
+                        <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1rem;">Recent Dispatched Trips</h3>
                         <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
                             <thead>
                                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted);">
-                                    <th style="padding: 1rem; font-weight: normal;">TRIP</th>
-                                    <th style="padding: 1rem; font-weight: normal;">VEHICLE</th>
-                                    <th style="padding: 1rem; font-weight: normal;">DRIVER</th>
+                                    <th style="padding: 1rem; font-weight: normal;">TRIP ID</th>
+                                    <th style="padding: 1rem; font-weight: normal;">SOURCE</th>
+                                    <th style="padding: 1rem; font-weight: normal;">DESTINATION</th>
+                                    <th style="padding: 1rem; font-weight: normal;">CARGO</th>
                                     <th style="padding: 1rem; font-weight: normal;">STATUS</th>
-                                    <th style="padding: 1rem; font-weight: normal;">ETA</th>
                                 </tr>
                             </thead>
                             <tbody id="recentTripsTableBody">
-                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                    <td style="padding: 1rem;">TR001</td>
-                                    <td style="padding: 1rem;">VAN-05</td>
-                                    <td style="padding: 1rem;">Alex</td>
-                                    <td style="padding: 1rem;"><span style="background-color: var(--primary-color); padding: 0.25rem 1rem; border-radius: 4px; color: white;">On Trip</span></td>
-                                    <td style="padding: 1rem;">45 min</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                    <td style="padding: 1rem;">TR002</td>
-                                    <td style="padding: 1rem;">TRK-12</td>
-                                    <td style="padding: 1rem;">John</td>
-                                    <td style="padding: 1rem;"><span style="background-color: var(--secondary-color); padding: 0.25rem 1rem; border-radius: 4px; color: white;">Completed</span></td>
-                                    <td style="padding: 1rem;">—</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                    <td style="padding: 1rem;">TR003</td>
-                                    <td style="padding: 1rem;">MINI-08</td>
-                                    <td style="padding: 1rem;">Priya</td>
-                                    <td style="padding: 1rem;"><span style="background-color: #60a5fa; padding: 0.25rem 1rem; border-radius: 4px; color: black;">Dispatched</span></td>
-                                    <td style="padding: 1rem;">1h 10m</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                    <td style="padding: 1rem;">TR004</td>
-                                    <td style="padding: 1rem;">—</td>
-                                    <td style="padding: 1rem;">—</td>
-                                    <td style="padding: 1rem;"><span style="background-color: #6b7280; padding: 0.25rem 1rem; border-radius: 4px; color: white;">Draft</span></td>
-                                    <td style="padding: 1rem;">Awaiting vehicle</td>
+                                <tr>
+                                    <td colspan="5" style="padding: 1rem; text-align: center; color: var(--text-muted);">Loading recent trips...</td>
                                 </tr>
                             </tbody>
                         </table>
