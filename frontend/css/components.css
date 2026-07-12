@@ -7,7 +7,6 @@
    AUTH / LOGIN PAGE
 ───────────────────────────────────────── */
 .auth-viewport {
-  perspective: 1200px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,23 +38,18 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  transform: rotateY(-6deg) rotateX(3deg) translateZ(0);
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease, border-color 0.6s ease;
-  box-shadow: 
-    -20px 20px 40px rgba(0, 0, 0, 0.6), 
-    0 0 0 1px var(--border-subtle);
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+  box-shadow: var(--shadow-modal);
 }
 
 .auth-card-3d:hover {
-  transform: rotateY(-2deg) rotateX(1.5deg) translateZ(10px);
-  border-color: rgba(56, 189, 248, 0.25);
+  border-color: rgba(56, 189, 248, 0.2);
   box-shadow: 
-    -35px 35px 70px rgba(0, 0, 0, 0.75), 
-    0 0 30px rgba(56, 189, 248, 0.08);
+    0 16px 48px rgba(0, 0, 0, 0.5), 
+    0 0 24px rgba(56, 189, 248, 0.05);
 }
 
-/* Left panel: Branding with depth */
+/* Left panel: Branding */
 .auth-branding-3d {
   border-right: 1px solid var(--border-subtle);
   display: flex;
@@ -64,8 +58,6 @@
   padding: 3rem;
   position: relative;
   overflow: hidden;
-  transform: translateZ(25px);
-  transform-style: preserve-3d;
   min-height: 520px;
 }
 
@@ -74,7 +66,6 @@
   align-items: center;
   gap: 0.875rem;
   margin-bottom: 1.5rem;
-  transform: translateZ(40px);
 }
 
 .brand-icon-3d {
@@ -104,15 +95,12 @@
   line-height: 1.6;
   margin-bottom: 2.25rem;
   max-width: 360px;
-  transform: translateZ(30px);
 }
 
 /* Feature Showcase */
 .showcase-section-3d {
   margin-top: 1rem;
   margin-bottom: 1.5rem;
-  transform: translateZ(35px);
-  transform-style: preserve-3d;
 }
 
 .showcase-title-3d {
@@ -139,7 +127,6 @@
   padding: 0.75rem 1rem;
   border-radius: var(--radius-lg);
   transition: border-color var(--t-fast), background var(--t-fast);
-  transform: translateZ(15px);
 }
 .showcase-item-3d:hover {
   border-color: rgba(56, 189, 248, 0.15);
@@ -185,7 +172,7 @@
   line-height: 1.4;
 }
 
-/* Right Side: Form Wrapper with 3D depth */
+/* Right Side: Form Wrapper */
 .auth-form-wrapper-3d {
   display: flex;
   align-items: center;
@@ -193,18 +180,14 @@
   padding: 3rem;
   position: relative;
   overflow: hidden;
-  transform: translateZ(35px);
-  transform-style: preserve-3d;
 }
 
 .auth-form-container-3d {
   width: 100%;
-  transform-style: preserve-3d;
 }
 
 .form-header-3d { 
   margin-bottom: 2rem; 
-  transform: translateZ(40px);
 }
 
 .form-title-3d {
@@ -221,7 +204,6 @@
 
 .form-group-3d {
   margin-bottom: 1.25rem;
-  transform: translateZ(45px);
 }
 
 .form-options-3d {
@@ -229,7 +211,6 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
-  transform: translateZ(40px);
 }
 
 /* Custom Checkbox Overrides */
@@ -292,16 +273,15 @@
     0 4px 12px rgba(56, 189, 248, 0.2);
   transition: transform var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
   cursor: pointer;
-  transform: translateZ(50px);
 }
 .auth-form-container-3d .btn-primary:hover {
-  transform: translateZ(55px) translateY(-1px);
+  transform: translateY(-1px);
   box-shadow: 
     0 1px 0 rgba(255, 255, 255, 0.2) inset,
     0 6px 16px rgba(56, 189, 248, 0.35);
 }
 .auth-form-container-3d .btn-primary:active {
-  transform: translateZ(48px) translateY(1px);
+  transform: translateY(1px);
   box-shadow: 
     0 1px 0 rgba(0, 0, 0, 0.1) inset,
     0 2px 6px rgba(56, 189, 248, 0.15);
@@ -358,7 +338,6 @@ input:-webkit-autofill:active {
   }
   .auth-card-3d {
     grid-template-columns: 1fr;
-    transform: none !important; /* disable 3D tilt on smaller screens */
     box-shadow: var(--shadow-card);
   }
   .auth-branding-3d {
