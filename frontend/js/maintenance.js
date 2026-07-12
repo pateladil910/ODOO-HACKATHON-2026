@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load and render maintenance logs
     const loadMaintenanceLogs = async () => {
         try {
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading service log...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading service log...</td></tr>';
             
             if (vehiclesCache.length === 0) {
                 await loadMetaData();
@@ -98,14 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
             renderLogs(allLogs);
         } catch (error) {
             console.error('[Load Maintenance Logs Error]', error);
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #fca5a5; padding: 2rem;">Failed to load logs.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #fca5a5; padding: 2rem;">Failed to load logs.</td></tr>';
         }
     };
 
     const renderLogs = (logsList) => {
         tableBody.innerHTML = '';
         if (logsList.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">No maintenance logs found.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No maintenance logs found.</td></tr>';
             return;
         }
 
@@ -124,9 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const vehicle = vehiclesCache.find(v => v.id === log.vehicle_id);
             const vehicleReg = vehicle ? vehicle.registration_number : `ID: ${log.vehicle_id}`;
+            const formattedDate = log.logged_at ? new Date(log.logged_at).toISOString().split('T')[0] : '-';
 
             const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px dashed rgba(255,255,255,0.1)';
+            tr.style.borderBottom = '1px solid var(--border-subtle)';
             tr.style.cursor = 'pointer';
             
             tr.onmouseenter = () => tr.style.backgroundColor = 'rgba(255,255,255,0.02)';
@@ -134,11 +135,15 @@ document.addEventListener('DOMContentLoaded', () => {
             tr.onclick = () => loadLogIntoForm(log);
 
             tr.innerHTML = `
-                <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${vehicleReg}</td>
-                <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); color: var(--text-muted);">${log.description}</td>
-                <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${parseFloat(log.cost).toLocaleString()}</td>
-                <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); text-align: right;">
+                <td>${vehicleReg}</td>
+                <td style="color: var(--text-muted);">${log.description}</td>
+                <td class="num-col">$${parseFloat(log.cost).toLocaleString()}</td>
+                <td>${formattedDate}</td>
+                <td style="text-align: center;">
                     <span style="background-color: ${badgeBg}; color: ${badgeColor}; padding: 0.25rem 1rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">${statusText}</span>
+                </td>
+                <td class="actions-col">
+                    <button class="btn btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.7rem; box-shadow: var(--shadow-3d-btn);">Edit</button>
                 </td>
             `;
             tableBody.appendChild(tr);
