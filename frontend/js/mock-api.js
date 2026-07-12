@@ -601,12 +601,100 @@
       
       let fileData = doc.file_data;
       if (!fileData) {
+        // Generate mock data containing vehicle details
+        const vehicle = vehicles.find(v => v.id === doc.vehicle_id) || {
+          registration_number: 'N/A',
+          model: 'N/A',
+          type: 'N/A',
+          odometer: 0,
+          max_capacity: 0,
+          status: 'N/A'
+        };
+
         if (doc.file_name.endsWith('.pdf')) {
-          fileData = 'data:application/pdf;base64,JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nDMwMzQ1MjcyMVFIy0zRNzTWT8tM0TdSMCpWiAcAOCME7gplbmRzdHJlYW0KZW5kb2JqCjMgMCBvYmoKMjIKZW5kb2JqCjEgMCBvYmoKPDwvVHlwZS9QYWdlcy9LaWRzWzQgMCBSXS9Db3VudCAxPj4KZW5kb2JqCjQgMCBvYmoKPDwvVHlwZS9QYWdlL1BhcmVudCAxIDAgUi9NZWRpYUJveFswIDAgNTk1IDQyMF0vQ29udGVudHMgMiAwIFI+PgplbmRvYmoKNSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMSAwIFI+PgpleHRyYWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDIxOSAwMDAwMCBuIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDAxNDggMDAwMDAgbiAKMDAwMDAwMDIxOSAwMDAwMCBuIAowMDAwMDAwMzAzIDAwMDAwIG4gCnRyYWlsZXIKPDwvU2l6ZSA2L1Jvb3QgNSAwIFI+PgpzdGFydHhyZWYKMzUxCiUlRU9GCg==';
+          // Dynamic uncompressed PDF generator containing vehicle details
+          const lines = [
+            `BT`,
+            `/F1 18 Tf`,
+            `70 750 Td`,
+            `(${doc.document_name.toUpperCase()}) Tj`,
+            `/F1 12 Tf`,
+            `0 -40 Td`,
+            `(Vehicle Registration: ${vehicle.registration_number}) Tj`,
+            `0 -25 Td`,
+            `(Model Name: ${vehicle.model}) Tj`,
+            `0 -25 Td`,
+            `(Vehicle Type: ${vehicle.type}) Tj`,
+            `0 -25 Td`,
+            `(Current Odometer: ${parseFloat(vehicle.odometer).toLocaleString()} km) Tj`,
+            `0 -25 Td`,
+            `(Max Cargo Capacity: ${parseFloat(vehicle.max_capacity).toLocaleString()} kg) Tj`,
+            `0 -25 Td`,
+            `(Operational Status: ${vehicle.status}) Tj`,
+            `0 -40 Td`,
+            `(This certificate verifies the active registration and compliance logs of the vehicle.) Tj`,
+            `0 -20 Td`,
+            `(Generated dynamically on: ${new Date().toLocaleDateString()}) Tj`,
+            `ET`
+          ];
+          
+          const streamContent = lines.join('\n');
+          const streamLength = streamContent.length;
+          
+          const pdfParts = [
+            `%PDF-1.4\n`,
+            `1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`,
+            `2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n`,
+            `3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R >> >> /MediaBox [0 0 595 842] /Contents 5 0 R >>\nendobj\n`,
+            `4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n`,
+            `5 0 obj\n<< /Length ${streamLength} >>\nstream\n${streamContent}\nendstream\nendobj\n`
+          ];
+          
+          const offsets = [];
+          let currentOffset = 0;
+          for (let i = 1; i < pdfParts.length; i++) {
+            currentOffset += pdfParts[i - 1].length;
+            offsets.push(currentOffset);
+          }
+          
+          const startXref = currentOffset + pdfParts[pdfParts.length - 1].length;
+          
+          const pdf = pdfParts.join('') +
+            `xref\n0 6\n0000000000 65535 f \n` +
+            `${String(offsets[0]).padStart(10, '0')} 00000 n \n` +
+            `${String(offsets[1]).padStart(10, '0')} 00000 n \n` +
+            `${String(offsets[2]).padStart(10, '0')} 00000 n \n` +
+            `${String(offsets[3]).padStart(10, '0')} 00000 n \n` +
+            `${String(offsets[4]).padStart(10, '0')} 00000 n \n` +
+            `trailer\n<< /Size 6 /Root 1 0 R >>\n` +
+            `startxref\n${startXref}\n%%EOF\n`;
+            
+          fileData = 'data:application/pdf;base64,' + btoa(pdf);
         } else {
-          fileData = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+          // Dynamic SVG containing vehicle details
+          const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+              <rect width="100%" height="100%" fill="#1e1e24" />
+              <rect x="20" y="20" width="560" height="360" rx="15" fill="none" stroke="#22d3ee" stroke-width="2" />
+              <text x="300" y="70" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" fill="#22d3ee" text-anchor="middle">
+                ${doc.document_name.toUpperCase()}
+              </text>
+              <text x="80" y="140" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Registration: ${vehicle.registration_number}</text>
+              <text x="80" y="175" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Model: ${vehicle.model}</text>
+              <text x="80" y="210" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Type: ${vehicle.type}</text>
+              <text x="80" y="245" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Odometer: ${parseFloat(vehicle.odometer).toLocaleString()} km</text>
+              <text x="80" y="280" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Capacity: ${parseFloat(vehicle.max_capacity).toLocaleString()} kg</text>
+              <text x="80" y="315" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#f8fafc">Status: ${vehicle.status}</text>
+              <text x="300" y="360" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">
+                Official compliance file mock. Generated dynamically on ${new Date().toLocaleDateString()}
+              </text>
+            </svg>
+          `.trim();
+          
+          fileData = 'data:image/svg+xml;base64,' + btoa(svg);
         }
       }
+
       return makeResponse({
         id: doc.id,
         vehicle_id: doc.vehicle_id,
