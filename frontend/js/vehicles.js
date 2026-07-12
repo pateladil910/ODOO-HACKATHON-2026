@@ -67,19 +67,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let allVehicles = [];
     const loadVehicles = async () => {
         try {
-            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading fleet registry...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading fleet registry...</td></tr>';
             allVehicles = await authenticatedFetch('/vehicles');
             renderVehicles(allVehicles);
         } catch (error) {
             console.error('[Load Vehicles Error]', error);
-            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger-color); padding: 2rem;">Failed to load vehicles.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--danger-color); padding: 2rem;">Failed to load vehicles.</td></tr>';
         }
     };
 
     const renderVehicles = (vehiclesList) => {
         tableBody.innerHTML = '';
         if (vehiclesList.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No vehicles found matching criteria.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">No vehicles found matching criteria.</td></tr>';
             return;
         }
 
@@ -196,7 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 file_name: file.name,
                 file_size: file.size,
                 mime_type: file.type,
-                file_data: base64Data
+                file_data: base64Data,
+                file_content: base64Data
             };
             try {
                 await authenticatedFetch(`/vehicles/${vehicleId}/documents`, {

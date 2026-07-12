@@ -136,7 +136,7 @@
     }
 
     // --- 2. VEHICLES CRUD ---
-    if (url.includes('/vehicles')) {
+    if (url.includes('/vehicles') && !url.includes('/documents')) {
       const parts = url.split('/vehicles');
       const paramId = parts[1] ? parseInt(parts[1].replace('/', ''), 10) : null;
 
