@@ -104,6 +104,26 @@ class DriverModel {
     const { rows } = await db.query(queryText, [id]);
     return rows.length > 0;
   }
+
+  /**
+   * Find drivers with licenses expiring within 30 days or already expired (Reminders Bonus)
+   */
+  static async findExpiringLicenses() {
+    const queryText = `
+      SELECT id, name, license_number, license_expiry_date, contact_number, status,
+             CASE 
+               WHEN license_expiry_date < CURRENT_DATE THEN 'EXPIRED'
+               ELSE 'EXPIRING_SOON'
+             END as expiry_state,
+             (license_expiry_date - CURRENT_DATE) as days_remaining
+      FROM drivers
+      WHERE license_expiry_date <= CURRENT_DATE + INTERVAL '30 days'
+      ORDER BY license_expiry_date ASC;
+    `;
+    const { rows } = await db.query(queryText);
+    return rows;
+  }
 }
 
 module.exports = DriverModel;
+

@@ -74,10 +74,44 @@ const deleteDriver = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, null, 'Driver deleted successfully.'));
 });
 
+const getExpiryReminders = asyncHandler(async (req, res) => {
+  const expiringDrivers = await DriverModel.findExpiringLicenses();
+  
+  const remindersSent = expiringDrivers.map(driver => {
+    const subject = driver.expiry_state === 'EXPIRED' 
+      ? `CRITICAL: Driving License Expired - ${driver.name}`
+      : `WARNING: Driving License Expiry Notice - ${driver.name}`;
+      
+    const message = driver.expiry_state === 'EXPIRED'
+      ? `Dear ${driver.name}, your driving license (${driver.license_number}) expired on ${new Date(driver.license_expiry_date).toISOString().split('T')[0]}. You are suspended from active duties until you renew your license.`
+      : `Dear ${driver.name}, your driving license (${driver.license_number}) expires in ${driver.days_remaining} days on ${new Date(driver.license_expiry_date).toISOString().split('T')[0]}. Please submit a renewal request.`;
+
+    console.log(`[Simulated Email Reminder] Sent to: ${driver.name.toLowerCase().replace(/\s+/g, '.')}@transitops.com | Subject: ${subject}`);
+    
+    return {
+      driver_id: driver.id,
+      name: driver.name,
+      license_number: driver.license_number,
+      license_expiry_date: driver.license_expiry_date,
+      days_remaining: driver.days_remaining,
+      expiry_state: driver.expiry_state,
+      email_simulated: {
+        to: `${driver.name.toLowerCase().replace(/\s+/g, '.')}@transitops.com`,
+        subject,
+        message
+      }
+    };
+  });
+
+  res.status(200).json(new ApiResponse(200, remindersSent, 'Driver license expiration email reminders simulated successfully.'));
+});
+
 module.exports = {
   getDrivers,
   getDriverById,
   createDriver,
   updateDriver,
-  deleteDriver
+  deleteDriver,
+  getExpiryReminders
 };
+
