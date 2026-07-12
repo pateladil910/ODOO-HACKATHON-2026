@@ -91,6 +91,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Helper to format ISO date to YYYY-MM-DD
             const formattedExpiry = d.license_expiry_date ? new Date(d.license_expiry_date).toISOString().split('T')[0] : '-';
+            const expiryDate = d.license_expiry_date ? new Date(d.license_expiry_date) : null;
+            const today = new Date();
+            let expiryWarning = '';
+            
+            if (expiryDate) {
+                const diffTime = expiryDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays < 0) {
+                    expiryWarning = ` <span class="badge badge-danger" style="font-size: 0.65rem; margin-left: 4px; display: inline-flex; align-items: center; gap: 2px;" title="License is EXPIRED!"><i class="ph ph-warning-octagon"></i> Expired</span>`;
+                } else if (diffDays <= 30) {
+                    expiryWarning = ` <span class="badge badge-warning" style="font-size: 0.65rem; margin-left: 4px; display: inline-flex; align-items: center; gap: 2px;" title="License expires in ${diffDays} days!"><i class="ph ph-warning"></i> Expiring Soon</span>`;
+                }
+            }
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -99,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div>${d.license_number}</div>
                     <small style="color: var(--text-muted); font-size: 0.75rem;">${d.license_category}</small>
                 </td>
-                <td>${formattedExpiry}</td>
+                <td>${formattedExpiry}${expiryWarning}</td>
                 <td>${d.contact_number}</td>
                 <td>
                     <span style="font-weight: 700; color: ${parseFloat(d.safety_score) >= 90 ? 'var(--secondary-color)' : 'var(--danger-color)'}">
