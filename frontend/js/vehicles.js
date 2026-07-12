@@ -101,6 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="padding: 1rem;">${parseFloat(v.odometer).toLocaleString()}</td>
                 <td style="padding: 1rem;">${parseFloat(v.acquisition_cost || 0).toLocaleString()}</td>
                 <td style="padding: 1rem;"><span style="background-color: ${badgeColor}; padding: 0.25rem 1rem; border-radius: 4px; color: ${textColor};">${v.status}</span></td>
+                <td style="padding: 1rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-outline btn-sm docs-btn" data-id="${v.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"><i class="ph ph-paperclip"></i> Docs</button>
+                        <button class="btn btn-outline btn-sm edit-btn" data-id="${v.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</button>
+                        <button class="btn btn-outline btn-sm delete-btn" data-id="${v.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: #fca5a5;">Delete</button>
+                    </div>
+                </td>
             `;
             tableBody.appendChild(tr);
         });
@@ -113,8 +120,122 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', () => deleteVehicle(btn.getAttribute('data-id')));
             });
+            document.querySelectorAll('.docs-btn').forEach(btn => {
+                btn.addEventListener('click', () => openDocModal(btn.getAttribute('data-id')));
+            });
         }
     };
+
+    // --- Document Management Modal Handlers ---
+    let currentVehicleIdForDocs = null;
+
+    const openDocModal = async (vehicleId) => {
+        currentVehicleIdForDocs = vehicleId;
+        document.getElementById('docVehicleId').value = vehicleId;
+        document.getElementById('docUploadForm').reset();
+        const docModal = document.getElementById('documentModal');
+        docModal.classList.add('show');
+        loadVehicleDocuments(vehicleId);
+    };
+
+    const loadVehicleDocuments = async (vehicleId) => {
+        const listContainer = document.getElementById('docListContainer');
+        listContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 1rem;">Loading documents...</div>';
+        try {
+            const docs = await authenticatedFetch(`/vehicles/${vehicleId}/documents`);
+            listContainer.innerHTML = '';
+            if (docs.length === 0) {
+                listContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 1rem;">No documents uploaded.</div>';
+                return;
+            }
+            docs.forEach(doc => {
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.justify = 'space-between';
+                div.style.alignItems = 'center';
+                div.style.padding = '0.5rem';
+                div.style.background = 'rgba(255,255,255,0.05)';
+                div.style.borderRadius = '4px';
+                div.style.border = '1px solid rgba(255,255,255,0.1)';
+                
+                div.innerHTML = `
+                    <div style="display: flex; flex-direction: column; text-align: left;">
+                        <span style="font-size: 0.85rem; font-weight: 500;">${doc.document_name}</span>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">${doc.file_name} (${(doc.file_size / 1024).toFixed(1)} KB)</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a href="${API_BASE_URL}/vehicles/documents/${doc.id}" target="_blank" class="btn btn-outline btn-sm" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; color: var(--secondary-color); text-decoration: none; display: flex; align-items: center;"><i class="ph ph-download"></i></a>
+                        <button class="btn btn-outline btn-sm delete-doc-btn" data-id="${doc.id}" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; color: #fca5a5;"><i class="ph ph-trash"></i></button>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+            // Attach delete listeners
+            listContainer.querySelectorAll('.delete-doc-btn').forEach(btn => {
+                btn.addEventListener('click', () => deleteDocument(btn.getAttribute('data-id')));
+            });
+        } catch (err) {
+            listContainer.innerHTML = '<div style="color: #fca5a5; font-size: 0.85rem; text-align: center; padding: 1rem;">Failed to load documents.</div>';
+        }
+    };
+
+    const uploadDocument = async (e) => {
+        e.preventDefault();
+        const vehicleId = document.getElementById('docVehicleId').value;
+        const docName = document.getElementById('docName').value;
+        const fileInput = document.getElementById('docFile');
+        const file = fileInput.files[0];
+        
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = async () => {
+            const base64Data = reader.result;
+            const payload = {
+                document_name: docName,
+                file_name: file.name,
+                file_size: file.size,
+                mime_type: file.type,
+                file_data: base64Data
+            };
+            try {
+                await authenticatedFetch(`/vehicles/${vehicleId}/documents`, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                loadVehicleDocuments(vehicleId);
+                document.getElementById('docUploadForm').reset();
+            } catch (err) {
+                alert(err.message || 'Failed to upload document.');
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const deleteDocument = async (docId) => {
+        if (confirm('Are you sure you want to delete this document?')) {
+            try {
+                await authenticatedFetch(`/vehicles/documents/${docId}`, {
+                    method: 'DELETE'
+                });
+                loadVehicleDocuments(currentVehicleIdForDocs);
+            } catch (err) {
+                alert(err.message || 'Failed to delete document.');
+            }
+        }
+    };
+
+    const docUploadForm = document.getElementById('docUploadForm');
+    if (docUploadForm) {
+        docUploadForm.addEventListener('submit', uploadDocument);
+    }
+
+    const closeDocModalBtn = document.getElementById('closeDocModalBtn');
+    if (closeDocModalBtn) {
+        closeDocModalBtn.addEventListener('click', () => {
+            document.getElementById('documentModal').classList.remove('show');
+        });
+    }
 
     // Filter and Search Event Handlers
     const filterAndSearch = () => {

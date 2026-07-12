@@ -550,6 +550,42 @@
         });
         return makeResponse(report);
       }
+
+      // --- VEHICLE DOCUMENTS MOCK ---
+      if (url.includes('/vehicles/') && url.includes('/documents') && method === 'GET') {
+        const parts = url.split('/');
+        const vehicleId = parseInt(parts[parts.indexOf('vehicles') + 1], 10);
+        const docs = loadDb('mock_documents', []);
+        const vehicleDocs = docs.filter(d => d.vehicle_id === vehicleId);
+        return makeResponse(vehicleDocs);
+      }
+
+      if (url.includes('/vehicles/') && url.includes('/documents') && method === 'POST') {
+        const parts = url.split('/');
+        const vehicleId = parseInt(parts[parts.indexOf('vehicles') + 1], 10);
+        const docs = loadDb('mock_documents', []);
+        const newDoc = {
+          id: docs.length > 0 ? Math.max(...docs.map(x => x.id)) + 1 : 1,
+          vehicle_id: vehicleId,
+          document_name: body.document_name,
+          file_name: body.file_name,
+          file_size: body.file_size,
+          mime_type: body.mime_type,
+          created_at: new Date()
+        };
+        docs.push(newDoc);
+        saveDb('mock_documents', docs);
+        return makeResponse(newDoc, 201);
+      }
+
+      if (url.includes('/vehicles/documents/') && method === 'DELETE') {
+        const parts = url.split('/');
+        const docId = parseInt(parts[parts.indexOf('documents') + 1], 10);
+        const docs = loadDb('mock_documents', []);
+        const newDocList = docs.filter(x => x.id !== docId);
+        saveDb('mock_documents', newDocList);
+        return makeResponse(null);
+      }
     }
 
     return makeResponse({ message: 'Endpoint mock not matched' }, 404);

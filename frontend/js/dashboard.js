@@ -93,94 +93,206 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 3. Fetch and Render KPIs
-    const loadKPIs = async () => {
-        try {
-            const kpis = await authenticatedFetch('/analytics/kpis');
-            
-            const totalVehiclesEl = document.getElementById('kpiTotalVehicles');
-            const availableVehiclesEl = document.getElementById('kpiAvailableVehicles');
-            const maintenanceVehiclesEl = document.getElementById('kpiMaintenanceVehicles');
-            
-            const activeTripsEl = document.getElementById('kpiActiveTrips');
-            const pendingTripsEl = document.getElementById('kpiPendingTrips');
-            
-            const activeDriversEl = document.getElementById('kpiActiveDrivers');
-            const utilizationEl = document.getElementById('kpiUtilization');
+    // 3. Fetch, Compute and Filter KPIs based on Active Filters
+    let allVehicles = [];
+    let allDrivers = [];
+    let allTrips = [];
 
-            if (totalVehiclesEl) totalVehiclesEl.textContent = kpis.vehicles.total;
-            if (availableVehiclesEl) availableVehiclesEl.textContent = kpis.vehicles.available;
-            if (maintenanceVehiclesEl) maintenanceVehiclesEl.textContent = kpis.vehicles.maintenance;
-            
-            if (activeTripsEl) activeTripsEl.textContent = kpis.trips.dispatched;
-            if (pendingTripsEl) pendingTripsEl.textContent = kpis.trips.draft;
-            
-            if (activeDriversEl) activeDriversEl.textContent = kpis.drivers.active;
-            if (utilizationEl) utilizationEl.textContent = `${kpis.vehicles.utilization_percentage}%`;
-
-            // Update Vehicle Status Bars Animation Dynamically
-            const total = kpis.vehicles.total;
-            const barAvailable = document.getElementById('bar-available');
-            const barOnTrip = document.getElementById('bar-ontrip');
-            const barInShop = document.getElementById('bar-inshop');
-            const barRetired = document.getElementById('bar-retired');
-
-            setTimeout(() => {
-                if (barAvailable) barAvailable.style.width = total > 0 ? `${(kpis.vehicles.available / total) * 100}%` : '0%';
-                if (barOnTrip) barOnTrip.style.width = total > 0 ? `${(kpis.vehicles.active / total) * 100}%` : '0%';
-                if (barInShop) barInShop.style.width = total > 0 ? `${(kpis.vehicles.maintenance / total) * 100}%` : '0%';
-                if (barRetired) barRetired.style.width = total > 0 ? `${(kpis.vehicles.retired / total) * 100}%` : '0%';
-            }, 100);
-
-        } catch (error) {
-            console.error('[KPI Load Failure]', error);
-        }
+    const getRegion = (locationStr) => {
+        if (!locationStr) return '';
+        const match = locationStr.match(/\(([^)]+)\)/);
+        if (match) return match[1].trim();
+        const parts = locationStr.split(' ');
+        return parts[parts.length - 1].trim();
     };
 
-    // 4. Fetch and Render Recent Trips
-    const loadRecentTrips = async () => {
+    const computeAndRenderDashboard = () => {
+        const filterTypeVal = document.getElementById('filterType').value;
+        const filterStatusVal = document.getElementById('filterStatus').value;
+        const filterRegionVal = document.getElementById('filterRegion').value;
+
+        // Filter vehicles
+        let filteredVehicles = allVehicles;
+        if (filterTypeVal !== 'all') {
+            filteredVehicles = filteredVehicles.filter(v => v.type === filterTypeVal);
+        }
+        if (filterStatusVal !== 'all') {
+            filteredVehicles = filteredVehicles.filter(v => v.status === filterStatusVal);
+        }
+        if (filterRegionVal !== 'all') {
+            filteredVehicles = filteredVehicles.filter(v => {
+                const vehicleTrips = allTrips.filter(t => t.vehicle_id === v.id);
+                return vehicleTrips.some(t => getRegion(t.source) === filterRegionVal || getRegion(t.destination) === filterRegionVal);
+            });
+        }
+
+        const totalVehicles = filteredVehicles.length;
+        const availableVehicles = filteredVehicles.filter(v => v.status === 'Available').length;
+        const maintenanceVehicles = filteredVehicles.filter(v => v.status === 'In Shop').length;
+        const activeVehiclesCount = filteredVehicles.filter(v => v.status === 'On Trip').length;
+        const retiredVehicles = filteredVehicles.filter(v => v.status === 'Retired').length;
+
+        const eligibleVehicles = totalVehicles - retiredVehicles;
+        const fleetUtilization = eligibleVehicles > 0 ? ((activeVehiclesCount / eligibleVehicles) * 100).toFixed(2) : '0.00';
+
+        // Filter trips
+        let filteredTrips = allTrips;
+        if (filterTypeVal !== 'all') {
+            filteredTrips = filteredTrips.filter(t => {
+                const v = allVehicles.find(veh => veh.id === t.vehicle_id);
+                return v && v.type === filterTypeVal;
+            });
+        }
+        if (filterStatusVal !== 'all') {
+            if (filterStatusVal === 'On Trip') {
+                filteredTrips = filteredTrips.filter(t => t.status === 'Dispatched');
+            } else if (filterStatusVal === 'Available') {
+                filteredTrips = filteredTrips.filter(t => t.status === 'Draft');
+            }
+        }
+        if (filterRegionVal !== 'all') {
+            filteredTrips = filteredTrips.filter(t => getRegion(t.source) === filterRegionVal || getRegion(t.destination) === filterRegionVal);
+        }
+
+        const activeTripsCount = filteredTrips.filter(t => t.status === 'Dispatched').length;
+        const pendingTripsCount = filteredTrips.filter(t => t.status === 'Draft').length;
+
+        // Filter drivers
+        let filteredDrivers = allDrivers;
+        if (filterRegionVal !== 'all') {
+            filteredDrivers = filteredDrivers.filter(d => {
+                const driverTrips = allTrips.filter(t => t.driver_id === d.id);
+                return driverTrips.some(t => getRegion(t.source) === filterRegionVal || getRegion(t.destination) === filterRegionVal);
+            });
+        }
+        const activeDriversCount = filteredDrivers.filter(d => d.status === 'Available' || d.status === 'On Trip').length;
+
+        // Render KPIs
+        const totalVehiclesEl = document.getElementById('kpiTotalVehicles');
+        const availableVehiclesEl = document.getElementById('kpiAvailableVehicles');
+        const maintenanceVehiclesEl = document.getElementById('kpiMaintenanceVehicles');
+        const activeTripsEl = document.getElementById('kpiActiveTrips');
+        const pendingTripsEl = document.getElementById('kpiPendingTrips');
+        const activeDriversEl = document.getElementById('kpiActiveDrivers');
+        const utilizationEl = document.getElementById('kpiUtilization');
+
+        if (totalVehiclesEl) totalVehiclesEl.textContent = totalVehicles;
+        if (availableVehiclesEl) availableVehiclesEl.textContent = availableVehicles;
+        if (maintenanceVehiclesEl) maintenanceVehiclesEl.textContent = maintenanceVehicles;
+        if (activeTripsEl) activeTripsEl.textContent = activeTripsCount;
+        if (pendingTripsEl) pendingTripsEl.textContent = pendingTripsCount;
+        if (activeDriversEl) activeDriversEl.textContent = activeDriversCount;
+        if (utilizationEl) utilizationEl.textContent = `${fleetUtilization}%`;
+
+        // Update Vehicle Status Bars
+        const barAvailable = document.getElementById('bar-available');
+        const barOnTrip = document.getElementById('bar-ontrip');
+        const barInShop = document.getElementById('bar-inshop');
+        const barRetired = document.getElementById('bar-retired');
+
+        if (barAvailable) barAvailable.style.width = totalVehicles > 0 ? `${(availableVehicles / totalVehicles) * 100}%` : '0%';
+        if (barOnTrip) barOnTrip.style.width = totalVehicles > 0 ? `${(activeVehiclesCount / totalVehicles) * 100}%` : '0%';
+        if (barInShop) barInShop.style.width = totalVehicles > 0 ? `${(maintenanceVehicles / totalVehicles) * 100}%` : '0%';
+        if (barRetired) barRetired.style.width = totalVehicles > 0 ? `${(retiredVehicles / totalVehicles) * 100}%` : '0%';
+
+        renderRecentTripsList(filteredTrips);
+    };
+
+    const renderRecentTripsList = (tripsList) => {
         const tableBody = document.getElementById('recentTripsTableBody');
         if (!tableBody) return;
+        tableBody.innerHTML = '';
+
+        if (tripsList.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1rem;">No trips registered matching criteria.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        const recentTrips = tripsList.slice(-5).reverse();
+        recentTrips.forEach(trip => {
+            let badgeColor = '#6b7280'; // Draft
+            let textColor = 'white';
+            if (trip.status === 'Completed') badgeColor = 'var(--secondary-color)';
+            if (trip.status === 'Cancelled') badgeColor = 'var(--danger-color)';
+            if (trip.status === 'On Trip' || trip.status === 'In Progress' || trip.status === 'Dispatched') badgeColor = 'var(--primary-color)';
+
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+            tr.innerHTML = `
+                <td style="padding: 1rem;">TR${String(trip.id).padStart(3, '0')}</td>
+                <td style="padding: 1rem;">${trip.source}</td>
+                <td style="padding: 1rem;">${trip.destination}</td>
+                <td class="num-col" style="padding: 1rem;">${trip.cargo_weight} kg</td>
+                <td style="padding: 1rem;"><span style="background-color: ${badgeColor}; padding: 0.25rem 1rem; border-radius: 4px; color: ${textColor}; font-weight: 600;">${trip.status}</span></td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    };
+
+    const populateFilters = () => {
+        const typeSelect = document.getElementById('filterType');
+        const statusSelect = document.getElementById('filterStatus');
+        const regionSelect = document.getElementById('filterRegion');
+
+        if (!typeSelect || !statusSelect || !regionSelect) return;
+
+        // Vehicle Types
+        const uniqueTypes = [...new Set(allVehicles.map(v => v.type))].filter(Boolean);
+        typeSelect.innerHTML = '<option value="all">Vehicle Type: All</option>';
+        uniqueTypes.forEach(t => {
+            typeSelect.innerHTML += `<option value="${t}">${t}</option>`;
+        });
+
+        // Vehicle Statuses
+        const uniqueStatuses = [...new Set(allVehicles.map(v => v.status))].filter(Boolean);
+        statusSelect.innerHTML = '<option value="all">Status: All</option>';
+        uniqueStatuses.forEach(s => {
+            statusSelect.innerHTML += `<option value="${s}">${s}</option>`;
+        });
+
+        // Regions from Trips
+        const regionsSet = new Set();
+        allTrips.forEach(t => {
+            const regS = getRegion(t.source);
+            const regD = getRegion(t.destination);
+            if (regS) regionsSet.add(regS);
+            if (regD) regionsSet.add(regD);
+        });
+        const uniqueRegions = [...regionsSet].filter(Boolean);
+        regionSelect.innerHTML = '<option value="all">Region: All</option>';
+        uniqueRegions.forEach(r => {
+            regionSelect.innerHTML += `<option value="${r}">${r}</option>`;
+        });
+
+        typeSelect.addEventListener('change', computeAndRenderDashboard);
+        statusSelect.addEventListener('change', computeAndRenderDashboard);
+        regionSelect.addEventListener('change', computeAndRenderDashboard);
+    };
+
+    const loadDashboardData = async () => {
         try {
-            const trips = await authenticatedFetch('/trips');
-            tableBody.innerHTML = '';
+            const [vehicles, drivers, trips] = await Promise.all([
+                authenticatedFetch('/vehicles'),
+                authenticatedFetch('/drivers'),
+                authenticatedFetch('/trips')
+            ]);
 
-            if (trips.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1rem;">No trips registered yet.</td>
-                    </tr>
-                `;
-                return;
-            }
+            allVehicles = vehicles;
+            allDrivers = drivers;
+            allTrips = trips;
 
-            // Get last 5 trips
-            const recentTrips = trips.slice(-5).reverse();
-            recentTrips.forEach(trip => {
-                let badgeColor = '#6b7280'; // Draft
-                let textColor = 'white';
-                if (trip.status === 'Completed') badgeColor = 'var(--secondary-color)';
-                if (trip.status === 'Cancelled') badgeColor = 'var(--danger-color)';
-                if (trip.status === 'On Trip' || trip.status === 'In Progress' || trip.status === 'Dispatched') badgeColor = 'var(--primary-color)';
-
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
-                tr.innerHTML = `
-                    <td style="padding: 1rem;">TR${String(trip.id).padStart(3, '0')}</td>
-                    <td style="padding: 1rem;">${trip.source}</td>
-                    <td style="padding: 1rem;">${trip.destination}</td>
-                    <td style="padding: 1rem;">${trip.cargo_weight} kg</td>
-                    <td style="padding: 1rem;"><span style="background-color: ${badgeColor}; padding: 0.25rem 1rem; border-radius: 4px; color: ${textColor}; font-weight: 600;">${trip.status}</span></td>
-                `;
-                tableBody.appendChild(tr);
-            });
+            populateFilters();
+            computeAndRenderDashboard();
         } catch (error) {
-            console.error('[Trips Load Failure]', error);
+            console.error('[Dashboard Data Load Failure]', error);
         }
     };
 
     // Run loader tasks
     loadHealthStatus();
-    loadKPIs();
-    loadRecentTrips();
+    loadDashboardData();
 });
