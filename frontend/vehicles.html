@@ -72,58 +72,68 @@
                     <button class="mobile-toggle" id="mobileToggle">
                         <i class="ph ph-list"></i>
                     </button>
-                    <h2 class="page-title">Vehicle Registry</h2>
+                    <div class="header-search">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
                 </div>
                 <div class="header-right">
-                    <button class="header-action" title="Notifications">
-                        <i class="ph ph-bell"></i>
-                    </button>
-                    <button class="header-action" title="Settings">
-                        <i class="ph ph-gear"></i>
-                    </button>
+                    <div class="header-user">
+                        <span class="header-user-name">Raven K.</span>
+                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
+                    </div>
                 </div>
             </header>
 
             <!-- Page Content -->
             <div class="app-content">
-                <!-- Action Header -->
-                <div class="data-table-container">
-                    <div class="data-table-header">
-                        <h3 class="data-table-title">Fleet Vehicles</h3>
-                        <button class="btn btn-primary" id="openAddModalBtn">
-                            <i class="ph ph-plus" style="margin-right: 8px;"></i> Add Vehicle
-                        </button>
-                    </div>
-
-                    <!-- Search and Filter -->
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search by registration or model..." style="max-width: 300px; box-shadow: var(--shadow-3d-btn);">
-                        <select id="statusFilter" class="form-control" style="max-width: 200px; box-shadow: var(--shadow-3d-btn);">
-                            <option value="">All Statuses</option>
+                <!-- Filters -->
+                <div class="dashboard-filters" style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1.5rem; justify-content: space-between;">
+                    <div style="display: flex; gap: 1rem;">
+                        <select class="filter-select" style="min-width: 150px; padding: 0.5rem 1rem; background-color: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted); border-radius: 4px;">
+                            <option value="all">Type: All</option>
+                            <option value="Van">Van</option>
+                            <option value="Truck">Truck</option>
+                            <option value="Mini">Mini</option>
+                        </select>
+                        <select id="statusFilter" class="filter-select" style="min-width: 150px; padding: 0.5rem 1rem; background-color: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted); border-radius: 4px;">
+                            <option value="">Status: All</option>
                             <option value="Available">Available</option>
                             <option value="On Trip">On Trip</option>
                             <option value="In Shop">In Shop</option>
                             <option value="Retired">Retired</option>
                         </select>
+                        <input type="text" id="searchInput" placeholder="Search reg. no..." style="min-width: 200px; padding: 0.5rem 1rem; background-color: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted); border-radius: 4px;">
                     </div>
+                    
+                    <button class="btn" id="openAddModalBtn" style="background-color: var(--warning-color); color: #000; border: none; padding: 0.5rem 1.5rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                        + Add Vehicle
+                    </button>
+                </div>
 
-                    <table class="data-table">
+                <div class="dashboard-section" style="padding: 0; background: transparent; box-shadow: none;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
                         <thead>
-                            <tr>
-                                <th>Registration</th>
-                                <th>Model / Type</th>
-                                <th>Max Capacity</th>
-                                <th>Odometer (km)</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted);">
+                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Reg. No. (Unique)</th>
+                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Name/Model</th>
+                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Type</th>
+                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Capacity</th>
+                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Odometer</th>
+                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Acq. Cost</th>
+                                <th style="padding: 1rem; font-weight: normal; text-transform: uppercase;">Status</th>
                             </tr>
                         </thead>
                         <tbody id="vehiclesTableBody">
                             <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted);">Loading fleet registry...</td>
+                                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading fleet registry...</td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                
+                <div style="margin-top: 1.5rem; font-size: 0.75rem; color: var(--warning-color);">
+                    Rule: Registration No. must be unique • Retired/In Shop vehicles are hidden from Trip Dispatcher
                 </div>
             </div>
         </main>
