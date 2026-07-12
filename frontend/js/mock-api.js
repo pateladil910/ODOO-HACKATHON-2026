@@ -615,37 +615,12 @@
           // Helper to escape parenthesis characters inside PDF text string operators
           const escapePdf = (text) => String(text || '').replace(/[\(\)\\]/g, '\\$&');
 
-          // Dynamic uncompressed PDF generator containing vehicle details
-          const lines = [
-            `BT`,
-            `/F1 18 Tf`,
-            `70 750 Td`,
-            `(${escapePdf(doc.document_name)}) Tj`,
-            `/F1 12 Tf`,
-            `0 -40 Td`,
-            `(Vehicle Registration: ${escapePdf(vehicle.registration_number)}) Tj`,
-            `0 -25 Td`,
-            `(Model Name: ${escapePdf(vehicle.model)}) Tj`,
-            `0 -25 Td`,
-            `(Vehicle Type: ${escapePdf(vehicle.type)}) Tj`,
-            `0 -25 Td`,
-            `(Current Odometer: ${parseFloat(vehicle.odometer).toLocaleString()} km) Tj`,
-            `0 -25 Td`,
-            `(Max Cargo Capacity: ${parseFloat(vehicle.max_capacity).toLocaleString()} kg) Tj`,
-            `0 -25 Td`,
-            `(Operational Status: ${escapePdf(vehicle.status)}) Tj`,
-            `0 -40 Td`,
-            `(This certificate verifies the active registration and compliance logs of the vehicle.) Tj`,
-            `0 -20 Td`,
-            `(Generated dynamically on: ${new Date().toLocaleDateString()}) Tj`,
-            `ET`
-          ];
-          
-          const streamContent = lines.join('\n');
+          // Dynamic uncompressed PDF generator containing vehicle details in a single stream line
+          const streamContent = `BT /F1 18 Tf 70 750 Td (${escapePdf(doc.document_name)}) Tj /F1 12 Tf 0 -40 Td (Vehicle Registration: ${escapePdf(vehicle.registration_number)}) Tj 0 -25 Td (Model Name: ${escapePdf(vehicle.model)}) Tj 0 -25 Td (Vehicle Type: ${escapePdf(vehicle.type)}) Tj 0 -25 Td (Current Odometer: ${parseFloat(vehicle.odometer).toLocaleString()} km) Tj 0 -25 Td (Max Cargo Capacity: ${parseFloat(vehicle.max_capacity).toLocaleString()} kg) Tj 0 -25 Td (Operational Status: ${escapePdf(vehicle.status)}) Tj 0 -40 Td (This certificate verifies active registration and compliance logs.) Tj 0 -20 Td (Generated dynamically on: ${new Date().toLocaleDateString()}) Tj ET`;
           const streamLength = streamContent.length;
           
           const pdfParts = [
-            `%PDF-1.4\n`,
+            `%PDF-1.4\n%âãÏÓ\n`,
             `1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`,
             `2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n`,
             `3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R >> >> /MediaBox [0 0 595 842] /Contents 5 0 R >>\nendobj\n`,
@@ -673,7 +648,7 @@
             `trailer\r\n<< /Size 6 /Root 1 0 R >>\r\n` +
             `startxref\r\n${startXref}\r\n%%EOF\r\n`;
             
-          fileData = 'data:application/pdf;base64,' + btoa(unescape(encodeURIComponent(pdf)));
+          fileData = 'data:application/pdf;base64,' + btoa(pdf);
         } else {
           // Dynamic SVG containing vehicle details
           const svg = `
@@ -695,7 +670,7 @@
             </svg>
           `.trim();
           
-          fileData = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+          fileData = 'data:image/svg+xml;base64,' + btoa(svg);
         }
       }
 
