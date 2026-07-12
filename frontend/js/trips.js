@@ -22,16 +22,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const API_BASE_URL = getApiBaseUrl();
 
     // UI elements
-    const tableBody = document.getElementById('tripsTableBody');
+    const liveBoardContainer = document.getElementById('liveBoardContainer');
     const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
-    const openAddModalBtn = document.getElementById('openAddModalBtn');
-    const tripModal = document.getElementById('tripModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
     const tripForm = document.getElementById('tripForm');
-    const modalTitle = document.getElementById('modalTitle');
+    
+    // Form Inputs
+    const tripIdInput = document.getElementById('tripId');
+    const sourceInput = document.getElementById('source');
+    const destinationInput = document.getElementById('destination');
     const vehicleSelect = document.getElementById('vehicleSelect');
     const driverSelect = document.getElementById('driverSelect');
+    const cargoWeightInput = document.getElementById('cargoWeight');
+    const plannedDistanceInput = document.getElementById('plannedDistance');
+    
+    const dispatchBtn = document.getElementById('dispatchBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    // Validation UI
+    const capacityWarningBox = document.getElementById('capacityWarningBox');
+    const warningVehicleCap = document.getElementById('warningVehicleCap');
+    const warningCargoWeight = document.getElementById('warningCargoWeight');
+    const warningOverage = document.getElementById('warningOverage');
+
+    // Lifecycle UI
+    const nodeDraft = document.getElementById('node-Draft');
+    const nodeDispatched = document.getElementById('node-Dispatched');
+    const nodeCompleted = document.getElementById('node-Completed');
+    const nodeCancelled = document.getElementById('node-Cancelled');
 
     // Authenticated API request
     const authenticatedFetch = async (endpoint, options = {}) => {
@@ -59,15 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return result.data !== undefined ? result.data : result;
     };
 
-    // Check RBAC permissions for Add/Edit/Delete
-    const hasWritePermission = user.role === 'manager' || user.role === 'driver' || user.role === 'admin';
-    const hasDeletePermission = user.role === 'manager' || user.role === 'admin';
-    
-    if (!hasWritePermission && openAddModalBtn) {
-        openAddModalBtn.style.display = 'none';
-    }
-
-    // Cache vehicles & drivers to display names/registration details in the table grid
+    // Cache vehicles & drivers
     let vehiclesCache = [];
     let driversCache = [];
     let allTrips = [];
@@ -76,25 +85,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const populateDropdowns = () => {
         if (!vehicleSelect || !driverSelect) return;
         
+        const currentV = vehicleSelect.value;
+        const currentD = driverSelect.value;
+
         vehicleSelect.innerHTML = '<option value="">Choose a vehicle...</option>';
         vehiclesCache.forEach(v => {
-            if (v.status === 'Available' || v.status === 'On Trip') {
+            if (v.status === 'Available' || v.status === 'On Trip' || v.id == currentV) {
                 const opt = document.createElement('option');
                 opt.value = v.id;
-                opt.textContent = `${v.registration_number} - ${v.model} (${v.status})`;
+                opt.textContent = `${v.registration_number} - ${v.max_capacity} kg capacity`;
                 vehicleSelect.appendChild(opt);
             }
         });
+        vehicleSelect.value = currentV;
 
         driverSelect.innerHTML = '<option value="">Choose a driver...</option>';
         driversCache.forEach(d => {
-            if (d.status === 'Available' || d.status === 'On Trip') {
+            if (d.status === 'Available' || d.status === 'On Trip' || d.id == currentD) {
                 const opt = document.createElement('option');
                 opt.value = d.id;
-                opt.textContent = `${d.name} (Safety Score: ${d.safety_score}%)`;
+                opt.textContent = `${d.name}`;
                 driverSelect.appendChild(opt);
             }
         });
+        driverSelect.value = currentD;
     };
 
     const loadMetaData = async () => {
@@ -110,9 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load and render trips
     const loadTrips = async () => {
         try {
-            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Loading manifest...</td></tr>';
+            liveBoardContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading live board...</div>';
             
-            // Make sure we have vehicle and driver caches loaded first
             if (vehiclesCache.length === 0 || driversCache.length === 0) {
                 await loadMetaData();
             }
@@ -121,203 +134,206 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTrips(allTrips);
         } catch (error) {
             console.error('[Load Trips Error]', error);
-            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--danger-color);">Failed to load manifest.</td></tr>';
+            liveBoardContainer.innerHTML = '<div style="text-align: center; color: #fca5a5; padding: 2rem;">Failed to load trips.</div>';
         }
     };
 
     const renderTrips = (tripsList) => {
-        tableBody.innerHTML = '';
+        liveBoardContainer.innerHTML = '';
         if (tripsList.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No trips registered in manifest.</td></tr>';
+            liveBoardContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No trips active.</div>';
             return;
         }
 
-        tripsList.forEach(t => {
-            let badgeClass = 'badge-info';
-            if (t.status === 'Completed') badgeClass = 'badge-success';
-            if (t.status === 'Cancelled') badgeClass = 'badge-danger';
-            if (t.status === 'Draft') badgeClass = 'badge-warning';
+        // Show newest first
+        const sortedTrips = [...tripsList].reverse();
 
-            // Find associated model/registration details from cache
+        sortedTrips.forEach(t => {
+            let badgeColor = '#4b5563'; 
+            let textColor = '#fff';
+            let extraText = '';
+
+            if (t.status === 'Dispatched') { badgeColor = '#60a5fa'; textColor = '#000'; extraText = '45 min'; }
+            else if (t.status === 'Draft') { badgeColor = '#6b7280'; textColor = '#fff'; extraText = 'Awaiting driver'; }
+            else if (t.status === 'Cancelled') { badgeColor = '#fca5a5'; textColor = '#000'; extraText = 'Vehicle went to shop'; }
+            else if (t.status === 'Completed') { badgeColor = 'var(--secondary-color)'; textColor = '#000'; }
+
             const vehicle = vehiclesCache.find(v => v.id === t.vehicle_id);
             const driver = driversCache.find(d => d.id === t.driver_id);
 
-            const vehicleText = vehicle ? `${vehicle.registration_number} <br><small style="color:var(--text-muted)">${vehicle.model}</small>` : 'Unallocated';
+            const vehicleText = vehicle ? vehicle.model : 'Unallocated';
             const driverText = driver ? driver.name : 'Unassigned';
 
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>#${t.id}</strong></td>
-                <td>
-                    <div><strong>From:</strong> ${t.source}</div>
-                    <div><strong>To:</strong> ${t.destination}</div>
-                </td>
-                <td>${vehicleText}</td>
-                <td>${driverText}</td>
-                <td>${t.cargo_weight} kg</td>
-                <td>
-                    <div>${t.planned_distance} km</div>
-                    <small style="color: var(--secondary-color); font-weight:700;">$${parseFloat(t.revenue).toLocaleString()}</small>
-                </td>
-                <td><span class="badge ${badgeClass}">${t.status}</span></td>
-                <td>
-                    ${hasWritePermission ? `
-                        <button class="btn btn-sm edit-btn" data-id="${t.id}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; box-shadow: var(--shadow-3d-btn); margin-right: 0.5rem;">Edit</button>
-                        ${hasDeletePermission ? `
-                            <button class="btn btn-sm delete-btn" data-id="${t.id}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; box-shadow: var(--shadow-3d-btn); color: var(--danger-color);">Delete</button>
-                        ` : ''}
-                    ` : '<span style="color: var(--text-muted); font-size: 0.75rem;">Read-only</span>'}
-                </td>
+            const card = document.createElement('div');
+            card.style.border = '1px dashed rgba(255,255,255,0.2)';
+            card.style.padding = '1rem';
+            card.style.borderRadius = '8px';
+            card.style.cursor = 'pointer';
+            card.style.transition = 'background 0.2s';
+            card.className = 'live-board-card';
+            
+            card.onmouseenter = () => card.style.backgroundColor = 'rgba(255,255,255,0.05)';
+            card.onmouseleave = () => card.style.backgroundColor = 'transparent';
+            
+            card.onclick = () => loadTripIntoForm(t);
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 500; font-style: italic;">TR${String(t.id).padStart(3, '0')}</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">${vehicleText} / ${driverText}</span>
+                </div>
+                <div style="font-size: 0.85rem; margin-bottom: 1rem;">${t.source} &rarr; ${t.destination}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="background-color: ${badgeColor}; padding: 0.25rem 1rem; border-radius: 4px; color: ${textColor}; font-size: 0.8rem;">${t.status}</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">${extraText}</span>
+                </div>
             `;
-            tableBody.appendChild(tr);
+            liveBoardContainer.appendChild(card);
         });
+    };
 
-        // Event listeners for operations
-        if (hasWritePermission) {
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
-            });
+    // Form Dynamic Validation
+    const validateDispatch = () => {
+        const vId = vehicleSelect.value;
+        const weight = parseFloat(cargoWeightInput.value);
+
+        if (!vId || isNaN(weight)) {
+            capacityWarningBox.style.display = 'none';
+            dispatchBtn.style.pointerEvents = 'none';
+            dispatchBtn.style.backgroundColor = 'rgba(255,255,255,0.05)';
+            dispatchBtn.textContent = 'Dispatch (disabled)';
+            dispatchBtn.style.color = 'var(--text-muted)';
+            return;
         }
-        if (hasDeletePermission) {
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', () => deleteTrip(btn.getAttribute('data-id')));
-            });
+
+        const vehicle = vehiclesCache.find(v => v.id == vId);
+        if (vehicle) {
+            if (weight > vehicle.max_capacity) {
+                // Invalid
+                capacityWarningBox.style.display = 'block';
+                warningVehicleCap.textContent = `Vehicle Capacity: ${vehicle.max_capacity} kg`;
+                warningCargoWeight.textContent = `Cargo Weight: ${weight} kg`;
+                warningOverage.textContent = `Capacity exceeded by ${weight - vehicle.max_capacity} kg - dispatch blocked`;
+                
+                dispatchBtn.style.pointerEvents = 'none';
+                dispatchBtn.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                dispatchBtn.textContent = 'Dispatch (disabled)';
+                dispatchBtn.style.color = 'var(--text-muted)';
+            } else {
+                // Valid
+                capacityWarningBox.style.display = 'none';
+                dispatchBtn.style.pointerEvents = 'auto';
+                dispatchBtn.style.backgroundColor = 'var(--primary-color)';
+                dispatchBtn.textContent = tripIdInput.value ? 'Update Trip' : 'Dispatch Trip';
+                dispatchBtn.style.color = '#fff';
+            }
         }
     };
 
-    // Search and Filter handlers
-    const filterAndSearch = () => {
-        const query = searchInput.value.toLowerCase();
-        const selectedStatus = statusFilter.value;
+    vehicleSelect.addEventListener('change', validateDispatch);
+    cargoWeightInput.addEventListener('input', validateDispatch);
 
-        const filtered = allTrips.filter(t => {
-            const matchesSearch = t.source.toLowerCase().includes(query) || t.destination.toLowerCase().includes(query);
-            const matchesStatus = !selectedStatus || t.status === selectedStatus;
-            return matchesSearch && matchesStatus;
+    // Lifecycle Animation
+    const updateLifecycleUI = (status) => {
+        [nodeDraft, nodeDispatched, nodeCompleted, nodeCancelled].forEach(node => {
+            node.classList.remove('active');
+            node.querySelector('.node-circle').style.backgroundColor = '#4b5563';
+            node.querySelector('span').style.color = 'var(--text-muted)';
         });
 
-        renderTrips(filtered);
+        let activeNode = nodeDraft;
+        let color = 'var(--secondary-color)';
+        if (status === 'Dispatched') { activeNode = nodeDispatched; color = '#60a5fa'; }
+        if (status === 'Completed') { activeNode = nodeCompleted; color = 'var(--secondary-color)'; }
+        if (status === 'Cancelled') { activeNode = nodeCancelled; color = '#fca5a5'; }
+
+        activeNode.classList.add('active');
+        activeNode.querySelector('.node-circle').style.backgroundColor = color;
+        activeNode.querySelector('span').style.color = color;
     };
 
-    if (searchInput) searchInput.addEventListener('input', filterAndSearch);
-    if (statusFilter) statusFilter.addEventListener('change', filterAndSearch);
-
-    // Modal display control
-    if (openAddModalBtn) {
-        openAddModalBtn.addEventListener('click', () => {
-            modalTitle.textContent = 'Create New Dispatch Trip';
-            tripForm.reset();
-            document.getElementById('tripId').value = '';
-            
-            // Force dropdown reload to catch any status updates
-            loadMetaData();
-            
-            tripModal.classList.add('show');
-        });
-    }
-
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', () => {
-            tripModal.classList.remove('show');
-        });
-    }
-
-    const openEditModal = async (id) => {
-        try {
-            await loadMetaData(); // Refresh options
-            const trip = await authenticatedFetch(`/trips/${id}`);
-            modalTitle.textContent = 'Edit Dispatch Details';
-            
-            document.getElementById('tripId').value = trip.id;
-            document.getElementById('source').value = trip.source;
-            document.getElementById('destination').value = trip.destination;
-            
-            // Check if vehicle/driver is in dropdown, if not temporarily add it (since they might be 'On Trip')
-            let hasVehicleOption = Array.from(vehicleSelect.options).some(x => x.value == trip.vehicle_id);
-            if (!hasVehicleOption && trip.vehicle_id) {
-                const vehicle = vehiclesCache.find(v => v.id === trip.vehicle_id);
-                if (vehicle) {
-                    const opt = document.createElement('option');
-                    opt.value = vehicle.id;
-                    opt.textContent = `${vehicle.registration_number} - ${vehicle.model} (Allocated)`;
-                    vehicleSelect.appendChild(opt);
-                }
-            }
-            vehicleSelect.value = trip.vehicle_id;
-
-            let hasDriverOption = Array.from(driverSelect.options).some(x => x.value == trip.driver_id);
-            if (!hasDriverOption && trip.driver_id) {
-                const driver = driversCache.find(d => d.id === trip.driver_id);
-                if (driver) {
-                    const opt = document.createElement('option');
-                    opt.value = driver.id;
-                    opt.textContent = `${driver.name} (Assigned)`;
-                    driverSelect.appendChild(opt);
-                }
-            }
-            driverSelect.value = trip.driver_id;
-
-            document.getElementById('cargoWeight').value = trip.cargo_weight;
-            document.getElementById('plannedDistance').value = trip.planned_distance;
-            document.getElementById('revenue').value = trip.revenue;
-            document.getElementById('status').value = trip.status;
-
-            tripModal.classList.add('show');
-        } catch (error) {
-            alert('Failed to retrieve trip details.');
-        }
+    // Load existing trip into form
+    const loadTripIntoForm = (trip) => {
+        tripIdInput.value = trip.id;
+        sourceInput.value = trip.source;
+        destinationInput.value = trip.destination;
+        
+        // Ensure options exist
+        populateDropdowns();
+        
+        vehicleSelect.value = trip.vehicle_id;
+        driverSelect.value = trip.driver_id;
+        cargoWeightInput.value = trip.cargo_weight;
+        plannedDistanceInput.value = trip.planned_distance;
+        
+        updateLifecycleUI(trip.status);
+        validateDispatch();
     };
 
     // Form submit handler
-    if (tripForm) {
-        tripForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('tripId').value;
-            const payload = {
-                source: document.getElementById('source').value,
-                destination: document.getElementById('destination').value,
-                vehicle_id: parseInt(document.getElementById('vehicleSelect').value, 10),
-                driver_id: parseInt(document.getElementById('driverSelect').value, 10),
-                cargo_weight: parseFloat(document.getElementById('cargoWeight').value),
-                planned_distance: parseFloat(document.getElementById('plannedDistance').value),
-                revenue: parseFloat(document.getElementById('revenue').value),
-                status: document.getElementById('status').value
-            };
+    tripForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const id = tripIdInput.value;
+        const dist = parseFloat(plannedDistanceInput.value) || 0;
+        
+        // Determine status: if it's a new trip, make it Dispatched if not specified otherwise.
+        // Actually, if they click Dispatch Trip, it goes to Dispatched.
+        let targetStatus = id ? allTrips.find(t=>t.id==id)?.status || 'Dispatched' : 'Dispatched';
+        if (targetStatus === 'Draft') targetStatus = 'Dispatched';
 
-            try {
-                if (id) {
-                    await authenticatedFetch(`/trips/${id}`, {
-                        method: 'PUT',
-                        body: JSON.stringify(payload)
-                    });
-                } else {
-                    await authenticatedFetch('/trips', {
-                        method: 'POST',
-                        body: JSON.stringify(payload)
-                    });
-                }
-                tripModal.classList.remove('show');
-                loadTrips();
-            } catch (error) {
-                alert(error.message || 'Error occurred while saving trip.');
+        const payload = {
+            source: sourceInput.value,
+            destination: destinationInput.value,
+            vehicle_id: parseInt(vehicleSelect.value, 10),
+            driver_id: parseInt(driverSelect.value, 10),
+            cargo_weight: parseFloat(cargoWeightInput.value),
+            planned_distance: dist,
+            revenue: dist * 2, // Auto-calculated revenue requirement for backend
+            status: targetStatus
+        };
+
+        try {
+            if (id) {
+                await authenticatedFetch(`/trips/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                await authenticatedFetch('/trips', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
             }
+            tripForm.reset();
+            tripIdInput.value = '';
+            updateLifecycleUI('Draft');
+            validateDispatch();
+            loadTrips();
+        } catch (error) {
+            alert(error.message || 'Error occurred while saving trip.');
+        }
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        tripForm.reset();
+        tripIdInput.value = '';
+        updateLifecycleUI('Draft');
+        validateDispatch();
+    });
+
+    // Search
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            const filtered = allTrips.filter(t => {
+                return t.source.toLowerCase().includes(query) || t.destination.toLowerCase().includes(query) || `TR${t.id}`.toLowerCase().includes(query);
+            });
+            renderTrips(filtered);
         });
     }
 
-    // Delete trip handler
-    const deleteTrip = async (id) => {
-        if (confirm('Are you sure you want to delete this trip dispatch manifest record?')) {
-            try {
-                await authenticatedFetch(`/trips/${id}`, {
-                    method: 'DELETE'
-                });
-                loadTrips();
-            } catch (error) {
-                alert(error.message || 'Failed to delete trip.');
-            }
-        }
-    };
-
     // Initializer call
+    updateLifecycleUI('Draft');
     loadTrips();
 });

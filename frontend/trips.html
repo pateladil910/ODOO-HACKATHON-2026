@@ -72,118 +72,122 @@
                     <button class="mobile-toggle" id="mobileToggle">
                         <i class="ph ph-list"></i>
                     </button>
-                    <h2 class="page-title">Trips & Dispatch Management</h2>
+                    <div class="header-search">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
                 </div>
                 <div class="header-right">
-                    <button class="header-action" title="Notifications">
-                        <i class="ph ph-bell"></i>
-                    </button>
-                    <button class="header-action" title="Settings">
-                        <i class="ph ph-gear"></i>
-                    </button>
+                    <div class="header-user">
+                        <span class="header-user-name">Raven K.</span>
+                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
+                    </div>
                 </div>
             </header>
 
             <!-- Page Content -->
             <div class="app-content">
-                <!-- Action Header -->
-                <div class="data-table-container">
-                    <div class="data-table-header">
-                        <h3 class="data-table-title">Trips Manifest</h3>
-                        <button class="btn btn-primary" id="openAddModalBtn">
-                            <i class="ph ph-plus" style="margin-right: 8px;"></i> Create Trip
-                        </button>
+                <div class="dispatch-container" style="display: grid; grid-template-columns: 400px 1fr; gap: 3rem; align-items: start;">
+                    
+                    <!-- LEFT COLUMN: Form & Lifecycle -->
+                    <div class="dispatch-left">
+                        <h4 style="margin: 0 0 1rem; text-transform: uppercase; font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px;">TRIP LIFECYCLE</h4>
+                        <div class="lifecycle-timeline" id="tripLifecycle" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; position: relative;">
+                            <!-- Line behind nodes -->
+                            <div style="position: absolute; top: 10px; left: 15px; right: 15px; height: 2px; background: rgba(255,255,255,0.1); z-index: 1;"></div>
+                            
+                            <div class="lifecycle-node active" id="node-Draft" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
+                                <div class="node-circle" style="width: 20px; height: 20px; border-radius: 50%; background-color: var(--secondary-color); border: 2px solid var(--bg-main); margin-bottom: 0.5rem; transition: background-color 0.3s;"></div>
+                                <span style="font-size: 0.7rem; color: var(--secondary-color);">Draft</span>
+                            </div>
+                            <div class="lifecycle-node" id="node-Dispatched" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
+                                <div class="node-circle" style="width: 20px; height: 20px; border-radius: 50%; background-color: #4b5563; border: 2px solid var(--bg-main); margin-bottom: 0.5rem; transition: background-color 0.3s;"></div>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Dispatched</span>
+                            </div>
+                            <div class="lifecycle-node" id="node-Completed" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
+                                <div class="node-circle" style="width: 20px; height: 20px; border-radius: 50%; background-color: #4b5563; border: 2px solid var(--bg-main); margin-bottom: 0.5rem; transition: background-color 0.3s;"></div>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Completed</span>
+                            </div>
+                            <div class="lifecycle-node" id="node-Cancelled" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
+                                <div class="node-circle" style="width: 20px; height: 20px; border-radius: 50%; background-color: #4b5563; border: 2px solid var(--bg-main); margin-bottom: 0.5rem; transition: background-color 0.3s;"></div>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Cancelled</span>
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 0 0 1rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">CREATE TRIP</h4>
+                        <form id="tripForm">
+                            <input type="hidden" id="tripId">
+                            
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="source" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Source</label>
+                                <input type="text" id="source" class="form-control" placeholder="Gandhinagar Depot" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="destination" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Destination</label>
+                                <input type="text" id="destination" class="form-control" placeholder="Ahmedabad Hub" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="vehicleSelect" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Vehicle (Available Only)</label>
+                                <select id="vehicleSelect" class="form-control" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
+                                    <option value="">Choose a vehicle...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="driverSelect" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Driver (Available Only)</label>
+                                <select id="driverSelect" class="form-control" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
+                                    <option value="">Choose a driver...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="cargoWeight" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Cargo Weight (kg)</label>
+                                <input type="number" step="0.01" id="cargoWeight" class="form-control" placeholder="700" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="plannedDistance" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Planned Distance (km)</label>
+                                <input type="number" step="0.01" id="plannedDistance" class="form-control" placeholder="38" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
+                            </div>
+
+                            <!-- Validation Warning Box -->
+                            <div id="capacityWarningBox" style="display: none; border: 1px solid #f87171; background-color: rgba(248, 113, 113, 0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                                <div style="color: #fca5a5; font-size: 0.85rem; margin-bottom: 0.25rem;" id="warningVehicleCap">Vehicle Capacity: 500 kg</div>
+                                <div style="color: #fca5a5; font-size: 0.85rem; margin-bottom: 0.25rem;" id="warningCargoWeight">Cargo Weight: 700 kg</div>
+                                <div style="color: #f87171; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="ph ph-x"></i> <span id="warningOverage">Capacity exceeded by 200 kg - dispatch blocked</span>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <button type="submit" id="dispatchBtn" class="btn" style="background-color: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 4px; pointer-events: none;">Dispatch (disabled)</button>
+                                <button type="button" id="cancelBtn" class="btn" style="background-color: transparent; color: #fca5a5; border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 4px;">Cancel</button>
+                            </div>
+                        </form>
                     </div>
 
-                    <!-- Search and Filter -->
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search by source or destination..." style="max-width: 300px; box-shadow: var(--shadow-3d-btn);">
-                        <select id="statusFilter" class="form-control" style="max-width: 200px; box-shadow: var(--shadow-3d-btn);">
-                            <option value="">All Statuses</option>
-                            <option value="Draft">Draft</option>
-                            <option value="Dispatched">Dispatched</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
+                    <!-- RIGHT COLUMN: Live Board -->
+                    <div class="dispatch-right">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                            <h4 style="margin: 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">LIVE BOARD</h4>
+                            <input type="text" id="searchInput" placeholder="Search..." style="background: transparent; border: none; color: var(--text-muted); text-align: right; font-size: 0.85rem; outline: none; width: 100px;">
+                        </div>
+                        
+                        <div id="liveBoardContainer" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+                            <!-- Trip Cards injected here -->
+                            <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading live board...</div>
+                        </div>
+
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">
+                            On Complete: odometer &rarr; fuel log &rarr; expenses &rarr; Vehicle &amp; Driver Available
+                        </div>
                     </div>
 
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Trip ID</th>
-                                <th>Route (Source &rarr; Destination)</th>
-                                <th>Vehicle Allocation</th>
-                                <th>Driver Assigned</th>
-                                <th>Cargo</th>
-                                <th>Distance / Rev</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tripsTableBody">
-                            <tr>
-                                <td colspan="8" style="text-align: center; color: var(--text-muted);">Loading manifest...</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- Create/Edit Trip Modal Overlay -->
-    <div class="modal-overlay" id="tripModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Create New Dispatch Trip</h3>
-                <button class="modal-close" id="closeModalBtn">&times;</button>
-            </div>
-            <form id="tripForm">
-                <input type="hidden" id="tripId">
-                <div class="form-group">
-                    <label class="form-label" for="source">Source Location</label>
-                    <input type="text" id="source" class="form-control" placeholder="e.g. Warehouse A (Chicago)" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="destination">Destination Location</label>
-                    <input type="text" id="destination" class="form-control" placeholder="e.g. Distribution Center (Detroit)" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="vehicleSelect">Allocate Vehicle</label>
-                    <select id="vehicleSelect" class="form-control" required>
-                        <option value="">Choose a vehicle...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="driverSelect">Assign Driver</label>
-                    <select id="driverSelect" class="form-control" required>
-                        <option value="">Choose a driver...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="cargoWeight">Cargo Weight (kg)</label>
-                    <input type="number" step="0.01" id="cargoWeight" class="form-control" placeholder="e.g. 1200" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="plannedDistance">Planned Distance (km)</label>
-                    <input type="number" step="0.01" id="plannedDistance" class="form-control" placeholder="e.g. 450" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="revenue">Projected Revenue ($)</label>
-                    <input type="number" step="0.01" id="revenue" class="form-control" placeholder="e.g. 1800" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="status">Trip Status</label>
-                    <select id="status" class="form-control" required>
-                        <option value="Draft">Draft</option>
-                        <option value="Dispatched">Dispatched</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.875rem;">Save Dispatch Trip</button>
-            </form>
-        </div>
     </div>
 
     <script src="js/app.js"></script>
