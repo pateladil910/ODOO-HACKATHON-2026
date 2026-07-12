@@ -1,277 +1,90 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports & Analytics - TransitOps</title>
+    <title>Reports &amp; Analytics - TransitOps</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <style>
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-        .kpi-card {
-            background-color: var(--bg-main);
-            padding: 1.5rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-3d-btn);
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .kpi-title {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-        .kpi-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #fff;
-        }
-        
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .chart-card {
-            background-color: var(--bg-main);
-            padding: 1.5rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-3d-in); /* Inset shadow for charts area */
-        }
-        
-        .chart-header {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        /* Custom Bar Chart (HTML/CSS) */
-        .bar-chart {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            height: 200px;
-            padding-top: 1rem;
-            gap: 0.5rem;
-        }
-        .bar-column {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 0.5rem;
-            height: 100%;
-        }
-        .bar {
-            width: 100%;
-            background-color: var(--primary-color);
-            border-radius: 4px 4px 0 0;
-            min-height: 5px;
-            transition: height 0.5s ease-out;
-            box-shadow: 0 -2px 10px rgba(0, 240, 255, 0.2);
-        }
-        .bar:hover {
-            background-color: #fff;
-        }
-        .bar-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-        
-        /* Custom Horizontal Progress Chart */
-        .progress-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
-        .progress-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-        .progress-label-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-        }
-        .progress-vehicle {
-            font-weight: 600;
-        }
-        .progress-cost {
-            color: var(--text-muted);
-        }
-        .progress-bar-bg {
-            width: 100%;
-            height: 8px;
-            background-color: rgba(255,255,255,0.05);
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease-out;
-        }
-        .fill-danger { background-color: var(--danger-color); box-shadow: 0 0 8px var(--danger-color); }
-        .fill-warning { background-color: var(--secondary-color); box-shadow: 0 0 8px var(--secondary-color); }
-        .fill-info { background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); }
-    </style>
-    <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar -->
         <aside class="app-sidebar" id="appSidebar">
-            <div class="sidebar-header">
-                <a href="dashboard.html" class="sidebar-brand">
-                    <div class="sidebar-icon">T</div>
-                    <span>TransitOps</span>
-                </a>
-            </div>
-            
+            <div class="sidebar-header"><a href="dashboard.html" class="sidebar-brand"><div class="sidebar-icon">T</div><span>TransitOps</span></a></div>
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item" data-roles="all">
-                    <i class="ph ph-squares-four"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="vehicles.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-car"></i>
-                    <span>Vehicle Registry</span>
-                </a>
-                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
-                    <i class="ph ph-identification-card"></i>
-                    <span>Drivers</span>
-                </a>
-                <a href="trips.html" class="nav-item" data-roles="manager,driver">
-                    <i class="ph ph-path"></i>
-                    <span>Trips</span>
-                </a>
-                <a href="maintenance.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-wrench"></i>
-                    <span>Maintenance</span>
-                </a>
-                <a href="expenses.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-receipt"></i>
-                    <span>Fuel & Expenses</span>
-                </a>
-                <a href="reports.html" class="nav-item active" data-roles="manager,finance">
-                    <i class="ph ph-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="settings.html" class="nav-item" data-roles="admin,manager">
-                    <i class="ph ph-gear"></i>
-                    <span>Settings</span>
-                </a>
+                <a href="dashboard.html" class="nav-item" data-roles="all"><i class="ph ph-squares-four"></i><span>Dashboard</span></a>
+                <a href="vehicles.html" class="nav-item" data-roles="manager"><i class="ph ph-car"></i><span>Vehicle Registry</span></a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety"><i class="ph ph-identification-card"></i><span>Drivers</span></a>
+                <a href="trips.html" class="nav-item" data-roles="manager,driver"><i class="ph ph-path"></i><span>Trips</span></a>
+                <a href="maintenance.html" class="nav-item" data-roles="manager"><i class="ph ph-wrench"></i><span>Maintenance</span></a>
+                <a href="expenses.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-receipt"></i><span>Fuel &amp; Expenses</span></a>
+                <a href="reports.html" class="nav-item active" data-roles="manager,finance"><i class="ph ph-chart-bar"></i><span>Reports</span></a>
+                <a href="settings.html" class="nav-item" data-roles="admin,manager"><i class="ph ph-gear"></i><span>Settings</span></a>
             </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-profile">
-                    <div class="user-avatar">U</div>
-                    <div class="user-info">
-                        <div class="user-name">User Name</div>
-                        <div class="user-role">Role</div>
-                    </div>
-                    <button class="logout-btn" id="logoutBtn" title="Logout">
-                        <i class="ph ph-sign-out"></i>
-                    </button>
-                </div>
-            </div>
+            <div class="sidebar-footer"><div class="user-profile"><div class="user-avatar">U</div><div class="user-info"><div class="user-name">User Name</div><div class="user-role">Role</div></div><button class="logout-btn" id="logoutBtn" title="Logout"><i class="ph ph-sign-out"></i></button></div></div>
         </aside>
 
-        <!-- Main Content -->
         <main class="app-main">
-            <!-- Header -->
             <header class="app-header">
                 <div class="header-left">
-                    <button class="mobile-toggle" id="mobileToggle">
-                        <i class="ph ph-list"></i>
-                    </button>
-                    <div class="header-search">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" placeholder="Search reports...">
-                    </div>
+                    <button class="mobile-toggle" id="mobileToggle"><i class="ph ph-list"></i></button>
+                    <div class="header-search"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search reports..."></div>
                 </div>
                 <div class="header-right">
-                    <div class="header-user">
-                        <span class="header-user-name">Raven K.</span>
-                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
-                    </div>
+                    <div class="header-user"><span class="header-user-name">User</span><div class="header-user-role" id="userRoleBadge">- <div class="header-user-avatar">U</div></div></div>
                 </div>
             </header>
 
-            <!-- Page Content -->
-            <div class="app-content" id="reportContent" style="padding-top: 1rem;">
-                
+            <div class="app-content" id="reportContent">
+
                 <!-- Action Bar -->
-                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 1.5rem;" data-html2canvas-ignore>
-                    <button class="btn" id="exportPdfBtn" style="background-color: var(--bg-main); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <i class="ph ph-file-pdf"></i> Export PDF
-                    </button>
-                    <button class="btn" id="exportCsvBtn" style="background-color: var(--primary-color); color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem; box-shadow: var(--shadow-3d-btn); cursor: pointer;">
-                        <i class="ph ph-download"></i> Export CSV
-                    </button>
+                <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-bottom:1.25rem;" data-html2canvas-ignore>
+                    <button class="btn btn-sm" id="exportPdfBtn"><i class="ph ph-file-pdf"></i> Export PDF</button>
+                    <button class="btn btn-primary btn-sm" id="exportCsvBtn"><i class="ph ph-download"></i> Export CSV</button>
                 </div>
 
                 <!-- KPI Row -->
-                <div class="kpi-grid">
-                    <div class="kpi-card">
+                <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="kpi-card kpi-blue">
                         <div class="kpi-title">Fuel Efficiency</div>
-                        <div class="kpi-value" id="kpiFuelEff">0 <span style="font-size:1rem; color:var(--text-muted); font-weight:400;">km/l</span></div>
+                        <div class="kpi-value" id="kpiFuelEff">0 <span style="font-size:1rem;color:var(--text-secondary);font-weight:400;">km/l</span></div>
                     </div>
-                    <div class="kpi-card">
+                    <div class="kpi-card kpi-headline">
                         <div class="kpi-title">Fleet Utilization</div>
                         <div class="kpi-value" id="kpiUtil">0%</div>
                     </div>
-                    <div class="kpi-card">
+                    <div class="kpi-card kpi-amber">
                         <div class="kpi-title">Operational Cost</div>
-                        <div class="kpi-value" style="color: var(--secondary-color);" id="kpiCost">0</div>
+                        <div class="kpi-value" id="kpiCost">$0</div>
                     </div>
-                    <div class="kpi-card">
+                    <div class="kpi-card kpi-green">
                         <div class="kpi-title">Vehicle ROI</div>
                         <div class="kpi-value" id="kpiRoi">0%</div>
                     </div>
                 </div>
-                
+
                 <!-- Charts Row -->
                 <div class="charts-grid">
-                    <!-- Left: Monthly Revenue -->
                     <div class="chart-card">
                         <div class="chart-header">
                             <span>Monthly Revenue</span>
-                            <span style="color: var(--text-muted); font-weight:400; text-transform:none;">YTD</span>
+                            <span class="chart-header-sub">YTD</span>
                         </div>
                         <div class="bar-chart" id="revenueChart">
-                            <div style="width: 100%; text-align: center; color: var(--text-muted);">Loading revenue data...</div>
+                            <div style="width:100%;text-align:center;color:var(--text-secondary);">Loading revenue data...</div>
                         </div>
                     </div>
-                    
-                    <!-- Right: Costliest Vehicles -->
+
                     <div class="chart-card">
                         <div class="chart-header">
                             <span>Top Costliest Vehicles</span>
                         </div>
                         <div class="progress-list" id="costliestChart">
-                            <div style="width: 100%; text-align: center; color: var(--text-muted);">Loading vehicle data...</div>
+                            <div style="width:100%;text-align:center;color:var(--text-secondary);">Loading vehicle data...</div>
                         </div>
                     </div>
                 </div>

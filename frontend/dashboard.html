@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,6 @@
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar -->
         <aside class="app-sidebar" id="appSidebar">
             <div class="sidebar-header">
                 <a href="dashboard.html" class="sidebar-brand">
@@ -19,42 +18,16 @@
                     <span>TransitOps</span>
                 </a>
             </div>
-            
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item active" data-roles="all">
-                    <i class="ph ph-squares-four"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="vehicles.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-car"></i>
-                    <span>Vehicle Registry</span>
-                </a>
-                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
-                    <i class="ph ph-identification-card"></i>
-                    <span>Drivers</span>
-                </a>
-                <a href="trips.html" class="nav-item" data-roles="manager,driver">
-                    <i class="ph ph-path"></i>
-                    <span>Trips</span>
-                </a>
-                <a href="maintenance.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-wrench"></i>
-                    <span>Maintenance</span>
-                </a>
-                <a href="expenses.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-receipt"></i>
-                    <span>Fuel & Expenses</span>
-                </a>
-                <a href="reports.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="settings.html" class="nav-item" data-roles="admin,manager">
-                    <i class="ph ph-gear"></i>
-                    <span>Settings</span>
-                </a>
+                <a href="dashboard.html" class="nav-item active" data-roles="all"><i class="ph ph-squares-four"></i><span>Dashboard</span></a>
+                <a href="vehicles.html" class="nav-item" data-roles="manager"><i class="ph ph-car"></i><span>Vehicle Registry</span></a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety"><i class="ph ph-identification-card"></i><span>Drivers</span></a>
+                <a href="trips.html" class="nav-item" data-roles="manager,driver"><i class="ph ph-path"></i><span>Trips</span></a>
+                <a href="maintenance.html" class="nav-item" data-roles="manager"><i class="ph ph-wrench"></i><span>Maintenance</span></a>
+                <a href="expenses.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-receipt"></i><span>Fuel &amp; Expenses</span></a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-chart-bar"></i><span>Reports</span></a>
+                <a href="settings.html" class="nav-item" data-roles="admin,manager"><i class="ph ph-gear"></i><span>Settings</span></a>
             </nav>
-
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <div class="user-avatar">U</div>
@@ -62,27 +35,21 @@
                         <div class="user-name">User Name</div>
                         <div class="user-role">Role</div>
                     </div>
-                    <button class="logout-btn" id="logoutBtn" title="Logout">
-                        <i class="ph ph-sign-out"></i>
-                    </button>
+                    <button class="logout-btn" id="logoutBtn" title="Logout"><i class="ph ph-sign-out"></i></button>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="app-main">
-            <!-- Header -->
             <header class="app-header">
                 <div class="header-left">
-                    <button class="mobile-toggle" id="mobileToggle">
-                        <i class="ph ph-list"></i>
-                    </button>
+                    <button class="mobile-toggle" id="mobileToggle"><i class="ph ph-list"></i></button>
                     <div class="header-search">
                         <i class="ph ph-magnifying-glass"></i>
                         <input type="text" placeholder="Search...">
                     </div>
                 </div>
-                <div class="header-right" style="display: flex; align-items: center; gap: 1rem;">
+                <div class="header-right">
                     <div class="header-user">
                         <span class="header-user-name">User</span>
                         <div class="header-user-role" id="userRoleBadge">- <div class="header-user-avatar">U</div></div>
@@ -90,112 +57,102 @@
                 </div>
             </header>
 
-            <!-- Page Content -->
             <div class="app-content">
+
                 <!-- Filters -->
-                <div class="dashboard-filters">
-                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Filters</span>
-                    <select class="filter-select">
-                        <option value="all">Vehicle Type: All</option>
-                    </select>
-                    <select class="filter-select">
-                        <option value="all">Status: All</option>
-                    </select>
-                    <select class="filter-select">
-                        <option value="all">Region: All</option>
-                    </select>
+                <div class="filter-bar">
+                    <span class="text-label">Filters</span>
+                    <select class="filter-select"><option value="all">Vehicle Type: All</option></select>
+                    <select class="filter-select"><option value="all">Status: All</option></select>
+                    <select class="filter-select"><option value="all">Region: All</option></select>
                 </div>
 
                 <!-- KPI Cards -->
                 <div class="kpi-grid">
-                    <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
-                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Active Vehicles</span>
-                        <div class="kpi-value" id="kpiTotalVehicles" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
+                    <div class="kpi-card kpi-neutral">
+                        <span class="kpi-title">Active Vehicles</span>
+                        <div class="kpi-value" id="kpiTotalVehicles">0</div>
                     </div>
-                    
-                    <div class="kpi-card" style="border-left: 4px solid var(--secondary-color);">
-                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Available Vehicles</span>
-                        <div class="kpi-value" id="kpiAvailableVehicles" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
+                    <div class="kpi-card kpi-green">
+                        <span class="kpi-title">Available Vehicles</span>
+                        <div class="kpi-value" id="kpiAvailableVehicles">0</div>
                     </div>
-
-                    <div class="kpi-card" style="border-left: 4px solid var(--warning-color);">
-                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Vehicles In Maintenance</span>
-                        <div class="kpi-value" id="kpiMaintenanceVehicles" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
+                    <div class="kpi-card kpi-amber">
+                        <span class="kpi-title">Vehicles In Maintenance</span>
+                        <div class="kpi-value" id="kpiMaintenanceVehicles">0</div>
                     </div>
-
-                    <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
-                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Active Trips</span>
-                        <div class="kpi-value" id="kpiActiveTrips" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
+                    <div class="kpi-card kpi-blue">
+                        <span class="kpi-title">Active Trips</span>
+                        <div class="kpi-value" id="kpiActiveTrips">0</div>
                     </div>
-
-                    <div class="kpi-card" style="border-left: 4px solid #6b7280;">
-                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Pending Trips</span>
-                        <div class="kpi-value" id="kpiPendingTrips" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
+                    <div class="kpi-card kpi-amber">
+                        <span class="kpi-title">Pending Trips</span>
+                        <div class="kpi-value" id="kpiPendingTrips">0</div>
                     </div>
-
-                    <div class="kpi-card" style="border-left: 4px solid var(--primary-color);">
-                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Drivers On Duty</span>
-                        <div class="kpi-value" id="kpiActiveDrivers" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0</div>
+                    <div class="kpi-card kpi-green">
+                        <span class="kpi-title">Drivers On Duty</span>
+                        <div class="kpi-value" id="kpiActiveDrivers">0</div>
                     </div>
-                    
-                    <div class="kpi-card" style="border-left: 4px solid var(--secondary-color);">
-                        <span class="kpi-title" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 0.5rem; color: var(--text-muted);">Fleet Utilization</span>
-                        <div class="kpi-value" id="kpiUtilization" style="font-size: 1.75rem; font-weight: normal; margin: 0; text-shadow: none;">0%</div>
+                    <div class="kpi-card kpi-headline">
+                        <span class="kpi-title">Fleet Utilization</span>
+                        <div class="kpi-value" id="kpiUtilization">0%</div>
                     </div>
                 </div>
 
-                <!-- Main Dashboard Sections -->
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                <!-- Main Two-Column Layout -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+
                     <!-- Recent Trips -->
-                    <div class="dashboard-section" style="padding: 0; background: transparent; box-shadow: none;">
-                        <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1rem;">Recent Dispatched Trips</h3>
-                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
-                            <thead>
-                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted);">
-                                    <th style="padding: 1rem; font-weight: normal;">TRIP ID</th>
-                                    <th style="padding: 1rem; font-weight: normal;">SOURCE</th>
-                                    <th style="padding: 1rem; font-weight: normal;">DESTINATION</th>
-                                    <th style="padding: 1rem; font-weight: normal;">CARGO</th>
-                                    <th style="padding: 1rem; font-weight: normal;">STATUS</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recentTripsTableBody">
-                                <tr>
-                                    <td colspan="5" style="padding: 1rem; text-align: center; color: var(--text-muted);">Loading recent trips...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div>
+                        <p class="section-label">Recent Trips</p>
+                        <div class="data-table-container">
+                            <div class="data-table-header">
+                                <span class="data-table-title">Recent Dispatched Trips</span>
+                            </div>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Trip</th>
+                                        <th>Source</th>
+                                        <th>Destination</th>
+                                        <th class="num-col">Cargo (kg)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentTripsTableBody">
+                                    <tr class="skeleton-row"><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:2rem;">Loading recent trips...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <!-- Vehicle Status -->
-                    <div class="dashboard-section" style="padding: 0; background: transparent; box-shadow: none;">
-                        <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1rem;">Vehicle Status</h3>
-                        
-                        <div style="margin-bottom: 1rem; display: flex; align-items: center;">
-                            <span style="width: 80px; font-size: 0.85rem;">Available</span>
-                            <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
-                                <div id="bar-available" style="width: 0%; height: 100%; background-color: var(--secondary-color); border-radius: 2px; transition: width 1s ease-out;"></div>
+                    <div>
+                        <div class="data-table-container" style="padding: 1.25rem;">
+                            <div class="data-table-title" style="margin-bottom: 1.25rem;">Vehicle Status</div>
+                            <div class="fleet-status-bar">
+                                <span class="fleet-status-label">Available</span>
+                                <div class="fleet-status-track"><div id="bar-available" class="fleet-status-fill" style="width:0%; background:var(--status-green);"></div></div>
+                                <span class="fleet-status-count">0</span>
                             </div>
-                        </div>
-                        <div style="margin-bottom: 1rem; display: flex; align-items: center;">
-                            <span style="width: 80px; font-size: 0.85rem;">On Trip</span>
-                            <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
-                                <div id="bar-ontrip" style="width: 0%; height: 100%; background-color: #60a5fa; border-radius: 2px; transition: width 1s ease-out;"></div>
+                            <div class="fleet-status-bar">
+                                <span class="fleet-status-label">On Trip</span>
+                                <div class="fleet-status-track"><div id="bar-ontrip" class="fleet-status-fill" style="width:0%; background:var(--status-blue);"></div></div>
+                                <span class="fleet-status-count">0</span>
                             </div>
-                        </div>
-                        <div style="margin-bottom: 1rem; display: flex; align-items: center;">
-                            <span style="width: 80px; font-size: 0.85rem;">In Shop</span>
-                            <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
-                                <div id="bar-inshop" style="width: 0%; height: 100%; background-color: var(--warning-color); border-radius: 2px; transition: width 1s ease-out;"></div>
+                            <div class="fleet-status-bar">
+                                <span class="fleet-status-label">In Shop</span>
+                                <div class="fleet-status-track"><div id="bar-inshop" class="fleet-status-fill" style="width:0%; background:var(--status-amber);"></div></div>
+                                <span class="fleet-status-count">0</span>
                             </div>
-                        </div>
-                        <div style="margin-bottom: 1rem; display: flex; align-items: center;">
-                            <span style="width: 80px; font-size: 0.85rem;">Retired</span>
-                            <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
-                                <div id="bar-retired" style="width: 0%; height: 100%; background-color: #fca5a5; border-radius: 2px; transition: width 1s ease-out;"></div>
+                            <div class="fleet-status-bar">
+                                <span class="fleet-status-label">Retired</span>
+                                <div class="fleet-status-track"><div id="bar-retired" class="fleet-status-fill" style="width:0%; background:var(--status-red);"></div></div>
+                                <span class="fleet-status-count">0</span>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </main>
