@@ -195,25 +195,25 @@
                         <div style="margin-bottom: 1rem; display: flex; align-items: center;">
                             <span style="width: 80px; font-size: 0.85rem;">Available</span>
                             <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
-                                <div style="width: 75%; height: 100%; background-color: var(--secondary-color); border-radius: 2px;"></div>
+                                <div id="bar-available" style="width: 0%; height: 100%; background-color: var(--secondary-color); border-radius: 2px; transition: width 1s ease-out;"></div>
                             </div>
                         </div>
                         <div style="margin-bottom: 1rem; display: flex; align-items: center;">
                             <span style="width: 80px; font-size: 0.85rem;">On Trip</span>
                             <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
-                                <div style="width: 30%; height: 100%; background-color: #60a5fa; border-radius: 2px;"></div>
+                                <div id="bar-ontrip" style="width: 0%; height: 100%; background-color: #60a5fa; border-radius: 2px; transition: width 1s ease-out;"></div>
                             </div>
                         </div>
                         <div style="margin-bottom: 1rem; display: flex; align-items: center;">
                             <span style="width: 80px; font-size: 0.85rem;">In Shop</span>
                             <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
-                                <div style="width: 10%; height: 100%; background-color: var(--warning-color); border-radius: 2px;"></div>
+                                <div id="bar-inshop" style="width: 0%; height: 100%; background-color: var(--warning-color); border-radius: 2px; transition: width 1s ease-out;"></div>
                             </div>
                         </div>
                         <div style="margin-bottom: 1rem; display: flex; align-items: center;">
                             <span style="width: 80px; font-size: 0.85rem;">Retired</span>
                             <div style="flex: 1; height: 12px; background-color: var(--bg-surface); border-radius: 2px;">
-                                <div style="width: 5%; height: 100%; background-color: #fca5a5; border-radius: 2px;"></div>
+                                <div id="bar-retired" style="width: 0%; height: 100%; background-color: #fca5a5; border-radius: 2px; transition: width 1s ease-out;"></div>
                             </div>
                         </div>
                     </div>
@@ -223,5 +223,6 @@
     </div>
 
     <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
