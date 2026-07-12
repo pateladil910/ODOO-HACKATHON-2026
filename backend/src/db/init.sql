@@ -205,7 +205,8 @@ VALUES
 ('VAN-05', 'Chevrolet Express 2020', 'Van', 500.00, 112000.10, 24000.00, 'Available'),
 ('TRUCK-01', 'Volvo FH16 Heavy Duty', 'Truck', 18000.00, 254100.80, 115000.00, 'Available'),
 ('TRUCK-02', 'Scania R500 Flatbed', 'Truck', 15000.00, 142300.00, 98000.00, 'In Shop'),
-('SEDAN-01', 'Toyota Prius Hybrid', 'Sedan', 350.00, 62000.40, 22000.00, 'Retired');
+('SEDAN-01', 'Toyota Prius Hybrid', 'Sedan', 350.00, 62000.40, 22000.00, 'Retired'),
+('BUS-01', 'Electric Shuttle Bus 2024', 'Bus', 8000.00, 1200.50, 150000.00, 'Available');
 
 
 -- Seed Drivers
@@ -216,7 +217,8 @@ VALUES
 ('Charlie Cox', 'DL-72314152', 'Class B Commercial', '2027-08-01', '+1-555-0185', 92.00, 'On Trip'),
 ('Daniel Craig', 'DL-61245152', 'Standard Class C', '2025-01-01', '+1-555-0112', 88.50, 'Off Duty'), -- Expired License (to check compliance rules)
 ('Emily Blunt', 'DL-55246261', 'Class A Commercial', '2029-06-18', '+1-555-0131', 97.20, 'Available'),
-('Frank Castle', 'DL-44125251', 'Class B Commercial', '2027-12-05', '+1-555-0177', 74.00, 'Suspended'); -- Suspended Driver (to check rules)
+('Frank Castle', 'DL-44125251', 'Class B Commercial', '2027-12-05', '+1-555-0177', 74.00, 'Suspended'),
+('George Clark', 'DL-33246162', 'Class A Commercial', '2028-11-20', '+1-555-0155', 99.00, 'Available');
 
 
 -- Seed Trips
