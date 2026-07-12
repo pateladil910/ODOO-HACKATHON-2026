@@ -114,13 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td>${formattedExpiry}${expiryWarning}</td>
                 <td>${d.contact_number}</td>
-                <td>
+                <td class="num-col">
                     <span style="font-weight: 700; color: ${parseFloat(d.safety_score) >= 90 ? 'var(--secondary-color)' : 'var(--danger-color)'}">
                         ${d.safety_score}%
                     </span>
                 </td>
                 <td><span class="badge ${badgeClass}">${d.status}</span></td>
-                <td>
+                <td class="actions-col">
                     ${hasWritePermission ? `
                         <button class="btn btn-sm edit-btn" data-id="${d.id}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; box-shadow: var(--shadow-3d-btn); margin-right: 0.5rem;">Edit</button>
                         ${user.role === 'manager' || user.role === 'admin' ? `
