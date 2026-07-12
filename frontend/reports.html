@@ -134,6 +134,9 @@
         .fill-warning { background-color: var(--secondary-color); box-shadow: 0 0 8px var(--secondary-color); }
         .fill-info { background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); }
     </style>
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="app-layout">
@@ -217,8 +220,21 @@
             </header>
 
             <!-- Page Content -->
-            <div class="app-content" style="padding-top: 1rem;">
+            <div class="app-content" id="reportContent" style="padding-top: 1rem;">
                 
+                <!-- Action Bar -->
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 1.5rem;" data-html2canvas-ignore>
+                    <button class="btn" id="exportPdfBtn" style="background-color: var(--bg-main); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <i class="ph ph-file-pdf"></i> Export PDF
+                    </button>
+                    <button class="btn" id="exportExcelBtn" style="background-color: var(--bg-main); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <i class="ph ph-file-xls"></i> Export Excel
+                    </button>
+                    <button class="btn" id="exportCsvBtn" style="background-color: var(--primary-color); color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem; box-shadow: var(--shadow-3d-btn); cursor: pointer;">
+                        <i class="ph ph-download"></i> Export CSV
+                    </button>
+                </div>
+
                 <!-- KPI Row -->
                 <div class="kpi-grid">
                     <div class="kpi-card">

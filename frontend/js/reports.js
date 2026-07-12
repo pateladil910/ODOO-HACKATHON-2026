@@ -23,6 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const revenueChart = document.getElementById('revenueChart');
     const costliestChart = document.getElementById('costliestChart');
+    
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const exportExcelBtn = document.getElementById('exportExcelBtn');
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+
+    let allReports = [];
 
     const authenticatedFetch = async (endpoint, options = {}) => {
         const headers = {
@@ -43,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadReports = async () => {
         try {
-            const allReports = await authenticatedFetch('/analytics/reports');
+            allReports = await authenticatedFetch('/analytics/reports');
             renderDashboard(allReports);
         } catch (error) {
             console.error('[Load Reports Error]', error);
@@ -71,20 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const avgRoi = reportsList.length > 0 ? (sumRoi / reportsList.length) * 100 : 0;
 
         // Update KPIs
-        if (kpiFuelEff) kpiFuelEff.innerHTML = '8.4 <span style="font-size:1rem; color:var(--text-muted); font-weight:400;">km/l</span>'; // Mocked as requested
-        if (kpiUtil) kpiUtil.textContent = '81%'; // Mocked as requested
+        if (kpiFuelEff) kpiFuelEff.innerHTML = '8.4 <span style="font-size:1rem; color:var(--text-muted); font-weight:400;">km/l</span>';
+        if (kpiUtil) kpiUtil.textContent = '81%';
         if (kpiCost) kpiCost.textContent = Math.round(totalCost).toLocaleString();
         if (kpiRoi) kpiRoi.textContent = avgRoi.toFixed(1) + '%';
 
-        // Render Monthly Revenue Bar Chart (Mocked trend + actual data scaling)
         renderRevenueChart();
-
-        // Render Top Costliest Vehicles
         renderCostliestVehicles(reportsList);
     };
 
     const renderRevenueChart = () => {
-        // Mock data to match mockup visual trend
         const mockData = [
             { month: 'Jan', value: 42000 },
             { month: 'Feb', value: 38000 },
@@ -110,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderCostliestVehicles = (reportsList) => {
-        // Sort descending by total cost
         const sorted = [...reportsList].sort((a, b) => b.totalOperationalCost - a.totalOperationalCost);
         const top3 = sorted.slice(0, 3);
         
@@ -119,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const maxCost = top3[0].totalOperationalCost || 1; // Prevent div by zero
+        const maxCost = top3[0].totalOperationalCost || 1;
         const colors = ['fill-danger', 'fill-warning', 'fill-info'];
 
         let html = '';
@@ -141,6 +142,86 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         costliestChart.innerHTML = html;
     };
+
+    // Export Handlers
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', () => {
+            if (allReports.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            const headers = ['Vehicle', 'Model', 'Distance (km)', 'Fuel Cost', 'Maintenance', 'Other Exp', 'Total Cost', 'Revenue', 'ROI'];
+            const rows = allReports.map(r => [
+                r.registration_number,
+                r.model,
+                r.distance_traveled,
+                r.fuel_cost,
+                r.maintenance_cost,
+                r.other_expenses,
+                r.totalOperationalCost,
+                r.revenue,
+                r.roi
+            ]);
+            
+            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `fleet_report_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    }
+
+    if (exportExcelBtn) {
+        exportExcelBtn.addEventListener('click', () => {
+            if (allReports.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            if (typeof XLSX === 'undefined') {
+                alert('Excel library not loaded.');
+                return;
+            }
+            const headers = ['Vehicle', 'Model', 'Distance (km)', 'Fuel Cost', 'Maintenance', 'Other Exp', 'Total Cost', 'Revenue', 'ROI'];
+            const rows = allReports.map(r => [
+                r.registration_number,
+                r.model,
+                r.distance_traveled,
+                r.fuel_cost,
+                r.maintenance_cost,
+                r.other_expenses,
+                r.totalOperationalCost,
+                r.revenue,
+                r.roi
+            ]);
+            
+            const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Fleet Report");
+            XLSX.writeFile(workbook, `fleet_report_${new Date().toISOString().split('T')[0]}.xlsx`);
+        });
+    }
+
+    if (exportPdfBtn) {
+        exportPdfBtn.addEventListener('click', () => {
+            if (typeof html2pdf === 'undefined') {
+                alert('PDF library not loaded.');
+                return;
+            }
+            const element = document.getElementById('reportContent');
+            
+            const opt = {
+                margin:       0.5,
+                filename:     `fleet_dashboard_${new Date().toISOString().split('T')[0]}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0f1015' },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+    }
 
     // Initialize
     loadReports();
