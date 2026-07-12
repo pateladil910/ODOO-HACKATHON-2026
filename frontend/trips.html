@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,187 +6,122 @@
     <title>Trips Dispatch - TransitOps</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar -->
         <aside class="app-sidebar" id="appSidebar">
             <div class="sidebar-header">
-                <a href="dashboard.html" class="sidebar-brand">
-                    <div class="sidebar-icon">T</div>
-                    <span>TransitOps</span>
-                </a>
+                <a href="dashboard.html" class="sidebar-brand"><div class="sidebar-icon">T</div><span>TransitOps</span></a>
             </div>
-            
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item" data-roles="all">
-                    <i class="ph ph-squares-four"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="vehicles.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-car"></i>
-                    <span>Vehicle Registry</span>
-                </a>
-                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
-                    <i class="ph ph-identification-card"></i>
-                    <span>Drivers</span>
-                </a>
-                <a href="trips.html" class="nav-item active" data-roles="manager,driver">
-                    <i class="ph ph-path"></i>
-                    <span>Trips</span>
-                </a>
-                <a href="maintenance.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-wrench"></i>
-                    <span>Maintenance</span>
-                </a>
-                <a href="expenses.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-receipt"></i>
-                    <span>Fuel & Expenses</span>
-                </a>
-                <a href="reports.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="settings.html" class="nav-item" data-roles="admin,manager">
-                    <i class="ph ph-gear"></i>
-                    <span>Settings</span>
-                </a>
+                <a href="dashboard.html" class="nav-item" data-roles="all"><i class="ph ph-squares-four"></i><span>Dashboard</span></a>
+                <a href="vehicles.html" class="nav-item" data-roles="manager"><i class="ph ph-car"></i><span>Vehicle Registry</span></a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety"><i class="ph ph-identification-card"></i><span>Drivers</span></a>
+                <a href="trips.html" class="nav-item active" data-roles="manager,driver"><i class="ph ph-path"></i><span>Trips</span></a>
+                <a href="maintenance.html" class="nav-item" data-roles="manager"><i class="ph ph-wrench"></i><span>Maintenance</span></a>
+                <a href="expenses.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-receipt"></i><span>Fuel &amp; Expenses</span></a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-chart-bar"></i><span>Reports</span></a>
+                <a href="settings.html" class="nav-item" data-roles="admin,manager"><i class="ph ph-gear"></i><span>Settings</span></a>
             </nav>
-
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <div class="user-avatar">U</div>
-                    <div class="user-info">
-                        <div class="user-name">User Name</div>
-                        <div class="user-role">Role</div>
-                    </div>
-                    <button class="logout-btn" id="logoutBtn" title="Logout">
-                        <i class="ph ph-sign-out"></i>
-                    </button>
+                    <div class="user-info"><div class="user-name">User Name</div><div class="user-role">Role</div></div>
+                    <button class="logout-btn" id="logoutBtn" title="Logout"><i class="ph ph-sign-out"></i></button>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="app-main">
-            <!-- Header -->
             <header class="app-header">
                 <div class="header-left">
-                    <button class="mobile-toggle" id="mobileToggle">
-                        <i class="ph ph-list"></i>
-                    </button>
-                    <div class="header-search">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" placeholder="Search...">
-                    </div>
+                    <button class="mobile-toggle" id="mobileToggle"><i class="ph ph-list"></i></button>
+                    <div class="header-search"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search trips..."></div>
                 </div>
                 <div class="header-right">
                     <div class="header-user">
-                        <span class="header-user-name">Raven K.</span>
-                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
+                        <span class="header-user-name">User</span>
+                        <div class="header-user-role" id="userRoleBadge">- <div class="header-user-avatar">U</div></div>
                     </div>
                 </div>
             </header>
 
-            <!-- Page Content -->
             <div class="app-content">
-                <div class="dispatch-container" style="display: grid; grid-template-columns: 400px 1fr; gap: 3rem; align-items: start;">
-                    
-                    <!-- LEFT COLUMN: Form & Lifecycle -->
+                <div class="dispatch-container">
+
+                    <!-- LEFT: Lifecycle + Form -->
                     <div class="dispatch-left">
-                        <h4 style="margin: 0 0 1rem; text-transform: uppercase; font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px;">TRIP LIFECYCLE</h4>
-                        <div class="lifecycle-timeline" id="tripLifecycle" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; position: relative;">
-                            <!-- Line behind nodes -->
-                            <div style="position: absolute; top: 10px; left: 15px; right: 15px; height: 2px; background: rgba(255,255,255,0.1); z-index: 1;"></div>
-                            
-                            <div class="lifecycle-node active" id="node-Draft" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
-                                <div class="node-circle" style="width: 20px; height: 20px; border-radius: 50%; background-color: var(--secondary-color); border: 2px solid var(--bg-main); margin-bottom: 0.5rem; transition: background-color 0.3s;"></div>
-                                <span style="font-size: 0.7rem; color: var(--secondary-color);">Draft</span>
-                            </div>
-                            <div class="lifecycle-node" id="node-Dispatched" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
-                                <div class="node-circle" style="width: 20px; height: 20px; border-radius: 50%; background-color: #4b5563; border: 2px solid var(--bg-main); margin-bottom: 0.5rem; transition: background-color 0.3s;"></div>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);">Dispatched</span>
-                            </div>
-                            <div class="lifecycle-node" id="node-Completed" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
-                                <div class="node-circle" style="width: 20px; height: 20px; border-radius: 50%; background-color: #4b5563; border: 2px solid var(--bg-main); margin-bottom: 0.5rem; transition: background-color 0.3s;"></div>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);">Completed</span>
-                            </div>
-                            <div class="lifecycle-node" id="node-Cancelled" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
-                                <div class="node-circle" style="width: 20px; height: 20px; border-radius: 50%; background-color: #4b5563; border: 2px solid var(--bg-main); margin-bottom: 0.5rem; transition: background-color 0.3s;"></div>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);">Cancelled</span>
-                            </div>
-                        </div>
 
-                        <h4 style="margin: 0 0 1rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">CREATE TRIP</h4>
-                        <form id="tripForm">
-                            <input type="hidden" id="tripId">
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="source" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Source</label>
-                                <input type="text" id="source" class="form-control" placeholder="Gandhinagar Depot" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="destination" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Destination</label>
-                                <input type="text" id="destination" class="form-control" placeholder="Ahmedabad Hub" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="vehicleSelect" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Vehicle (Available Only)</label>
-                                <select id="vehicleSelect" class="form-control" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                                    <option value="">Choose a vehicle...</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="driverSelect" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Driver (Available Only)</label>
-                                <select id="driverSelect" class="form-control" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                                    <option value="">Choose a driver...</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="cargoWeight" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Cargo Weight (kg)</label>
-                                <input type="number" step="0.01" id="cargoWeight" class="form-control" placeholder="700" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="plannedDistance" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Planned Distance (km)</label>
-                                <input type="number" step="0.01" id="plannedDistance" class="form-control" placeholder="38" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                            </div>
+                        <!-- Signature Element: Trip Lifecycle Stepper -->
+                        <div class="lifecycle-stepper">
+                            <div class="lifecycle-stepper-label">Trip Lifecycle</div>
+                            <div class="lifecycle-track" id="tripLifecycle">
+                                <div class="lifecycle-track-fill" id="lifecycleFill"></div>
 
-                            <!-- Validation Warning Box -->
-                            <div id="capacityWarningBox" style="display: none; border: 1px solid #f87171; background-color: rgba(248, 113, 113, 0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                                <div style="color: #fca5a5; font-size: 0.85rem; margin-bottom: 0.25rem;" id="warningVehicleCap">Vehicle Capacity: 500 kg</div>
-                                <div style="color: #fca5a5; font-size: 0.85rem; margin-bottom: 0.25rem;" id="warningCargoWeight">Cargo Weight: 700 kg</div>
-                                <div style="color: #f87171; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                    <i class="ph ph-x"></i> <span id="warningOverage">Capacity exceeded by 200 kg - dispatch blocked</span>
+                                <div class="lifecycle-node active" id="node-Draft">
+                                    <div class="node-circle"></div>
+                                    <span class="node-label">Draft</span>
+                                </div>
+                                <div class="lifecycle-node" id="node-Dispatched">
+                                    <div class="node-circle"></div>
+                                    <span class="node-label">Dispatched</span>
+                                </div>
+                                <div class="lifecycle-node" id="node-Completed">
+                                    <div class="node-circle"></div>
+                                    <span class="node-label">Completed</span>
+                                </div>
+                                <div class="lifecycle-node" id="node-Cancelled">
+                                    <div class="node-circle"></div>
+                                    <span class="node-label">Cancelled</span>
                                 </div>
                             </div>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <button type="submit" id="dispatchBtn" class="btn" style="background-color: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 4px; pointer-events: none;">Dispatch (disabled)</button>
-                                <button type="button" id="cancelBtn" class="btn" style="background-color: transparent; color: #fca5a5; border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 4px;">Cancel</button>
-                            </div>
-                        </form>
+                        </div>
+
+                        <!-- Create Trip Form -->
+                        <div class="data-table-container" style="padding: 1.25rem;">
+                            <div class="data-table-title" style="margin-bottom: 1.25rem;">Create Trip</div>
+                            <form id="tripForm">
+                                <input type="hidden" id="tripId">
+                                <div class="form-group"><label class="form-label" for="source">Source</label><input type="text" id="source" class="form-control" placeholder="Gandhinagar Depot" required></div>
+                                <div class="form-group"><label class="form-label" for="destination">Destination</label><input type="text" id="destination" class="form-control" placeholder="Ahmedabad Hub" required></div>
+                                <div class="form-group"><label class="form-label" for="vehicleSelect">Vehicle (Available Only)</label><select id="vehicleSelect" class="form-control" required><option value="">Choose a vehicle...</option></select></div>
+                                <div class="form-group"><label class="form-label" for="driverSelect">Driver (Available Only)</label><select id="driverSelect" class="form-control" required><option value="">Choose a driver...</option></select></div>
+                                <div class="form-group"><label class="form-label" for="cargoWeight">Cargo Weight (kg)</label><input type="number" step="0.01" id="cargoWeight" class="form-control" placeholder="700" required></div>
+                                <div class="form-group"><label class="form-label" for="plannedDistance">Planned Distance (km)</label><input type="number" step="0.01" id="plannedDistance" class="form-control" placeholder="38" required></div>
+
+                                <div id="capacityWarningBox" style="display:none;" class="alert-warning" style="margin-bottom:1rem;">
+                                    <i class="ph ph-warning" style="flex-shrink:0;"></i>
+                                    <div>
+                                        <div id="warningVehicleCap" style="font-size:0.786rem;">Vehicle Capacity: &mdash;</div>
+                                        <div id="warningCargoWeight" style="font-size:0.786rem;">Cargo Weight: &mdash;</div>
+                                        <div id="warningOverage" style="font-weight:600;font-size:0.786rem;">Capacity exceeded</div>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
+                                    <button type="submit" id="dispatchBtn" class="btn btn-primary">Dispatch</button>
+                                    <button type="button" id="cancelBtn" class="btn btn-danger">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
-                    <!-- RIGHT COLUMN: Live Board -->
+                    <!-- RIGHT: Live Board -->
                     <div class="dispatch-right">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
-                            <h4 style="margin: 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">LIVE BOARD</h4>
-                            <input type="text" id="searchInput" placeholder="Search..." style="background: transparent; border: none; color: var(--text-muted); text-align: right; font-size: 0.85rem; outline: none; width: 100px;">
+                        <div class="data-table-container" style="padding: 0;">
+                            <div class="data-table-header">
+                                <span class="data-table-title">Live Board</span>
+                                <input type="text" id="searchInput" placeholder="Search board..." style="background:transparent;border:none;outline:none;color:var(--text-secondary);font-size:0.857rem;text-align:right;">
+                            </div>
+                            <div id="liveBoardContainer" style="padding: 1rem; display:flex; flex-direction:column; gap:0.75rem;">
+                                <div style="text-align:center;color:var(--text-secondary);padding:2rem;">Loading live board...</div>
+                            </div>
                         </div>
-                        
-                        <div id="liveBoardContainer" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
-                            <!-- Trip Cards injected here -->
-                            <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading live board...</div>
-                        </div>
-
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">
+                        <p style="font-size:0.714rem;color:var(--text-muted);">
                             On Complete: odometer &rarr; fuel log &rarr; expenses &rarr; Vehicle &amp; Driver Available
-                        </div>
+                        </p>
                     </div>
 
                 </div>

@@ -6,174 +6,97 @@
     <title>Maintenance Logs - TransitOps</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar -->
         <aside class="app-sidebar" id="appSidebar">
-            <div class="sidebar-header">
-                <a href="dashboard.html" class="sidebar-brand">
-                    <div class="sidebar-icon">T</div>
-                    <span>TransitOps</span>
-                </a>
-            </div>
-            
+            <div class="sidebar-header"><a href="dashboard.html" class="sidebar-brand"><div class="sidebar-icon">T</div><span>TransitOps</span></a></div>
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item" data-roles="all">
-                    <i class="ph ph-squares-four"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="vehicles.html" class="nav-item" data-roles="manager">
-                    <i class="ph ph-car"></i>
-                    <span>Vehicle Registry</span>
-                </a>
-                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
-                    <i class="ph ph-identification-card"></i>
-                    <span>Drivers</span>
-                </a>
-                <a href="trips.html" class="nav-item" data-roles="manager,driver">
-                    <i class="ph ph-path"></i>
-                    <span>Trips</span>
-                </a>
-                <a href="maintenance.html" class="nav-item active" data-roles="manager">
-                    <i class="ph ph-wrench"></i>
-                    <span>Maintenance</span>
-                </a>
-                <a href="expenses.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-receipt"></i>
-                    <span>Fuel & Expenses</span>
-                </a>
-                <a href="reports.html" class="nav-item" data-roles="manager,finance">
-                    <i class="ph ph-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="settings.html" class="nav-item" data-roles="admin,manager">
-                    <i class="ph ph-gear"></i>
-                    <span>Settings</span>
-                </a>
+                <a href="dashboard.html" class="nav-item" data-roles="all"><i class="ph ph-squares-four"></i><span>Dashboard</span></a>
+                <a href="vehicles.html" class="nav-item" data-roles="manager"><i class="ph ph-car"></i><span>Vehicle Registry</span></a>
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety"><i class="ph ph-identification-card"></i><span>Drivers</span></a>
+                <a href="trips.html" class="nav-item" data-roles="manager,driver"><i class="ph ph-path"></i><span>Trips</span></a>
+                <a href="maintenance.html" class="nav-item active" data-roles="manager"><i class="ph ph-wrench"></i><span>Maintenance</span></a>
+                <a href="expenses.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-receipt"></i><span>Fuel & Expenses</span></a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance"><i class="ph ph-chart-bar"></i><span>Reports</span></a>
+                <a href="settings.html" class="nav-item" data-roles="admin,manager"><i class="ph ph-gear"></i><span>Settings</span></a>
             </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-profile">
-                    <div class="user-avatar">U</div>
-                    <div class="user-info">
-                        <div class="user-name">User Name</div>
-                        <div class="user-role">Role</div>
-                    </div>
-                    <button class="logout-btn" id="logoutBtn" title="Logout">
-                        <i class="ph ph-sign-out"></i>
-                    </button>
-                </div>
-            </div>
+            <div class="sidebar-footer"><div class="user-profile"><div class="user-avatar">U</div><div class="user-info"><div class="user-name">User Name</div><div class="user-role">Role</div></div><button class="logout-btn" id="logoutBtn" title="Logout"><i class="ph ph-sign-out"></i></button></div></div>
         </aside>
 
-        <!-- Main Content -->
         <main class="app-main">
-            <!-- Header -->
             <header class="app-header">
                 <div class="header-left">
-                    <button class="mobile-toggle" id="mobileToggle">
-                        <i class="ph ph-list"></i>
-                    </button>
-                    <div class="header-search">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" placeholder="Search...">
-                    </div>
+                    <button class="mobile-toggle" id="mobileToggle"><i class="ph ph-list"></i></button>
+                    <div class="header-search"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search..."></div>
                 </div>
                 <div class="header-right">
-                    <div class="header-user">
-                        <span class="header-user-name">Raven K.</span>
-                        <div class="header-user-role">Dispatcher <div class="header-user-avatar">RK</div></div>
-                    </div>
+                    <div class="header-user"><span class="header-user-name">User</span><div class="header-user-role" id="userRoleBadge">- <div class="header-user-avatar">U</div></div></div>
                 </div>
             </header>
 
-            <!-- Page Content -->
             <div class="app-content">
-                <div class="dispatch-container" style="display: grid; grid-template-columns: 400px 1fr; gap: 3rem; align-items: start;">
-                    
-                    <!-- LEFT COLUMN: Form -->
-                    <div class="dispatch-left">
-                        <h4 style="margin: 0 0 1.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">LOG SERVICE RECORD</h4>
-                        <form id="maintenanceForm">
-                            <input type="hidden" id="logId">
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="vehicleSelect" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Vehicle</label>
-                                <select id="vehicleSelect" class="form-control" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                                    <option value="">Choose a vehicle...</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="description" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Service Type</label>
-                                <input type="text" id="description" class="form-control" placeholder="Oil Change" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="cost" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Cost</label>
-                                <input type="number" step="0.01" id="cost" class="form-control" placeholder="2,500" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 1rem;">
-                                <label class="form-label" for="loggedAt" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Date</label>
-                                <input type="date" id="loggedAt" class="form-control" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 1.5rem;">
-                                <label class="form-label" for="status" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Status</label>
-                                <select id="status" class="form-control" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem;" required>
-                                    <option value="Active">In Shop</option>
-                                    <option value="Closed">Completed</option>
-                                </select>
-                            </div>
-                            
-                            <button type="submit" id="saveBtn" class="btn" style="background-color: var(--primary-color); color: #fff; width: 100%; border: none; padding: 0.75rem; border-radius: 4px; box-shadow: var(--shadow-3d-btn);">Save</button>
-                        </form>
+                <div class="dispatch-container">
 
-                        <div style="margin-top: 2rem; font-size: 0.8rem; line-height: 1.8;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                                <span style="color: var(--secondary-color);">Available</span>
-                                <span style="color: var(--text-muted);">─── creating active record ───&rarr;</span>
-                                <span style="color: var(--primary-color);">In Shop</span>
+                    <!-- LEFT: Log Form -->
+                    <div class="dispatch-left">
+                        <div class="data-table-container" style="padding: 1.25rem;">
+                            <div class="data-table-title" style="margin-bottom: 1.25rem;">Log Service Record</div>
+                            <form id="maintenanceForm">
+                                <input type="hidden" id="logId">
+                                <div class="form-group"><label class="form-label" for="vehicleSelect">Vehicle</label><select id="vehicleSelect" class="form-control" required><option value="">Choose a vehicle...</option></select></div>
+                                <div class="form-group"><label class="form-label" for="description">Service Type / Description</label><input type="text" id="description" class="form-control" placeholder="e.g. Oil Change" required></div>
+                                <div class="form-group"><label class="form-label" for="cost">Cost ($)</label><input type="number" step="0.01" id="cost" class="form-control" placeholder="e.g. 2500" required></div>
+                                <div class="form-group"><label class="form-label" for="loggedAt">Service Date</label><input type="date" id="loggedAt" class="form-control" required></div>
+                                <div class="form-group"><label class="form-label" for="status">Status</label><select id="status" class="form-control" required><option value="Active">In Shop (Active)</option><option value="Closed">Completed (Closed)</option></select></div>
+                                <button type="submit" id="saveBtn" class="btn btn-primary btn-block" style="padding:0.75rem;margin-top:0.5rem;">Save Service Record</button>
+                            </form>
+                        </div>
+
+                        <!-- Status Legend -->
+                        <div class="maint-legend">
+                            <div class="data-table-title" style="margin-bottom:0.875rem;font-size:0.786rem;">Vehicle Status Transitions</div>
+                            <div class="maint-legend-row">
+                                <span class="badge badge-available">Available</span>
+                                <span class="maint-legend-arrow">Creating active record &rarr;</span>
+                                <span class="badge badge-inshop">In Shop</span>
                             </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between;">
-                                <span style="color: var(--primary-color);">In Shop</span>
-                                <span style="color: var(--text-muted);">─── closing record (completed) ───&rarr;</span>
-                                <span style="color: var(--secondary-color);">Available</span>
+                            <div class="maint-legend-row" style="margin-top:0.5rem;">
+                                <span class="badge badge-inshop">In Shop</span>
+                                <span class="maint-legend-arrow">Closing record &rarr;</span>
+                                <span class="badge badge-available">Available</span>
                             </div>
-                            <div style="color: var(--primary-color); margin-top: 1rem; font-style: italic;">
-                                Note: In Shop vehicles are removed from the dispatch pool.
-                            </div>
+                            <p style="font-size:0.714rem;color:var(--text-secondary);margin-top:0.75rem;">
+                                In Shop vehicles are removed from the dispatch pool.
+                            </p>
                         </div>
                     </div>
 
-                    <!-- RIGHT COLUMN: Service Log -->
+                    <!-- RIGHT: Service Log -->
                     <div class="dispatch-right">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
-                            <h4 style="margin: 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">SERVICE LOG</h4>
-                        </div>
-                        
-                        <div style="overflow-x: auto;">
-                            <table style="width: 100%; text-align: left; border-collapse: separate; border-spacing: 0 0.5rem;">
+                        <div class="data-table-container">
+                            <div class="data-table-header">
+                                <span class="data-table-title">Service Log</span>
+                            </div>
+                            <table class="data-table">
                                 <thead>
-                                    <tr style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">
-                                        <th style="padding-bottom: 0.5rem;">Vehicle</th>
-                                        <th style="padding-bottom: 0.5rem;">Service</th>
-                                        <th style="padding-bottom: 0.5rem;">Cost</th>
-                                        <th style="padding-bottom: 0.5rem; text-align: right;">Status</th>
+                                    <tr>
+                                        <th>Vehicle</th>
+                                        <th>Service Description</th>
+                                        <th class="num-col">Cost</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th class="actions-col">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="maintenanceTableBody">
-                                    <tr>
-                                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading service log...</td>
-                                    </tr>
+                                    <tr><td colspan="6" style="text-align:center;color:var(--text-secondary);padding:2rem;">Loading service log...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
                 </div>
             </div>
         </main>

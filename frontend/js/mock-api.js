@@ -92,6 +92,19 @@
     const fuel = loadDb('mock_fuel', seedFuel);
     const expenses = loadDb('mock_expenses', seedExpenses);
 
+    // --- 0. HEALTH CHECK MOCK ---
+    if (url.includes('/health')) {
+      return new Response(JSON.stringify({
+        uptime: typeof performance !== 'undefined' ? performance.now() / 1000 : 100.0,
+        message: 'OK',
+        timestamp: Date.now(),
+        database: 'CONNECTED'
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     // --- 1. AUTH LOG IN BYPASS ---
     if (url.includes('/auth/login')) {
       const email = body.email || 'guest@transitops.com';
