@@ -94,11 +94,14 @@
 
     // --- 0. HEALTH CHECK MOCK ---
     if (url.includes('/health')) {
-      return makeResponse({
+      return new Response(JSON.stringify({
         uptime: typeof performance !== 'undefined' ? performance.now() / 1000 : 100.0,
         message: 'OK',
         timestamp: Date.now(),
         database: 'CONNECTED'
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
