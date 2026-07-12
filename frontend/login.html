@@ -14,29 +14,63 @@
         <!-- Left Side: Branding -->
         <section class="auth-branding">
             <div class="brand-content">
-                <div class="brand-logo">
+                <div class="brand-logo animate-fade-in stagger-1">
                     <div class="brand-icon">T</div>
                     <h1 class="brand-title">TransitOps</h1>
                 </div>
-                <p class="brand-subtitle">Smart Transport Operations Platform. Digitize vehicle, driver, dispatch, maintenance, and expense management seamlessly.</p>
+                <p class="brand-subtitle animate-fade-in stagger-2">Smart Transport Operations Platform. Digitize vehicle, driver, dispatch, maintenance, and expense management seamlessly.</p>
 
-                <h3 style="font-size: 0.786rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 0.875rem;">One login, four roles:</h3>
-                <ul class="roles-list">
-                    <li>Fleet Manager</li>
-                    <li>Dispatcher (Driver Role)</li>
-                    <li>Safety Officer</li>
-                    <li>Financial Analyst</li>
-                </ul>
+                <div class="showcase-section animate-fade-in stagger-3">
+                    <h3 class="showcase-title">One login, four operational roles</h3>
+                    <div class="showcase-grid">
+                        <div class="showcase-item">
+                            <div class="showcase-icon-wrapper">
+                                <i class="ph ph-users-three"></i>
+                            </div>
+                            <div class="showcase-text">
+                                <span class="showcase-item-title">Fleet Manager</span>
+                                <span class="showcase-item-desc">Register vehicles, monitor health & maintain registry.</span>
+                            </div>
+                        </div>
+                        <div class="showcase-item">
+                            <div class="showcase-icon-wrapper">
+                                <i class="ph ph-path"></i>
+                            </div>
+                            <div class="showcase-text">
+                                <span class="showcase-item-title">Dispatcher</span>
+                                <span class="showcase-item-desc">Create and monitor trip lifecycles & manage drivers.</span>
+                            </div>
+                        </div>
+                        <div class="showcase-item">
+                            <div class="showcase-icon-wrapper">
+                                <i class="ph ph-shield-check"></i>
+                            </div>
+                            <div class="showcase-text">
+                                <span class="showcase-item-title">Safety Officer</span>
+                                <span class="showcase-item-desc">Track safety ratings, licenses & driver expiry events.</span>
+                            </div>
+                        </div>
+                        <div class="showcase-item">
+                            <div class="showcase-icon-wrapper">
+                                <i class="ph ph-chart-bar"></i>
+                            </div>
+                            <div class="showcase-text">
+                                <span class="showcase-item-title">Financial Analyst</span>
+                                <span class="showcase-item-desc">Analyze fuel efficiency, toll records & operational ROI.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <div style="margin-top: 3rem; display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                <div class="animate-fade-in stagger-4" style="margin-top: 2rem; display: flex; gap: 1.5rem; flex-wrap: wrap; opacity: 0.8;">
                     <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.786rem; color: var(--text-secondary);">
-                        <i class="ph ph-car" style="color: var(--accent);"></i> Fleet Management
+                        <i class="ph ph-car"></i> Fleet Registry
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.786rem; color: var(--text-secondary);">
-                        <i class="ph ph-path" style="color: var(--accent);"></i> Trip Dispatch
+                        <i class="ph ph-compass"></i> Trip Dispatch
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.786rem; color: var(--text-secondary);">
-                        <i class="ph ph-chart-bar" style="color: var(--accent);"></i> Analytics
+                        <i class="ph ph-chart-line"></i> Analytics YTD
                     </div>
                 </div>
             </div>
@@ -49,7 +83,7 @@
         <!-- Right Side: Login Form -->
         <section class="auth-form-wrapper">
             <div class="auth-form-container">
-                <div class="form-header">
+                <div class="form-header animate-fade-in stagger-1">
                     <h2 class="form-title">Sign in to your account</h2>
                     <p class="form-subtitle">Enter your credentials to access the platform</p>
                 </div>
@@ -60,17 +94,17 @@
                 </div>
 
                 <form id="loginForm">
-                    <div class="form-group">
+                    <div class="form-group animate-fade-in stagger-2">
                         <label for="email" class="form-label">Email Address</label>
                         <input type="email" id="email" class="form-control" placeholder="name@transitops.in" required>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group animate-fade-in stagger-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" id="password" class="form-control" placeholder="••••••••" required>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group animate-fade-in stagger-4">
                         <label for="role" class="form-label">Role (RBAC)</label>
                         <select id="role" class="form-control">
                             <option value="dispatcher">Dispatcher</option>
@@ -80,7 +114,7 @@
                         </select>
                     </div>
 
-                    <div class="form-options">
+                    <div class="form-options animate-fade-in stagger-5">
                         <label class="checkbox-label">
                             <input type="checkbox" id="remember">
                             Remember me
@@ -88,7 +122,7 @@
                         <a href="#" class="forgot-password">Forgot password?</a>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-block" style="padding: 0.75rem; font-size: 0.929rem;">
+                    <button type="submit" class="btn btn-primary btn-block animate-fade-in stagger-6" style="padding: 0.75rem; font-size: 0.929rem;">
                         <i class="ph ph-sign-in"></i>
                         Sign In
                     </button>
