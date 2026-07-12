@@ -253,6 +253,14 @@
         if (licenseExpiry < today) {
           return makeResponse({ message: `Driver License expired` }, 400);
         }
+        if (body.status === 'Dispatched') {
+          if (v.status === 'On Trip') {
+            return makeResponse({ message: `Vehicle is already on an active trip.` }, 400);
+          }
+          if (d.status === 'On Trip') {
+            return makeResponse({ message: `Driver is already on an active trip.` }, 400);
+          }
+        }
         if (parseFloat(body.cargo_weight) > parseFloat(v.max_capacity)) {
           return makeResponse({ message: `Cargo weight exceeds vehicle maximum capacity (${v.max_capacity} kg).` }, 400);
         }
@@ -296,10 +304,10 @@
         if (v && d) {
           if (oldT.status !== newT.status) {
             if (newT.status === 'Dispatched') {
-              if (v.status === 'On Trip' && oldT.vehicle_id !== newT.vehicle_id) {
+              if (v.status === 'On Trip') {
                 return makeResponse({ message: `Vehicle is already on an active trip.` }, 400);
               }
-              if (d.status === 'On Trip' && oldT.driver_id !== newT.driver_id) {
+              if (d.status === 'On Trip') {
                 return makeResponse({ message: `Driver is already on an active trip.` }, 400);
               }
               if (v.status === 'Retired' || v.status === 'In Shop') {
