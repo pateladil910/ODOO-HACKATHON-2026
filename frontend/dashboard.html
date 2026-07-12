@@ -210,8 +210,46 @@
             </tbody>
           </table>
         </div>
+      <!-- Trips Tab Panel -->
+      <section class="tab-panel" id="tab-trips">
+        <!-- Filter Bar -->
+        <div class="filter-bar glass-panel">
+          <div class="search-box">
+            <input type="text" id="trip-search" placeholder="Search by source, destination...">
+          </div>
+          <div class="filter-group">
+            <select id="filter-trip-status">
+              <option value="">All Statuses</option>
+              <option value="Draft">Draft</option>
+              <option value="Dispatched">Dispatched</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Grid Table -->
+        <div class="table-container glass-panel">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Vehicle</th>
+                <th>Driver</th>
+                <th>Cargo Weight</th>
+                <th>Distance</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="trips-table-body">
+              <!-- Rendered Dynamically -->
+            </tbody>
+          </table>
+        </div>
       </section>
-      
+
     </main>
   </div>
   
@@ -328,6 +366,70 @@
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" id="btn-cancel-driver">Cancel</button>
           <button type="submit" class="btn btn-primary" id="btn-save-driver">Register Driver</button>
+        </div>
+  </div>
+
+  <!-- Add/Edit Trip Modal -->
+  <div class="modal-overlay" id="trip-modal">
+    <div class="modal-card glass-panel">
+      <div class="modal-header">
+        <h3 id="trip-modal-title">Create Trip</h3>
+        <button class="close-btn" id="close-trip-modal">&times;</button>
+      </div>
+      <form id="trip-form" class="modal-form">
+        <input type="hidden" id="trip-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="trip-source">Source Location *</label>
+            <input type="text" id="trip-source" placeholder="E.g. Warehouse A (Chicago)" required>
+          </div>
+          <div class="form-group">
+            <label for="trip-destination">Destination *</label>
+            <input type="text" id="trip-destination" placeholder="E.g. Distribution Center (Detroit)" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="trip-vehicle">Vehicle *</label>
+            <select id="trip-vehicle" required>
+              <!-- Populated dynamically with available vehicles -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="trip-driver">Driver *</label>
+            <select id="trip-driver" required>
+              <!-- Populated dynamically with available drivers -->
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="trip-weight">Cargo Weight (kg) *</label>
+            <input type="number" id="trip-weight" min="1" placeholder="E.g. 950" required>
+          </div>
+          <div class="form-group">
+            <label for="trip-distance">Planned Distance (km) *</label>
+            <input type="number" id="trip-distance" min="1" placeholder="E.g. 450" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="trip-status">Trip Status</label>
+            <select id="trip-status">
+              <option value="Draft">Draft</option>
+              <option value="Dispatched">Dispatched</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="trip-revenue">Planned Revenue ($)</label>
+            <input type="number" id="trip-revenue" min="0" value="0">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-trip">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-trip">Create Trip</button>
         </div>
       </form>
     </div>

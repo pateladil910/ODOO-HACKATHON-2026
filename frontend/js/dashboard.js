@@ -126,6 +126,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       loadDrivers();
     }
+    else if (tabName === 'trips') {
+      pageTitle.textContent = 'Trip Management';
+      pageSubtitle.textContent = 'Create, validate, dispatch, and track trips status across the fleet.';
+      
+      if (['driver', 'fleet_manager', 'admin'].includes(currentUser.role)) {
+        headerActionContainer.innerHTML = `
+          <button class="btn btn-primary" id="btn-add-trip">
+            <span>➕</span> Create Trip
+          </button>
+        `;
+        document.getElementById('btn-add-trip').addEventListener('click', () => openTripFormModal());
+      }
+      loadTrips();
+    }
   }
 
   // --- KPI Metrics Loader ---
@@ -471,6 +485,251 @@ document.addEventListener('DOMContentLoaded', () => {
       await window.api.delete(`/drivers/${id}`);
       window.api.showToast('Driver profile deleted successfully.', 'success');
       loadDrivers();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // --- TRIPS MODULE ---
+  const tripsTableBody = document.getElementById('trips-table-body');
+  const tripSearch = document.getElementById('trip-search');
+  const filterTripStatus = document.getElementById('filter-trip-status');
+  
+  const tripModal = document.getElementById('trip-modal');
+  const tripForm = document.getElementById('trip-form');
+  const tripModalTitle = document.getElementById('trip-modal-title');
+  const closeTripModal = document.getElementById('close-trip-modal');
+  const btnCancelTrip = document.getElementById('btn-cancel-trip');
+
+  async function loadTrips() {
+    try {
+      const search = tripSearch ? tripSearch.value.trim() : '';
+      const status = filterTripStatus ? filterTripStatus.value : '';
+      
+      let queryParams = [];
+      if (search) queryParams.push(`search=${encodeURIComponent(search)}`);
+      if (status) queryParams.push(`status=${encodeURIComponent(status)}`);
+      
+      const queryString = queryParams.length ? `?${queryParams.join('&')}` : '';
+      const trips = await window.api.get(`/trips${queryString}`);
+      
+      tripsTableBody.innerHTML = '';
+      if (!trips.length) {
+        tripsTableBody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">
+              No trips registered matching selected filters.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      trips.forEach(trip => {
+        const row = document.createElement('tr');
+        
+        const isDraft = trip.status === 'Draft';
+        const isDispatched = trip.status === 'Dispatched';
+        
+        const showEdit = ['driver', 'fleet_manager', 'admin'].includes(currentUser.role) && (isDraft || isDispatched);
+        const showDelete = currentUser.role === 'admin';
+        
+        let statusActions = '';
+        if (isDraft && ['fleet_manager', 'admin'].includes(currentUser.role)) {
+          statusActions = `<button class="btn btn-secondary btn-status-action" data-id="${trip.id}" data-status="Dispatched" style="padding:4px 8px; font-size:0.75rem;">🚀 Dispatch</button>`;
+        } else if (isDispatched && ['driver', 'fleet_manager', 'admin'].includes(currentUser.role)) {
+          statusActions = `
+            <button class="btn btn-primary btn-status-action" data-id="${trip.id}" data-status="Completed" style="padding:4px 8px; font-size:0.75rem; margin-right:4px;">✅ Complete</button>
+            <button class="btn btn-secondary btn-status-action" data-id="${trip.id}" data-status="Cancelled" style="padding:4px 8px; font-size:0.75rem; background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.2); color:#fca5a5;">❌ Cancel</button>
+          `;
+        }
+
+        row.innerHTML = `
+          <td>${trip.source}</td>
+          <td>${trip.destination}</td>
+          <td>
+            <div style="font-weight: 700; color: #a5b4fc;">${trip.vehicle_registration || 'N/A'}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${trip.vehicle_model || ''}</div>
+          </td>
+          <td>
+            <div style="font-weight: 600;">${trip.driver_name || 'N/A'}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${trip.driver_license || ''}</div>
+          </td>
+          <td>${parseFloat(trip.cargo_weight).toLocaleString()} kg</td>
+          <td>${parseFloat(trip.planned_distance).toLocaleString()} km</td>
+          <td>
+            <span class="status-pill ${trip.status.toLowerCase()}">
+              ${trip.status}
+            </span>
+          </td>
+          <td class="actions-cell" style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+            <div style="display:flex; gap:6px;">
+              ${showEdit ? `<button class="action-btn btn-edit-trip" title="Edit Trip" data-id="${trip.id}">✏️</button>` : ''}
+              ${showDelete ? `<button class="action-btn btn-delete-trip" title="Delete Trip" data-id="${trip.id}">🗑️</button>` : ''}
+            </div>
+            ${statusActions}
+          </td>
+        `;
+        tripsTableBody.appendChild(row);
+      });
+      
+      // Bind actions
+      tripsTableBody.querySelectorAll('.btn-edit-trip').forEach(btn => {
+        btn.addEventListener('click', () => editTrip(btn.getAttribute('data-id')));
+      });
+      
+      tripsTableBody.querySelectorAll('.btn-delete-trip').forEach(btn => {
+        btn.addEventListener('click', () => deleteTrip(btn.getAttribute('data-id')));
+      });
+
+      tripsTableBody.querySelectorAll('.btn-status-action').forEach(btn => {
+        btn.addEventListener('click', () => updateTripStatus(btn.getAttribute('data-id'), btn.getAttribute('data-status')));
+      });
+      
+    } catch (err) {
+      console.error('Error fetching trips', err);
+    }
+  }
+
+  // Bind filters
+  if (tripSearch) {
+    tripSearch.addEventListener('input', debounce(loadTrips, 300));
+  }
+  if (filterTripStatus) {
+    filterTripStatus.addEventListener('change', loadTrips);
+  }
+
+  async function loadAvailableVehiclesAndDrivers(selectedVehicleId = null, selectedDriverId = null) {
+    try {
+      const vehicles = await window.api.get('/vehicles');
+      const drivers = await window.api.get('/drivers');
+      
+      const vehicleSelect = document.getElementById('trip-vehicle');
+      const driverSelect = document.getElementById('trip-driver');
+      
+      vehicleSelect.innerHTML = '<option value="">-- Select Available Vehicle --</option>';
+      driverSelect.innerHTML = '<option value="">-- Select Available Driver --</option>';
+      
+      // Filter vehicles that are Available OR currently assigned to this trip (for edit mode)
+      const availableVehicles = vehicles.filter(v => v.status === 'Available' || v.id === parseInt(selectedVehicleId));
+      availableVehicles.forEach(v => {
+        const option = document.createElement('option');
+        option.value = v.id;
+        option.textContent = `${v.registration_number} - ${v.model} (Max: ${v.max_capacity} kg)`;
+        if (v.id === parseInt(selectedVehicleId)) option.selected = true;
+        vehicleSelect.appendChild(option);
+      });
+      
+      // Filter drivers that are Available OR currently assigned, AND have a valid driving license (not expired) and not Suspended
+      const today = new Date();
+      const availableDrivers = drivers.filter(d => {
+        const isExpired = new Date(d.license_expiry_date) < today;
+        return (d.status === 'Available' || d.id === parseInt(selectedDriverId)) && !isExpired && d.status !== 'Suspended';
+      });
+      
+      availableDrivers.forEach(d => {
+        const option = document.createElement('option');
+        option.value = d.id;
+        option.textContent = `${d.name} (${d.license_category}, Score: ${d.safety_score})`;
+        if (d.id === parseInt(selectedDriverId)) option.selected = true;
+        driverSelect.appendChild(option);
+      });
+      
+    } catch(err) {
+      console.error('Error populating available vehicles/drivers selection', err);
+    }
+  }
+
+  async function openTripFormModal(trip = null) {
+    tripForm.reset();
+    document.getElementById('trip-id').value = '';
+    
+    if (trip) {
+      tripModalTitle.textContent = 'Edit Trip Details';
+      document.getElementById('trip-id').value = trip.id;
+      document.getElementById('trip-source').value = trip.source;
+      document.getElementById('trip-destination').value = trip.destination;
+      document.getElementById('trip-weight').value = trip.cargo_weight;
+      document.getElementById('trip-distance').value = trip.planned_distance;
+      document.getElementById('trip-status').value = trip.status;
+      document.getElementById('trip-revenue').value = trip.revenue;
+      
+      await loadAvailableVehiclesAndDrivers(trip.vehicle_id, trip.driver_id);
+      document.getElementById('btn-save-trip').textContent = 'Save Changes';
+    } else {
+      tripModalTitle.textContent = 'Create Trip';
+      document.getElementById('trip-status').value = 'Draft';
+      document.getElementById('trip-revenue').value = 0;
+      
+      await loadAvailableVehiclesAndDrivers();
+      document.getElementById('btn-save-trip').textContent = 'Create Trip';
+    }
+    
+    tripModal.classList.add('active');
+  }
+
+  function closeTripModalCard() {
+    tripModal.classList.remove('active');
+  }
+
+  if (closeTripModal) closeTripModal.addEventListener('click', closeTripModalCard);
+  if (btnCancelTrip) btnCancelTrip.addEventListener('click', closeTripModalCard);
+  
+  tripForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const id = document.getElementById('trip-id').value;
+    const tripData = {
+      source: document.getElementById('trip-source').value,
+      destination: document.getElementById('trip-destination').value,
+      vehicle_id: document.getElementById('trip-vehicle').value,
+      driver_id: document.getElementById('trip-driver').value,
+      cargo_weight: document.getElementById('trip-weight').value,
+      planned_distance: document.getElementById('trip-distance').value,
+      status: document.getElementById('trip-status').value,
+      revenue: document.getElementById('trip-revenue').value
+    };
+    
+    try {
+      if (id) {
+        await window.api.put(`/trips/${id}`, tripData);
+        window.api.showToast('Trip record updated successfully.', 'success');
+      } else {
+        await window.api.post('/trips', tripData);
+        window.api.showToast('New trip record created successfully.', 'success');
+      }
+      closeTripModalCard();
+      loadTrips();
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  async function editTrip(id) {
+    try {
+      const trip = await window.api.get(`/trips/${id}`);
+      openTripFormModal(trip);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function deleteTrip(id) {
+    if (!confirm('Are you sure you want to delete this trip record?')) return;
+    try {
+      await window.api.delete(`/trips/${id}`);
+      window.api.showToast('Trip record deleted successfully.', 'success');
+      loadTrips();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function updateTripStatus(id, newStatus) {
+    try {
+      await window.api.put(`/trips/${id}`, { status: newStatus });
+      window.api.showToast(`Trip successfully updated to '${newStatus}'.`, 'success');
+      loadTrips();
     } catch (err) {
       console.error(err);
     }
