@@ -318,6 +318,9 @@ const handleMockQuery = (text, params) => {
       if (whereClause.includes('registration_number = $1')) {
         records = records.filter(r => r.registration_number === params[0]);
       }
+      if (whereClause.includes('license_number = $1')) {
+        records = records.filter(r => r.license_number === params[0] || (r.license_number && r.license_number.toUpperCase() === params[0].toUpperCase()));
+      }
       
       // Case-insensitive search match (ILIKE)
       const ilikeMatches = [...whereClause.matchAll(/\((?:i\.)?(\w+)\s+ILIKE\s+\$(\d+)\s+OR\s+(?:i\.)?(\w+)\s+ILIKE\s+\$(\d+)\)/gi)];
