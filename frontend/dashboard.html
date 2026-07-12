@@ -4,25 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - TransitOps</title>
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Session guard script to run immediately to prevent flashing of secure content -->
-    <script>
-      (function() {
-        const userData = localStorage.getItem('transitOpsUser');
-        if (!userData) {
-          window.location.replace('login.html');
-        }
-      })();
-    </script>
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar Navigation -->
+        <!-- Sidebar -->
         <aside class="app-sidebar" id="appSidebar">
             <div class="sidebar-header">
                 <a href="dashboard.html" class="sidebar-brand">
@@ -32,38 +20,42 @@
             </div>
             
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item active" data-tab="dashboard" data-roles="all">
+                <a href="dashboard.html" class="nav-item active" data-roles="all">
                     <i class="ph ph-squares-four"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="vehicles.html" class="nav-item" data-tab="vehicles" data-roles="fleet_manager,admin">
+                <a href="vehicles.html" class="nav-item" data-roles="manager">
                     <i class="ph ph-car"></i>
                     <span>Vehicle Registry</span>
                 </a>
-                <a href="drivers.html" class="nav-item" data-tab="drivers" data-roles="safety_officer,fleet_manager,admin">
+                <a href="drivers.html" class="nav-item" data-roles="manager,safety">
                     <i class="ph ph-identification-card"></i>
                     <span>Drivers</span>
                 </a>
-                <a href="trips.html" class="nav-item" data-tab="trips" data-roles="driver,fleet_manager,admin">
+                <a href="trips.html" class="nav-item" data-roles="manager,driver">
                     <i class="ph ph-path"></i>
                     <span>Trips</span>
                 </a>
-                <a href="maintenance.html" class="nav-item" data-tab="maintenance" data-roles="fleet_manager,admin">
+                <a href="maintenance.html" class="nav-item" data-roles="manager">
                     <i class="ph ph-wrench"></i>
                     <span>Maintenance</span>
                 </a>
-                <a href="expenses.html" class="nav-item" data-tab="expenses" data-roles="fleet_manager,financial_analyst,admin">
+                <a href="expenses.html" class="nav-item" data-roles="manager,finance">
                     <i class="ph ph-receipt"></i>
                     <span>Fuel & Expenses</span>
+                </a>
+                <a href="reports.html" class="nav-item" data-roles="manager,finance">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Reports</span>
                 </a>
             </nav>
 
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <div class="user-avatar" id="user-avatar-text">U</div>
+                    <div class="user-avatar">U</div>
                     <div class="user-info">
-                        <div class="user-name" id="user-email">loading...</div>
-                        <div class="user-role" id="user-role">Role</div>
+                        <div class="user-name">User Name</div>
+                        <div class="user-role">Role</div>
                     </div>
                     <button class="logout-btn" id="logoutBtn" title="Logout">
                         <i class="ph ph-sign-out"></i>
@@ -72,381 +64,113 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Main Content -->
         <main class="app-main">
-            <!-- Top Header -->
+            <!-- Header -->
             <header class="app-header">
                 <div class="header-left">
                     <button class="mobile-toggle" id="mobileToggle">
                         <i class="ph ph-list"></i>
                     </button>
-                    <h2 class="page-title" id="page-title">Dashboard Overview</h2>
+                    <h2 class="page-title">Dashboard Overview</h2>
                 </div>
-                <div class="header-right" id="header-action-container">
-                    <!-- Dynamic Action Buttons loaded here (e.g. Add Vehicle) -->
+                <div class="header-right">
+                    <button class="header-action" title="Notifications">
+                        <i class="ph ph-bell"></i>
+                    </button>
+                    <button class="header-action" title="Settings">
+                        <i class="ph ph-gear"></i>
+                    </button>
                 </div>
             </header>
 
-            <!-- Content Area -->
+            <!-- Page Content -->
             <div class="app-content">
-                
-                <!-- Dashboard Tab Panel -->
-                <section class="tab-panel active" id="tab-dashboard">
-                    <!-- KPI Metrics Grid -->
-                    <div class="metrics-grid" id="dashboard-kpis" style="margin-bottom: 30px;">
-                        <div class="metric-card card-3d">
-                            <div class="metric-info">
-                                <span class="metric-label">Total Vehicles</span>
-                                <span class="metric-value" id="kpi-total-vehicles">0</span>
-                            </div>
-                            <div class="metric-icon bg-primary"><i class="ph ph-car" style="font-size: 1.5rem;"></i></div>
+                <!-- Metrics Grid for KPIs -->
+                <div class="metrics-grid">
+                    <div class="card-3d metric-card">
+                        <div class="metric-card-icon">
+                            <i class="ph ph-car"></i>
                         </div>
-                        <div class="metric-card card-3d">
-                            <div class="metric-info">
-                                <span class="metric-label">Active Trips</span>
-                                <span class="metric-value" id="kpi-active-trips">0</span>
-                            </div>
-                            <div class="metric-icon bg-success"><i class="ph ph-path" style="font-size: 1.5rem;"></i></div>
-                        </div>
-                        <div class="metric-card card-3d">
-                            <div class="metric-info">
-                                <span class="metric-label">In Maintenance</span>
-                                <span class="metric-value" id="kpi-in-maintenance">0</span>
-                            </div>
-                            <div class="metric-icon bg-warning"><i class="ph ph-wrench" style="font-size: 1.5rem;"></i></div>
-                        </div>
-                        <div class="metric-card card-3d">
-                            <div class="metric-info">
-                                <span class="metric-label">Drivers On Duty</span>
-                                <span class="metric-value" id="kpi-drivers-on-duty">0</span>
-                            </div>
-                            <div class="metric-icon bg-info"><i class="ph ph-identification-card" style="font-size: 1.5rem;"></i></div>
+                        <div class="metric-card-info">
+                            <div class="metric-card-title">Total Vehicles</div>
+                            <div class="metric-card-value" id="kpiTotalVehicles">-</div>
                         </div>
                     </div>
-                    
-                    <!-- Welcome Widget -->
-                    <div class="card-3d welcome-panel" style="background-color: var(--bg-surface);">
-                        <h2 style="margin-bottom: 10px;">Welcome back, <span class="highlight text-primary" id="welcome-username">Operator</span>!</h2>
-                        <p style="color: var(--text-muted);">Please select a module from the sidebar to manage vehicles registry, driver licensing profiles, trip dispatch validations, maintenance records, and expense analytics.</p>
+                    <div class="card-3d metric-card">
+                        <div class="metric-card-icon" style="color: var(--secondary-color);">
+                            <i class="ph ph-identification-card"></i>
+                        </div>
+                        <div class="metric-card-info">
+                            <div class="metric-card-title">Active Drivers</div>
+                            <div class="metric-card-value" id="kpiActiveDrivers">-</div>
+                        </div>
                     </div>
-                </section>
+                    <div class="card-3d metric-card">
+                        <div class="metric-card-icon" style="color: var(--warning-color);">
+                            <i class="ph ph-path"></i>
+                        </div>
+                        <div class="metric-card-info">
+                            <div class="metric-card-title">Active Trips</div>
+                            <div class="metric-card-value" id="kpiActiveTrips">-</div>
+                        </div>
+                    </div>
+                    <div class="card-3d metric-card">
+                        <div class="metric-card-icon" style="color: var(--danger-color);">
+                            <i class="ph ph-chart-line-up"></i>
+                        </div>
+                        <div class="metric-card-info">
+                            <div class="metric-card-title">Fleet Utilization</div>
+                            <div class="metric-card-value" id="kpiUtilization">-</div>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Vehicles Tab Panel -->
-                <section class="tab-panel" id="tab-vehicles">
-                    <!-- Filter Bar -->
-                    <div class="filter-bar card-3d" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
-                        <div class="search-box" style="flex-grow: 1; max-width: 400px;">
-                            <input type="text" id="vehicle-search" class="form-control" placeholder="Search by model, registration...">
+                <!-- Dashboard Content Row: Recent Trips & Operations Summary -->
+                <div class="dashboard-grid">
+                    <div class="data-table-container">
+                        <div class="data-table-header">
+                            <h3 class="data-table-title">Recent Dispatched Trips</h3>
                         </div>
-                        <div class="filter-group" style="display: flex; gap: 12px;">
-                            <select id="filter-vehicle-type" class="form-control" style="width: auto;">
-                                <option value="">All Types</option>
-                                <option value="Van">Vans</option>
-                                <option value="Truck">Trucks</option>
-                                <option value="Sedan">Sedans</option>
-                            </select>
-                            <select id="filter-vehicle-status" class="form-control" style="width: auto;">
-                                <option value="">All Statuses</option>
-                                <option value="Available">Available</option>
-                                <option value="On Trip">On Trip</option>
-                                <option value="In Shop">In Shop</option>
-                                <option value="Retired">Retired</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Grid Table -->
-                    <div class="table-container card-3d" style="padding: 0; overflow-x: auto;">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Registration</th>
-                                    <th>Model</th>
-                                    <th>Type</th>
-                                    <th>Max Capacity</th>
-                                    <th>Odometer (km)</th>
-                                    <th>Cost ($)</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="vehicles-table-body">
-                                <!-- Rendered Dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Drivers Tab Panel -->
-                <section class="tab-panel" id="tab-drivers">
-                    <!-- Filter Bar -->
-                    <div class="filter-bar card-3d" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
-                        <div class="search-box" style="flex-grow: 1; max-width: 400px;">
-                            <input type="text" id="driver-search" class="form-control" placeholder="Search by name, license number...">
-                        </div>
-                        <div class="filter-group" style="display: flex; gap: 12px;">
-                            <select id="filter-driver-status" class="form-control" style="width: auto;">
-                                <option value="">All Statuses</option>
-                                <option value="Available">Available</option>
-                                <option value="On Trip">On Trip</option>
-                                <option value="Off Duty">Off Duty</option>
-                                <option value="Suspended">Suspended</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Grid Table -->
-                    <div class="table-container card-3d" style="padding: 0; overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>License Number</th>
-                                    <th>Category</th>
-                                    <th>Expiry Date</th>
-                                    <th>Contact</th>
-                                    <th>Safety Score</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="drivers-table-body">
-                                <!-- Rendered Dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Trips Tab Panel -->
-                <section class="tab-panel" id="tab-trips">
-                    <!-- Filter Bar -->
-                    <div class="filter-bar card-3d" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
-                        <div class="search-box" style="flex-grow: 1; max-width: 400px;">
-                            <input type="text" id="trip-search" class="form-control" placeholder="Search by source, destination...">
-                        </div>
-                        <div class="filter-group" style="display: flex; gap: 12px;">
-                            <select id="filter-trip-status" class="form-control" style="width: auto;">
-                                <option value="">All Statuses</option>
-                                <option value="Draft">Draft</option>
-                                <option value="Dispatched">Dispatched</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Grid Table -->
-                    <div class="table-container card-3d" style="padding: 0; overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
+                                    <th>ID</th>
                                     <th>Source</th>
                                     <th>Destination</th>
-                                    <th>Vehicle</th>
-                                    <th>Driver</th>
-                                    <th>Cargo Weight</th>
-                                    <th>Distance</th>
+                                    <th>Cargo (kg)</th>
                                     <th>Status</th>
-                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="trips-table-body">
-                                <!-- Rendered Dynamically -->
+                            <tbody id="recentTripsTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--text-muted);">Loading trips...</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-                </section>
 
+                    <div class="card-3d" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <h3 class="data-table-title">System Status</h3>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(163,177,198,0.2); padding-bottom: 0.5rem;">
+                            <span class="text-muted">API Connection</span>
+                            <span class="badge badge-success" id="apiStatusBadge">Connecting</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(163,177,198,0.2); padding-bottom: 0.5rem;">
+                            <span class="text-muted">Database Engine</span>
+                            <span class="badge badge-success" id="dbStatusBadge">Connecting</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span class="text-muted">Current Role</span>
+                            <span class="badge badge-info" id="userRoleBadge">-</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- --- MODALS CONTAINER --- -->
-    
-    <!-- Add/Edit Vehicle Modal -->
-    <div class="modal-overlay" id="vehicle-modal">
-        <div class="modal-card card-3d" style="width: 100%; max-width: 600px; padding: 24px;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                <h3 id="vehicle-modal-title" style="margin: 0; color: var(--text-dark);">Register Vehicle</h3>
-                <button class="close-btn" id="close-vehicle-modal" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
-            </div>
-            <form id="vehicle-form" class="modal-form">
-                <input type="hidden" id="vehicle-id">
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="vehicle-reg" class="form-label">Registration Number *</label>
-                        <input type="text" id="vehicle-reg" class="form-control" placeholder="E.g. VAN-05" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="vehicle-model" class="form-label">Model / Make *</label>
-                        <input type="text" id="vehicle-model" class="form-control" placeholder="E.g. Ford Transit" required>
-                    </div>
-                </div>
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="vehicle-type" class="form-label">Type *</label>
-                        <select id="vehicle-type" class="form-control" required>
-                            <option value="Van">Van</option>
-                            <option value="Truck">Truck</option>
-                            <option value="Sedan">Sedan</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="vehicle-capacity" class="form-label">Maximum Load Capacity (kg) *</label>
-                        <input type="number" id="vehicle-capacity" class="form-control" min="1" placeholder="E.g. 1500" required>
-                    </div>
-                </div>
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="vehicle-odometer" class="form-label">Current Odometer (km) *</label>
-                        <input type="number" id="vehicle-odometer" class="form-control" min="0" placeholder="E.g. 45000" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="vehicle-cost" class="form-label">Acquisition Cost ($) *</label>
-                        <input type="number" id="vehicle-cost" class="form-control" min="0" placeholder="E.g. 35000" required>
-                    </div>
-                </div>
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label for="vehicle-status" class="form-label">Status</label>
-                    <select id="vehicle-status" class="form-control">
-                        <option value="Available">Available</option>
-                        <option value="On Trip">On Trip</option>
-                        <option value="In Shop">In Shop</option>
-                        <option value="Retired">Retired</option>
-                    </select>
-                </div>
-                <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px;">
-                    <button type="button" class="btn" id="btn-cancel-vehicle">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-vehicle">Register Vehicle</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Add/Edit Driver Modal -->
-    <div class="modal-overlay" id="driver-modal">
-        <div class="modal-card card-3d" style="width: 100%; max-width: 600px; padding: 24px;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                <h3 id="driver-modal-title" style="margin: 0; color: var(--text-dark);">Register Driver</h3>
-                <button class="close-btn" id="close-driver-modal" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
-            </div>
-            <form id="driver-form" class="modal-form">
-                <input type="hidden" id="driver-id">
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="driver-name" class="form-label">Driver Full Name *</label>
-                        <input type="text" id="driver-name" class="form-control" placeholder="E.g. Alex Mercer" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="driver-license" class="form-label">License Number *</label>
-                        <input type="text" id="driver-license" class="form-control" placeholder="E.g. DL-98214" required>
-                    </div>
-                </div>
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="driver-category" class="form-label">License Category *</label>
-                        <input type="text" id="driver-category" class="form-control" placeholder="E.g. Class A Commercial" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="driver-expiry" class="form-label">License Expiry Date *</label>
-                        <input type="date" id="driver-expiry" class="form-control" required>
-                    </div>
-                </div>
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="driver-phone" class="form-label">Contact Phone *</label>
-                        <input type="text" id="driver-phone" class="form-control" placeholder="E.g. +1-555-0199" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="driver-score" class="form-label">Safety Compliance Score *</label>
-                        <input type="number" id="driver-score" class="form-control" min="0" max="100" step="0.1" value="100" required>
-                    </div>
-                </div>
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label for="driver-status" class="form-label">Status</label>
-                    <select id="driver-status" class="form-control">
-                        <option value="Available">Available</option>
-                        <option value="On Trip">On Trip</option>
-                        <option value="Off Duty">Off Duty</option>
-                        <option value="Suspended">Suspended</option>
-                    </select>
-                </div>
-                <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px;">
-                    <button type="button" class="btn" id="btn-cancel-driver">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-driver">Register Driver</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Add/Edit Trip Modal -->
-    <div class="modal-overlay" id="trip-modal">
-        <div class="modal-card card-3d" style="width: 100%; max-width: 600px; padding: 24px;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                <h3 id="trip-modal-title" style="margin: 0; color: var(--text-dark);">Create Trip</h3>
-                <button class="close-btn" id="close-trip-modal" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
-            </div>
-            <form id="trip-form" class="modal-form">
-                <input type="hidden" id="trip-id">
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="trip-source" class="form-label">Source Location *</label>
-                        <input type="text" id="trip-source" class="form-control" placeholder="E.g. Warehouse A (Chicago)" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="trip-destination" class="form-label">Destination *</label>
-                        <input type="text" id="trip-destination" class="form-control" placeholder="E.g. Distribution Center (Detroit)" required>
-                    </div>
-                </div>
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="trip-vehicle" class="form-label">Vehicle *</label>
-                        <select id="trip-vehicle" class="form-control" required>
-                            <!-- Populated dynamically with available vehicles -->
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="trip-driver" class="form-label">Driver *</label>
-                        <select id="trip-driver" class="form-control" required>
-                            <!-- Populated dynamically with available drivers -->
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="trip-weight" class="form-label">Cargo Weight (kg) *</label>
-                        <input type="number" id="trip-weight" class="form-control" min="1" placeholder="E.g. 950" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="trip-distance" class="form-label">Planned Distance (km) *</label>
-                        <input type="number" id="trip-distance" class="form-control" min="1" placeholder="E.g. 450" required>
-                    </div>
-                </div>
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="trip-status" class="form-label">Trip Status</label>
-                        <select id="trip-status" class="form-control">
-                            <option value="Draft">Draft</option>
-                            <option value="Dispatched">Dispatched</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="trip-revenue" class="form-label">Planned Revenue ($)</label>
-                        <input type="number" id="trip-revenue" class="form-control" min="0" value="0">
-                    </div>
-                </div>
-                <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px;">
-                    <button type="button" class="btn" id="btn-cancel-trip">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-trip">Create Trip</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>
