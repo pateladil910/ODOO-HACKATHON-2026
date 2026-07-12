@@ -171,10 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${regNum}</td>
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); color: var(--text-muted);">${formattedDate}</td>
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${log.liters} L</td>
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); text-align: right;">${parseFloat(log.cost).toLocaleString()}</td>
+                    <td>${regNum}</td>
+                    <td style="color: var(--text-muted);">${formattedDate}</td>
+                    <td class="num-col">${log.liters} L</td>
+                    <td class="num-col">$${parseFloat(log.cost).toLocaleString()}</td>
                 `;
                 fuelTableBody.appendChild(tr);
             });
@@ -199,14 +199,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">TR${String(exp.id).padStart(3, '0')}</td>
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${regNum}</td>
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${parseFloat(toll).toLocaleString()}</td>
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">${parseFloat(other).toLocaleString()}</td>
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); color: var(--text-muted);">0</td>
-                    <td style="padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); text-align: right;">
-                        <span style="background-color: var(--secondary-color); color: #000; padding: 0.25rem 1rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">Completed</span>
-                    </td>
+                    <td>TR${String(exp.id).padStart(3, '0')}</td>
+                    <td>${regNum}</td>
+                    <td class="num-col">$${parseFloat(toll).toLocaleString()}</td>
+                    <td class="num-col">$${parseFloat(other).toLocaleString()}</td>
+                    <td class="num-col" style="color: var(--text-muted);">$0</td>
+                    <td class="num-col" style="font-weight: 600; color: var(--secondary-color);">$${parseFloat(exp.cost).toLocaleString()}</td>
                 `;
                 expensesTableBody.appendChild(tr);
             });
