@@ -66,6 +66,19 @@
     { id: 4, vehicle_id: 5, type: 'Permits', cost: 150.00, logged_at: '2026-07-04' }
   ];
 
+  const seedDocuments = [
+    { id: 1, vehicle_id: 1, document_name: 'Registration Card', file_name: 'Registration_VAN-01.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 2, vehicle_id: 1, document_name: 'Insurance Policy', file_name: 'Insurance_VAN-01.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 3, vehicle_id: 2, document_name: 'Registration Card', file_name: 'Registration_TRK-02.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 4, vehicle_id: 2, document_name: 'Insurance Policy', file_name: 'Insurance_TRK-02.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 5, vehicle_id: 3, document_name: 'Registration Card', file_name: 'Registration_VAN-03.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 6, vehicle_id: 3, document_name: 'Insurance Policy', file_name: 'Insurance_VAN-03.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 7, vehicle_id: 4, document_name: 'Registration Card', file_name: 'Registration_TRK-04.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 8, vehicle_id: 4, document_name: 'Insurance Policy', file_name: 'Insurance_TRK-04.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 9, vehicle_id: 5, document_name: 'Registration Card', file_name: 'Registration_VAN-05.pdf', file_size: 131072, mime_type: 'application/pdf', created_at: new Date().toISOString() },
+    { id: 10, vehicle_id: 5, document_name: 'Insurance Policy', file_name: 'Insurance_VAN-05.pdf', file_size: 262144, mime_type: 'application/pdf', created_at: new Date().toISOString() }
+  ];
+
   // Global Intercept Function
   const handleMockRequest = async (url, init = {}) => {
     const method = (init.method || 'GET').toUpperCase();
@@ -555,7 +568,7 @@
       if (url.includes('/vehicles/') && url.includes('/documents') && method === 'GET') {
         const parts = url.split('/');
         const vehicleId = parseInt(parts[parts.indexOf('vehicles') + 1], 10);
-        const docs = loadDb('mock_documents', []);
+        const docs = loadDb('mock_documents', seedDocuments);
         const vehicleDocs = docs.filter(d => d.vehicle_id === vehicleId);
         return makeResponse(vehicleDocs);
       }
@@ -563,7 +576,7 @@
       if (url.includes('/vehicles/') && url.includes('/documents') && method === 'POST') {
         const parts = url.split('/');
         const vehicleId = parseInt(parts[parts.indexOf('vehicles') + 1], 10);
-        const docs = loadDb('mock_documents', []);
+        const docs = loadDb('mock_documents', seedDocuments);
         const newDoc = {
           id: docs.length > 0 ? Math.max(...docs.map(x => x.id)) + 1 : 1,
           vehicle_id: vehicleId,
@@ -581,7 +594,7 @@
       if (url.includes('/vehicles/documents/') && method === 'DELETE') {
         const parts = url.split('/');
         const docId = parseInt(parts[parts.indexOf('documents') + 1], 10);
-        const docs = loadDb('mock_documents', []);
+        const docs = loadDb('mock_documents', seedDocuments);
         const newDocList = docs.filter(x => x.id !== docId);
         saveDb('mock_documents', newDocList);
         return makeResponse(null);

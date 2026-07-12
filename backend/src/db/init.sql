@@ -257,3 +257,18 @@ VALUES
 (2, 'Tolls', 30.00, '2026-07-02'),
 (3, 'Tolls', 25.00, '2026-07-08'),
 (5, 'Permits', 150.00, '2026-07-04');
+
+-- Seed Vehicle Documents
+INSERT INTO vehicle_documents (vehicle_id, document_name, file_name, file_size, mime_type, file_path)
+VALUES
+(1, 'Registration Card', 'Registration_VAN-01.pdf', 131072, 'application/pdf', '/uploads/documents/Registration_VAN-01.pdf'),
+(1, 'Insurance Policy', 'Insurance_VAN-01.pdf', 262144, 'application/pdf', '/uploads/documents/Insurance_VAN-01.pdf'),
+(2, 'Registration Card', 'Registration_TRK-02.pdf', 131072, 'application/pdf', '/uploads/documents/Registration_TRK-02.pdf'),
+(2, 'Insurance Policy', 'Insurance_TRK-02.pdf', 262144, 'application/pdf', '/uploads/documents/Insurance_TRK-02.pdf'),
+(3, 'Registration Card', 'Registration_VAN-03.pdf', 131072, 'application/pdf', '/uploads/documents/Registration_VAN-03.pdf'),
+(3, 'Insurance Policy', 'Insurance_VAN-03.pdf', 262144, 'application/pdf', '/uploads/documents/Insurance_VAN-03.pdf'),
+(4, 'Registration Card', 'Registration_TRK-04.pdf', 131072, 'application/pdf', '/uploads/documents/Registration_TRK-04.pdf'),
+(4, 'Insurance Policy', 'Insurance_TRK-04.pdf', 262144, 'application/pdf', '/uploads/documents/Insurance_TRK-04.pdf'),
+(5, 'Registration Card', 'Registration_VAN-05.pdf', 131072, 'application/pdf', '/uploads/documents/Registration_VAN-05.pdf'),
+(5, 'Insurance Policy', 'Insurance_VAN-05.pdf', 262144, 'application/pdf', '/uploads/documents/Insurance_VAN-05.pdf');
+

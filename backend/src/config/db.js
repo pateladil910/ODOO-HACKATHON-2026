@@ -118,7 +118,19 @@ const mockDb = {
   trips: [],
   maintenance_logs: [],
   fuel_logs: [],
-  expenses: []
+  expenses: [],
+  vehicle_documents: [
+    { id: 1, vehicle_id: 1, document_name: 'Registration Card', file_name: 'Registration_VAN-01.pdf', file_size: 131072, mime_type: 'application/pdf', file_path: '/uploads/documents/Registration_VAN-01.pdf' },
+    { id: 2, vehicle_id: 1, document_name: 'Insurance Policy', file_name: 'Insurance_VAN-01.pdf', file_size: 262144, mime_type: 'application/pdf', file_path: '/uploads/documents/Insurance_VAN-01.pdf' },
+    { id: 3, vehicle_id: 2, document_name: 'Registration Card', file_name: 'Registration_TRK-02.pdf', file_size: 131072, mime_type: 'application/pdf', file_path: '/uploads/documents/Registration_TRK-02.pdf' },
+    { id: 4, vehicle_id: 2, document_name: 'Insurance Policy', file_name: 'Insurance_TRK-02.pdf', file_size: 262144, mime_type: 'application/pdf', file_path: '/uploads/documents/Insurance_TRK-02.pdf' },
+    { id: 5, vehicle_id: 3, document_name: 'Registration Card', file_name: 'Registration_VAN-03.pdf', file_size: 131072, mime_type: 'application/pdf', file_path: '/uploads/documents/Registration_VAN-03.pdf' },
+    { id: 6, vehicle_id: 3, document_name: 'Insurance Policy', file_name: 'Insurance_VAN-03.pdf', file_size: 262144, mime_type: 'application/pdf', file_path: '/uploads/documents/Insurance_VAN-03.pdf' },
+    { id: 7, vehicle_id: 4, document_name: 'Registration Card', file_name: 'Registration_TRK-04.pdf', file_size: 131072, mime_type: 'application/pdf', file_path: '/uploads/documents/Registration_TRK-04.pdf' },
+    { id: 8, vehicle_id: 4, document_name: 'Insurance Policy', file_name: 'Insurance_TRK-04.pdf', file_size: 262144, mime_type: 'application/pdf', file_path: '/uploads/documents/Insurance_TRK-04.pdf' },
+    { id: 9, vehicle_id: 5, document_name: 'Registration Card', file_name: 'Registration_VAN-05.pdf', file_size: 131072, mime_type: 'application/pdf', file_path: '/uploads/documents/Registration_VAN-05.pdf' },
+    { id: 10, vehicle_id: 5, document_name: 'Insurance Policy', file_name: 'Insurance_VAN-05.pdf', file_size: 262144, mime_type: 'application/pdf', file_path: '/uploads/documents/Insurance_VAN-05.pdf' }
+  ]
 };
 
 const handleMockQuery = (text, params) => {
